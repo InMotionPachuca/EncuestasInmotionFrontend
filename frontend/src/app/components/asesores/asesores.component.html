@@ -1,0 +1,71 @@
+<div class="asesores-container">
+  <!-- HEADER -->
+  <div class="asesores-header">
+    <div>
+      <h1><i class="fas fa-user-tie me-2 text-gold"></i>Dashboard de Asesores de Servicio</h1>
+      <p class="header-subtitle mt-1 mb-0">Métricas de desempeño y calificación de atención por asesor</p>
+    </div>
+  </div>
+
+  <!-- BARRA DE BÚSQUEDA -->
+  <div class="filtros-container">
+    <div class="filtros-box">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        class="filtro-input" 
+        placeholder="Buscar por nombre del asesor..." 
+        [(ngModel)]="filtroBusqueda"
+      >
+    </div>
+  </div>
+
+  <!-- CARGANDO -->
+  <div *ngIf="loading" class="cargando">
+    <p><i class="fas fa-spinner fa-spin me-2"></i> Cargando estadísticas de asesores...</p>
+  </div>
+
+  <!-- TARJETAS Y TABLA DE ASESORES -->
+  <div *ngIf="!loading" class="contenido-dashboard">
+    <div class="grid-asesores">
+      <div class="asesor-card" *ngFor="let asesor of asesoresFiltrados">
+        <div class="asesor-card-header">
+          <div class="avatar-asesor">
+            <i class="fas fa-user"></i>
+          </div>
+          <div>
+            <h3>{{ asesor.nombre }}</h3>
+            <span class="badge-total">{{ asesor.totalEncuestas }} encuestas enviadas</span>
+          </div>
+        </div>
+
+        <div class="asesor-card-body">
+          <div class="metric-box">
+            <span class="metric-label">Calificación Atencion Asesor</span>
+            <div class="stars-val">
+              <span class="metric-value">{{ asesor.promedioAtencion }} / 5</span>
+              <span class="stars-gold">★</span>
+            </div>
+          </div>
+
+          <div class="metric-box">
+            <span class="metric-label">Calificación Agencia</span>
+            <div class="stars-val">
+              <span class="metric-value">{{ asesor.promedioSatisfaccion }} / 5</span>
+              <span class="stars-gold">★</span>
+            </div>
+          </div>
+
+          <div class="metric-box">
+            <span class="metric-label">Recomendación Positiva</span>
+            <span class="metric-value text-success">{{ asesor.porcentajeRecomendacion }}%</span>
+          </div>
+        </div>
+
+        <div class="asesor-card-footer">
+          <span>Respuestas recibidas: <strong>{{ asesor.respondidas }}</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

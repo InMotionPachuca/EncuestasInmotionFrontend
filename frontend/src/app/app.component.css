@@ -1,0 +1,224 @@
+/* ============================================
+   NAVBAR INSTITUCIONAL DORADO
+   ============================================ */
+/* ============================================
+   NAVBAR BLANCA Y LOGO ADAPTADO
+   ============================================ */
+.navbar {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: #FFFFFF !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid #C5A059;
+}
+
+/* 
+   Convierte el logo blanco (inmo1.webp) a un tono carbón/negro sobrio 
+   para que resalte sobre el fondo blanco.
+*/
+.navbar-brand img[src*="inmo1.webp"],
+.navbar-brand img {
+  filter: brightness(0) opacity(0.85);
+  transition: filter 0.3s ease;
+}
+
+/* Opcional: efecto sutil al pasar el cursor sobre el logo */
+.navbar-brand img:hover {
+  filter: brightness(0) opacity(1);
+}
+
+.btn-logout {
+  background: #F8F9FA;
+  border: 1px solid #E9ECEF;
+  color: #495057;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-logout:hover {
+  background: #C5A059;
+  border-color: #C5A059;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.25);
+  transform: translateY(-1px);
+}
+
+.logout-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.logout-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* ============================================
+   SIDEBAR MEJORADO
+   ============================================ */
+.sidebar {
+  background: #FFFFFF !important;
+  border-right: 1px solid #E9ECEF !important;
+  position: sticky;
+  top: 70px;
+  height: calc(100vh - 70px);
+  overflow-y: auto;
+  z-index: 1020;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #C5A059;
+  border-radius: 4px;
+}
+
+.sidebar-header .tracking-wide {
+  letter-spacing: 0.5px;
+  font-family: 'Montserrat', sans-serif;
+  color: #212529;
+}
+
+.nav-link {
+  color: #495057;
+  padding: 10px 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 0.88rem;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+}
+
+.nav-link:hover {
+  background: #FDF8ED;
+  color: #C5A059;
+  transform: translateX(3px);
+}
+
+.nav-link.active {
+  background: #FDF8ED;
+  color: #9A7B3E;
+  font-weight: 600;
+}
+
+.nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 22px;
+  background: #C5A059;
+  border-radius: 0 4px 4px 0;
+}
+
+.menu-icon {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+}
+
+.badge {
+  font-size: 0.6rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+  background: #C5A059;
+  color: #FFFFFF;
+}
+
+.sidebar-footer {
+  font-size: 0.7rem;
+  color: #6C757D;
+}
+
+/* ============================================
+   CONTENIDO PRINCIPAL
+   ============================================ */
+.flex-grow-1 {
+  background: #F8F9FA !important;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 8px 16px !important;
+  }
+
+  .navbar-brand img {
+    height: 35px !important;
+  }
+
+  .btn-logout {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .logout-text {
+    display: none;
+  }
+
+  .sidebar {
+    width: 200px !important;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1040;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.06);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .flex-grow-1 {
+    padding: 16px !important;
+    margin-left: 0 !important;
+  }
+
+  .nav-link {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-brand span {
+    display: none;
+  }
+
+  .navbar-brand img {
+    height: 30px !important;
+  }
+
+  .btn-logout {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+
+  .logout-icon {
+    font-size: 0.9rem;
+  }
+}

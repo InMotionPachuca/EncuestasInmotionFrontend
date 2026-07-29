@@ -1,0 +1,145 @@
+<div class="crear-encuesta-container">
+  <!-- HEADER NEGRO Y DORADO -->
+  <div class="crear-header">
+    <div>
+      <h1>Generar Encuesta de Satisfacción</h1>
+      <p class="header-subtitle mt-1 mb-0">Complete los datos del cliente para generar el link de la encuesta.</p>
+    </div>
+  </div>
+
+  <!-- FORMULARIO DE CREACIÓN -->
+  <div class="form-container" *ngIf="!exito">
+    <form [formGroup]="encuestaForm" (ngSubmit)="generarEncuesta()">
+      <div class="form-section">
+        <h2><i class="fas fa-user-edit me-2 text-gold"></i>Datos del Cliente y Servicio</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre <span class="required">*</span></label>
+            <input type="text" formControlName="nombre" placeholder="Ingrese el nombre">
+            <small *ngIf="encuestaForm.get('nombre')?.invalid && encuestaForm.get('nombre')?.touched" class="error-text">
+              <i class="fas fa-exclamation-circle me-1"></i>El nombre es requerido
+            </small>
+          </div>
+          <div class="form-group">
+            <label>Apellido <span class="required">*</span></label>
+            <input type="text" formControlName="apellido" placeholder="Ingrese el apellido">
+            <small *ngIf="encuestaForm.get('apellido')?.invalid && encuestaForm.get('apellido')?.touched" class="error-text">
+              <i class="fas fa-exclamation-circle me-1"></i>El apellido es requerido
+            </small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email <span class="opcional-text">(opcional)</span></label>
+            <input type="email" formControlName="email" placeholder="ejemplo@email.com">
+          </div>
+          <div class="form-group">
+            <label>Teléfono <span class="required">*</span></label>
+            <input type="tel" formControlName="telefono" placeholder="55 1234 5678">
+            <small *ngIf="encuestaForm.get('telefono')?.invalid && encuestaForm.get('telefono')?.touched" class="error-text">
+              <i class="fas fa-exclamation-circle me-1"></i>El teléfono es requerido
+            </small>
+          </div>
+        </div>
+
+        <!-- FILA CON ASESOR Y SUCURSAL -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Asesor de Servicio <span class="opcional-text">(opcional)</span></label>
+            <input type="text" formControlName="asesor" placeholder="Nombre del asesor">
+          </div>
+          <div class="form-group">
+            <label>Sucursal <span class="required">*</span></label>
+            <select formControlName="marcaId">
+              <option value="">Seleccione una sucursal</option>
+              <option *ngFor="let marca of marcas" [value]="marca.id">
+                {{ marca.nombre }}
+              </option>
+            </select>
+            <small *ngIf="encuestaForm.get('marcaId')?.invalid && encuestaForm.get('marcaId')?.touched" class="error-text">
+              <i class="fas fa-exclamation-circle me-1"></i>Seleccione una sucursal
+            </small>
+          </div>
+        </div>
+
+        <!-- NUEVA FILA CON FECHA DE VISITA Y TIPO DE ENCUESTA -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fecha de Visita <span class="required">*</span></label>
+            <input type="date" formControlName="fechaVisita">
+            <small *ngIf="encuestaForm.get('fechaVisita')?.invalid && encuestaForm.get('fechaVisita')?.touched" class="error-text">
+              <i class="fas fa-exclamation-circle me-1"></i>La fecha es requerida
+            </small>
+          </div>
+          <div class="form-group">
+            <label>Tipo de Encuesta</label>
+            <select formControlName="tipo">
+              <option value="VENTA">Venta</option>
+              <option value="POSTVENTA">Postventa</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="resetForm()">
+          <i class="fas fa-broom me-1"></i> Limpiar
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="loading || encuestaForm.invalid">
+          <i class="fas me-1" [class.fa-plus-circle]="!loading" [class.fa-spinner]="loading" [class.fa-spin]="loading"></i>
+          {{ loading ? 'Generando...' : 'Generar Encuesta' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- CAJA DE ÉXITO -->
+  <div *ngIf="exito" class="success-box">
+    <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+    <h3>Encuesta Generada Exitosamente</h3>
+    
+    <div class="success-info">
+      <div class="info-row">
+        <span>Cliente:</span>
+        <strong>{{ encuestaCreada?.clienteNombre }}</strong>
+      </div>
+      <div class="info-row" *ngIf="encuestaCreada?.asesor">
+        <span>Asesor:</span>
+        <strong>{{ encuestaCreada?.asesor }}</strong>
+      </div>
+      <div class="info-row">
+        <span>Fecha de Visita:</span>
+        <strong>{{ fechaVisitaFormateada }}</strong>
+      </div>
+      <div class="info-row">
+        <span>Sucursal:</span>
+        <strong>{{ encuestaCreada?.marcaNombre }}</strong>
+      </div>
+      <div class="info-row">
+        <span>Token:</span>
+        <code>{{ tokenGenerado }}</code>
+      </div>
+    </div>
+
+    <div class="link-container">
+      <label>Link de la encuesta:</label>
+      <div class="link-display">
+        <input type="text" [value]="linkGenerado" readonly>
+        <button class="btn-copy" (click)="copiarLink()">
+          <i class="fas fa-copy me-1"></i> Copiar
+        </button>
+      </div>
+    </div>
+
+    <div class="success-actions">
+      <button class="btn-primary" (click)="resetForm()">
+        <i class="fas fa-plus me-1"></i> Nueva Encuesta
+      </button>
+      <button class="btn-secondary" routerLink="/dashboard">
+        <i class="fas fa-chart-pie me-1"></i> Ver Dashboard
+      </button>
+    </div>
+  </div>
+</div>

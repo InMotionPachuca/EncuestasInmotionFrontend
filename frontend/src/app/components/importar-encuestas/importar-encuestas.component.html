@@ -1,0 +1,183 @@
+<div class="importar-container">
+  <div class="toast-message" *ngIf="mensajeToast" [class]="'toast-' + tipoToast">
+    {{ mensajeToast }}
+  </div>
+
+  <!-- HEADER NEGRO Y DORADO COMPACTO -->
+  <div class="importar-header">
+    <div>
+      <h1>Importar Datos de Clientes para Encuestas</h1>
+      <p class="header-subtitle mt-1 mb-0">Cargue el archivo Excel con los clientes para generar encuestas automáticamente.</p>
+    </div>
+  </div>
+
+  <!-- SECCIÓN DE CARGA COMPACTA -->
+  <div class="upload-section">
+    <div class="upload-box" (dragover)="$event.preventDefault()" (drop)="onFileChange($event)">
+      <div class="upload-icon">
+        <i class="fas fa-file-excel"></i>
+      </div>
+      <h3>Seleccione el archivo Excel</h3>
+      <p>El archivo debe contener las columnas: FECHA, NOMBRE CLIENTE, ASESOR, TELEFONO, UNIDAD, MARCA</p>
+      <input type="file" accept=".xlsx,.xls" (change)="onFileChange($event)" #fileInput>
+    </div>
+
+    <div *ngIf="archivoSeleccionado" class="file-info">
+      <i class="fas fa-file-alt me-2 text-gold"></i>
+      <span class="file-name">{{ archivoSeleccionado.name }}</span>
+      <span class="file-size">{{ (archivoSeleccionado.size / 1024).toFixed(2) }} KB</span>
+      <button class="btn-remove" (click)="limpiar()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p><i class="fas fa-spinner fa-spin me-2"></i> Procesando archivo...</p>
+  </div>
+
+  <!-- SECCIÓN DE RESULTADOS -->
+  <div *ngIf="mostrarResultados && !loading" class="results-section">
+    <div class="results-header">
+      <h3>Clientes encontrados</h3>
+      <span class="total-count">Total: {{ totalRegistros }}</span>
+      <div class="results-actions">
+        <button class="btn-generate" (click)="generarEncuestas()" [disabled]="procesando || totalRegistros === 0">
+          <i class="fas fa-cogs me-1" *ngIf="!procesando"></i>
+          <i class="fas fa-spinner fa-spin me-1" *ngIf="procesando"></i>
+          {{ procesando ? 'Generando...' : 'Generar Encuestas' }}
+        </button>
+        <button class="btn-secondary" (click)="limpiar()">
+          <i class="fas fa-broom me-1"></i> Limpiar
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="mostrarResultados && !procesando && totalRegistros > 0" class="plantilla-selector">
+      <h4>Selecciona el tipo de plantilla:</h4>
+      <div class="selector-buttons">
+        <button 
+          class="btn-plantilla" 
+          [class.active]="tipoPlantilla === 'POSTVENTA'"
+          (click)="cambiarPlantilla('POSTVENTA')">
+          <i class="fas fa-tools me-1"></i> Post Venta
+        </button>
+        <button 
+          class="btn-plantilla" 
+          [class.active]="tipoPlantilla === 'VENTA'"
+          (click)="cambiarPlantilla('VENTA')">
+          <i class="fas fa-car me-1"></i> Venta
+        </button>
+      </div>
+      <p class="plantilla-info">Plantilla actual: <strong>{{ tipoPlantilla === 'VENTA' ? 'Venta' : 'Post Venta' }}</strong></p>
+    </div>
+
+    <div *ngIf="procesando" class="progress-status">
+      <span>Procesando: {{ (exitosos + fallidos) }} / {{ totalRegistros }}</span>
+      <span>Exitosos: {{ exitosos }} | Fallidos: {{ fallidos }}</span>
+      <span>Plantilla: {{ tipoPlantilla === 'VENTA' ? 'Venta' : 'Post Venta' }}</span>
+    </div>
+
+    <!-- TABLA DE PREVISTO -->
+    <div class="table-responsive" *ngIf="datosExcel.length > 0">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Teléfono</th>
+            <th>Asesor</th>
+            <th>Unidad</th>
+            <th>Marca</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of datosExcel">
+            <td>{{ cliente.index }}</td>
+            <td><strong>{{ cliente.nombreCliente }}</strong></td>
+            <td>{{ cliente.telefono }}</td>
+            <td>{{ cliente.asesor }}</td>
+            <td>{{ cliente.unidad }}</td>
+            <td>{{ cliente.marcaNombre || 'Subaru' }}</td>
+            <td>
+              <span *ngIf="!cliente.procesado" class="badge badge-pending"><i class="fas fa-clock me-1"></i>Pendiente</span>
+              <span *ngIf="cliente.procesado && cliente.exito" class="badge badge-success"><i class="fas fa-check me-1"></i>Éxito</span>
+              <span *ngIf="cliente.procesado && !cliente.exito" class="badge badge-error"><i class="fas fa-exclamation-circle me-1"></i>Error</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TABLA DE ENCUESTAS GENERADAS -->
+    <div *ngIf="encuestasGeneradas.length > 0" class="generated-section">
+      <h4>Encuestas Generadas</h4>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Marca</th>
+              <th>Link</th>
+              <th>Plantilla</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let item of encuestasGeneradas">
+              <tr>
+                <td>{{ item.cliente }}</td>
+                <td>{{ item.marca }}</td>
+                <td><code class="link-code">{{ item.link }}</code></td>
+                <td>
+                  <button class="btn-ver-plantilla" (click)="item.mostrarPlantilla = !item.mostrarPlantilla">
+                    <i class="fas me-1" [class.fa-eye]="!item.mostrarPlantilla" [class.fa-eye-slash]="item.mostrarPlantilla"></i>
+                    {{ item.mostrarPlantilla ? 'Ocultar' : 'Ver' }}
+                  </button>
+                </td>
+                <td>
+                  <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                    <button class="btn-copy" (click)="copiarImagen(item.imagenUrl)" title="Copiar solo la imagen">
+                      <i class="fas fa-image me-1"></i> Copiar Imagen
+                    </button>
+                    <button class="btn-copy-plantilla" (click)="copiarPlantilla(item.plantilla)" title="Copiar solo el texto de la plantilla">
+                      <i class="fab fa-whatsapp me-1"></i> Copiar Plantilla
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="item.mostrarPlantilla">
+                <td colspan="5">
+                  <div class="plantilla-box">
+                    <div class="plantilla-imagen" *ngIf="item.imagenUrl" style="text-align: center; margin-bottom: 10px;">
+                      <img [src]="item.imagenUrl" [alt]="item.marca" style="max-height: 80px; width: auto; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    </div>
+                    <textarea readonly rows="12" class="plantilla-textarea">{{ item.plantilla }}</textarea>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+      <div class="generated-actions">
+        <button class="btn-copy-all" (click)="copiarTodosLosLinks()">
+          <i class="fas fa-copy me-1"></i> Copiar Todos los Links
+        </button>
+        <button class="btn-report" (click)="descargarReporte()">
+          <i class="fas fa-file-download me-1"></i> Descargar Reporte
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="errores.length > 0" class="errors-section">
+      <h4><i class="fas fa-exclamation-triangle me-2"></i>Errores encontrados</h4>
+      <ul>
+        <li *ngFor="let error of errores">{{ error }}</li>
+      </ul>
+    </div>
+  </div>
+</div>

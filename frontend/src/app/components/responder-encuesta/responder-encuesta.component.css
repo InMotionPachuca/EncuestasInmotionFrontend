@@ -1,0 +1,454 @@
+.responder-container {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Header con fondo negro elegante y borde dorado oscuro metálico */
+.encuesta-header {
+  text-align: center;
+  padding: 40px 45px 35px;
+  background: linear-gradient(180deg, #111111 0%, #1c1a17 100%);
+  color: #F8F9FA;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  border-bottom: 5px solid #8A6D3B; /* Dorado oscuro */
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  border-top: 1px solid #2B261F;
+  border-left: 1px solid #2B261F;
+  border-right: 1px solid #2B261F;
+}
+
+.logo-principal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.logo-team-inmotion-principal {
+  height: 80px;
+  width: auto;
+  display: block;
+}
+
+/* Filtro CSS para convertir el logo a un dorado oscuro metálico bronceado */
+.logo-dorado-oscuro {
+  filter: sepia(1) saturate(3.5) hue-rotate(-10deg) brightness(0.7) contrast(1.2) drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.8));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.logo-dorado-oscuro:hover {
+  filter: sepia(1) saturate(4) hue-rotate(-10deg) brightness(0.85) contrast(1.2) drop-shadow(0px 3px 6px rgba(138, 109, 59, 0.4));
+  transform: scale(1.02);
+}
+
+.encuesta-header h1 {
+  font-size: 1.65rem;
+  margin-bottom: 12px;
+  font-weight: 700;
+  color: #FFFFFF;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Línea decorativa con degradado dorado oscuro a negro */
+.encuesta-header h1::after {
+  content: '';
+  display: block;
+  width: 70px;
+  height: 3px;
+  background: linear-gradient(90deg, #5A4522 0%, #B89758 50%, #5A4522 100%);
+  margin: 10px auto 0;
+  border-radius: 4px;
+}
+
+.marca-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0 16px;
+}
+
+/* Texto con degradado metálico dorado oscuro */
+.marca-nombre-text {
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #C5A059 0%, #8A6D3B 50%, #4A3A1E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Montserrat', sans-serif;
+  position: relative;
+  padding: 0 20px;
+}
+
+.marca-nombre-text::before,
+.marca-nombre-text::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  height: 1px;
+  background: #5A4522;
+  transform: translateY(-50%);
+}
+
+.marca-nombre-text::before {
+  left: -10px;
+}
+
+.marca-nombre-text::after {
+  right: -10px;
+}
+
+.encuesta-header p {
+  color: #C0C0C0;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  line-height: 1.6;
+}
+
+.encuesta-header .highlight {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 12px;
+  color: #D4AF37;
+  display: inline-block;
+  padding: 5px 22px;
+  background: rgba(138, 109, 59, 0.15);
+  border: 1px solid rgba(138, 109, 59, 0.3);
+  border-radius: 20px;
+}
+
+.cliente-info {
+  background: #F8F9FA;
+  padding: 16px 24px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  border-left: 4px solid #8A6D3B;
+  border-top: 1px solid #E9ECEF;
+  border-right: 1px solid #E9ECEF;
+  border-bottom: 1px solid #E9ECEF;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 40px;
+}
+
+.cliente-info p {
+  margin: 0;
+  color: #495057;
+  font-size: 0.92rem;
+}
+
+.cliente-info strong {
+  color: #212529;
+  font-weight: 600;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #E9ECEF;
+  border-top-color: #8A6D3B;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 15px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  background: #F8D7DA;
+  color: #842029;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid #F5C2C7;
+}
+
+.success-message {
+  background: #D1E7DD;
+  color: #0F5132;
+  padding: 40px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid #BADBCE;
+}
+
+.success-message h3 {
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.btn-volver {
+  padding: 10px 25px;
+  background: #8A6D3B;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 15px;
+  font-weight: 500;
+  transition: all 0.25s;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-volver:hover {
+  background: #5A4522;
+  transform: translateY(-1px);
+}
+
+.encuesta-content {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border-top: 4px solid #8A6D3B;
+  border-left: 1px solid #E9ECEF;
+  border-right: 1px solid #E9ECEF;
+  border-bottom: 1px solid #E9ECEF;
+}
+
+.pregunta {
+  background: #F8F9FA;
+  padding: 24px 28px;
+  border: 1px solid #E9ECEF;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  transition: all 0.25s;
+}
+
+.pregunta:hover {
+  border-color: #CED4DA;
+}
+
+.pregunta label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 14px;
+  color: #212529;
+  font-size: 0.95rem;
+}
+
+.pregunta input[disabled] {
+  width: 100%;
+  padding: 12px 16px;
+  background: #E9ECEF;
+  border: 1px solid #CED4DA;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #212529;
+  font-family: 'Inter', sans-serif;
+}
+
+.required {
+  color: #DC3545;
+  font-weight: 700;
+}
+
+.rango {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.rango-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.8rem;
+  color: #6C757D;
+  padding: 0 5px;
+}
+
+.rango-labels span:first-child {
+  color: #DC3545;
+}
+
+.rango-labels span:last-child {
+  color: #198754;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 0;
+}
+
+.stars span {
+  font-size: 2.8rem;
+  cursor: pointer;
+  color: #CED4DA;
+  transition: color 0.2s, transform 0.2s;
+  line-height: 1;
+}
+
+.stars span.active {
+  color: #8A6D3B;
+}
+
+.stars span:hover {
+  color: #5A4522;
+  transform: scale(1.1);
+}
+
+.si-no {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.si-no button {
+  flex: 1;
+  padding: 14px 20px;
+  border: 1px solid #CED4DA;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.25s;
+  color: #495057;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.si-no button.selected {
+  border-color: #8A6D3B;
+  background: #FAF6EE;
+  color: #5A4522;
+}
+
+.si-no button:hover {
+  border-color: #8A6D3B;
+}
+
+textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #CED4DA;
+  border-radius: 8px;
+  resize: vertical;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  background: white;
+  min-height: 80px;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #8A6D3B;
+  box-shadow: 0 0 0 3px rgba(138, 109, 59, 0.15);
+}
+
+/* Botón con degradado de dorado oscuro a tono bronce */
+.btn-enviar {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #A88344 0%, #705526 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-top: 10px;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-enviar:hover:not(:disabled) {
+  background: linear-gradient(135deg, #8A6D3B 0%, #5A4522 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(112, 85, 38, 0.3);
+}
+
+.btn-enviar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .responder-container {
+    padding: 12px;
+  }
+
+  .encuesta-header {
+    padding: 24px 16px;
+  }
+
+  .encuesta-header h1 {
+    font-size: 1.2rem;
+  }
+
+  .encuesta-content {
+    padding: 16px;
+  }
+
+  .pregunta {
+    padding: 16px 18px;
+  }
+
+  .pregunta label {
+    font-size: 0.9rem;
+  }
+
+  .stars {
+    gap: 8px;
+  }
+
+  .stars span {
+    font-size: 2rem;
+  }
+
+  .si-no {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .si-no button {
+    padding: 12px;
+  }
+
+  .cliente-info {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .rango-labels {
+    font-size: 0.7rem;
+  }
+
+  .logo-team-inmotion-principal {
+    height: 50px;
+  }
+
+  .marca-nombre-text {
+    font-size: 1.1rem;
+  }
+
+  .marca-nombre-text::before,
+  .marca-nombre-text::after {
+    width: 15px;
+  }
+
+  .encuesta-header .highlight {
+    font-size: 0.88rem;
+    padding: 2px 14px;
+  }
+}

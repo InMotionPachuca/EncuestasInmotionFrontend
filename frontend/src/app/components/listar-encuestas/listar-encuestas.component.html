@@ -1,0 +1,203 @@
+<div class="listar-encuestas-container">
+  <!-- HEADER NEGRO Y DORADO -->
+  <div class="listar-header">
+    <div>
+      <h1>Encuestas</h1>
+      <p class="header-subtitle mt-1 mb-0">Visualice todas las encuestas generadas</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-refresh" (click)="cargarEncuestas()">
+        <i class="fas fa-sync-alt me-1"></i> Actualizar
+      </button>
+      <button class="btn-export" (click)="exportarExcel()">
+        <i class="fas fa-file-excel me-1"></i> Exportar Excel
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filtros-container">
+    <div class="filtros-box">
+      <input 
+        type="text" 
+        class="filtro-input"
+        placeholder="Buscar por cliente o email..." 
+        [(ngModel)]="filtroTexto"
+        (input)="filtrarEncuestas()"
+      >
+      <select class="filtro-select" [(ngModel)]="filtroMarca" (change)="filtrarEncuestas()">
+        <option value="">Todas las marcas</option>
+        <option *ngFor="let marca of marcas" [value]="marca.nombre">
+          {{ marca.nombre }}
+        </option>
+      </select>
+      <select class="filtro-select" [(ngModel)]="filtroEstado" (change)="filtrarEncuestas()">
+        <option value="">Todos los estados</option>
+        <option value="ENVIADA">Enviada</option>
+        <option value="RESPONDIDA">Respondida</option>
+        <option value="EXPIRADA">Expirada</option>
+      </select>
+      <button class="btn-clear" (click)="limpiarFiltros()">
+        <i class="fas fa-eraser me-1"></i> Limpiar
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="loading" class="cargando">
+    <p><i class="fas fa-spinner fa-spin me-2"></i> Cargando encuestas...</p>
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="error" class="error-mensaje">
+    <p><i class="fas fa-exclamation-triangle me-2"></i> {{ error }}</p>
+  </div>
+
+  <!-- TABLA DE RESULTADOS -->
+  <div *ngIf="!loading && !error" class="tabla-container">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Marca</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let encuesta of encuestasFiltradas">
+            <td>
+              <div class="cliente-info">
+                <strong>{{ encuesta.clienteNombre }}</strong>
+                <span>{{ encuesta.clienteEmail }}</span>
+              </div>
+            </td>
+            <td>{{ encuesta.marcaNombre }}</td>
+            <td>
+              <span class="badge" [class]="getEstadoClass(encuesta.estado)">
+                {{ getEstadoTexto(encuesta.estado) }}
+              </span>
+            </td>
+            <td>{{ formatFecha(encuesta.fechaEnvio) }}</td>
+            <td>
+              <div class="btn-actions">
+                <button class="btn-sm btn-ver" (click)="verDetallesYPlantilla(encuesta)">
+                  <i class="fas fa-eye me-1"></i> Ver / Plantilla
+                </button>
+
+                <button class="btn-sm btn-copiar" (click)="copiarLink(encuesta.token, encuesta.clienteNombre)">
+                  <i class="fas fa-copy me-1"></i> Link
+                </button>
+
+                <button class="btn-sm btn-eliminar" (click)="eliminarEncuesta(encuesta)">
+                  <i class="fas fa-trash-alt me-1"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="encuestasFiltradas.length === 0">
+            <td colspan="5" class="sin-resultados">
+              <p>No hay encuestas disponibles</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tabla-footer" *ngIf="encuestasFiltradas.length > 0">
+      <span>Total: {{ encuestasFiltradas.length }} encuestas</span>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL UNIFICADO: DETALLES + PLANTILLA DE WHATSAPP -->
+<div class="modal-overlay" *ngIf="mostrarDetalles" (click)="cerrarDetalles()">
+  <div class="modal-card" style="max-width: 700px; max-height: 90vh; overflow-y: auto;" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3><i class="fas fa-file-alt me-2 text-gold"></i>Detalles y Plantilla de Encuesta</h3>
+      <button class="modal-close" (click)="cerrarDetalles()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body" *ngIf="encuestaSeleccionada">
+      <!-- SECCIÓN 1: DETALLES DE LA ENCUESTA -->
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 20px;">
+        <div class="detail-row"><b>Cliente:</b> {{ encuestaSeleccionada.clienteNombre }}</div>
+        <div class="detail-row"><b>Email:</b> {{ encuestaSeleccionada.clienteEmail || 'Sin correo' }}</div>
+        <div class="detail-row"><b>Asesor:</b> {{ encuestaSeleccionada.asesor || 'Asesor de Servicio' }}</div>
+        <div class="detail-row"><b>Marca:</b> {{ encuestaSeleccionada.marcaNombre }}</div>
+        <div class="detail-row"><b>Estado:</b> {{ getEstadoTexto(encuestaSeleccionada.estado) }}</div>
+        <div class="detail-row"><b>Fecha Envío:</b> {{ formatFecha(encuestaSeleccionada.fechaEnvio) }}</div>
+        <div class="detail-row" *ngIf="encuestaSeleccionada.fechaRespuesta">
+          <b>Fecha Respuesta:</b> {{ formatFecha(encuestaSeleccionada.fechaRespuesta) }}
+        </div>
+        <div class="detail-row">
+          <b>Token:</b> <code>{{ encuestaSeleccionada.token }}</code>
+        </div>
+        <div class="detail-row" style="margin-top: 8px;">
+          <b>Link Directo:</b>
+          <div class="link-box" style="display: flex; gap: 8px; margin-top: 4px;">
+            <input type="text" [value]="generarLink(encuestaSeleccionada.token)" readonly style="flex: 1; padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc;">
+            <button class="btn-copy-modal" (click)="copiarLink(encuestaSeleccionada.token, encuestaSeleccionada.clienteNombre)">
+              <i class="fas fa-copy me-1"></i> Copiar Link
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN RESPUESTAS (SI TIENE) -->
+      <div class="respuestas-box" *ngIf="encuestaSeleccionada.respuestas && encuestaSeleccionada.respuestas.length > 0" style="margin-bottom: 20px;">
+        <h4>Respuestas del Cliente</h4>
+        <div *ngFor="let respuesta of encuestaSeleccionada.respuestas" class="respuesta-line">
+          <p><b>{{ respuesta.preguntaTexto || 'Pregunta ' + respuesta.preguntaId }}</b></p>
+          <p>{{ respuesta.valorTexto || respuesta.valorNumerico || respuesta.opcionTexto || 'Sin respuesta' }}</p>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 2: PLANTILLA DE WHATSAPP -->
+      <div style="border-top: 2px solid #C5A059; padding-top: 15px;">
+        <div class="plantilla-box">
+          <!-- VISTA PREVIA Y BARRA DE ACCIONES DE COPIADO JUNTAS -->
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 12px; padding: 10px; background-color: #f8f9fa; border-radius: 6px; border: 1px solid #e9ecef; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <img 
+                *ngIf="imagenUrl" 
+                [src]="imagenUrl" 
+                [alt]="encuestaSeleccionada.marcaNombre" 
+                style="max-height: 55px; max-width: 130px; object-fit: contain; border-radius: 4px; border: 1px solid #ddd; background: #fff; padding: 2px;">
+              <span style="font-weight: 600; font-size: 0.9rem; color: #333;">
+                {{ encuestaSeleccionada.marcaNombre }}
+              </span>
+            </div>
+
+            <!-- BOTONES DE COPIAR JUNTOS -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button 
+                class="btn-copy" 
+                (click)="copiarImagen(imagenUrl)" 
+                title="Copiar solo la imagen al portapapeles"
+                style="white-space: nowrap; padding: 8px 12px;">
+                <i class="fas fa-image me-1"></i> Copiar Imagen
+              </button>
+              
+              <button 
+                class="btn-copy-plantilla" 
+                (click)="copiarPlantilla(plantillaActual)" 
+                title="Copiar solo el texto de la plantilla"
+                style="white-space: nowrap; padding: 8px 12px;">
+                <i class="fab fa-whatsapp me-1"></i> Copiar Plantilla
+              </button>
+            </div>
+          </div>
+
+          <!-- TEXTAREA DE LA PLANTILLA -->
+          <textarea readonly rows="10" class="plantilla-textarea" style="width: 100%; resize: vertical;">{{ plantillaActual }}</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
