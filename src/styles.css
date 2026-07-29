@@ -1,0 +1,210 @@
+/* ============================================
+   IMPORTAR BOOTSTRAP Y FUENTES GOOGLE
+   ============================================ */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+
+/* ============================================
+   VARIABLES DE COLOR - INSTITUCIONAL DORADO
+   ============================================ */
+:root {
+  /* Dorado Corporativo Principal */
+  --toyota-red: #C5A059;
+  --toyota-red-light: #E0C283;
+  --toyota-red-lighter: #FDF8ED;
+  --toyota-red-dark: #9A7B3E;
+  --toyota-red-rgb: 197, 160, 89;
+  
+  /* Degradados Sobrios */
+  --gradient-red-main: linear-gradient(135deg, #C5A059 0%, #9A7B3E 100%);
+  --gradient-red-light: linear-gradient(135deg, #FDF8ED 0%, #FFFFFF 100%);
+  --gradient-red-card: linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%);
+  
+  /* Grises Neutros Institucionales */
+  --toyota-gray: #6C757D;
+  --toyota-gray-light: #F8F9FA;
+  --toyota-gray-lighter: #FFFFFF;
+  
+  /* Sombras Minimalistas */
+  --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.04);
+  --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 6px 24px rgba(197, 160, 89, 0.12);
+}
+
+/* ============================================
+   ESTILOS GLOBALES
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #F8F9FA;
+  color: #212529;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   TÍTULOS SOBRIOS
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #212529;
+}
+
+h1 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ============================================
+   TEXTO
+   ============================================ */
+p, span, div, li, a, button, input, select, textarea {
+  font-family: 'Inter', sans-serif;
+}
+
+/* ============================================
+   ENLACES Y BOTONES
+   ============================================ */
+.nav-link, .btn, button {
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* ============================================
+   TABLAS
+   ============================================ */
+table th, table td {
+  font-family: 'Inter', sans-serif;
+}
+
+/* ============================================
+   SCROLLBAR PERSONALIZADA
+   ============================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F8F9FA;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C5A059;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9A7B3E;
+}
+
+/* ============================================
+   UTILIDADES
+   ============================================ */
+.text-toyota-red {
+  color: var(--toyota-red) !important;
+}
+
+.bg-toyota-red {
+  background: var(--gradient-red-main) !important;
+}
+
+.bg-toyota-red-light {
+  background: var(--toyota-red-lighter) !important;
+}
+
+.border-toyota-red {
+  border-color: var(--toyota-red) !important;
+}
+
+.shadow-toyota {
+  box-shadow: var(--shadow-soft) !important;
+}
+
+.shadow-toyota-hover:hover {
+  box-shadow: var(--shadow-hover) !important;
+}
+
+/* ============================================
+   ANIMACIONES
+   ============================================ */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinning {
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.3s ease forwards;
+}
+
+/* ============================================
+   TOAST CONTAINER GLOBAL
+   ============================================ */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  max-width: 400px;
+  animation: slideInRight 0.3s ease;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .toast-container {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 6px 20px rgba(197, 160, 89, 0.10);
+  }
+}

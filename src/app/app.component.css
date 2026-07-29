@@ -1,0 +1,216 @@
+/* ============================================
+   NAVBAR Y DESPLEGABLE DE USUARIO
+   ============================================ */
+.navbar {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: #FFFFFF !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid #C5A059;
+}
+
+.user-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.user-profile-btn {
+  background: #FDF8ED;
+  border: 1px solid #C5A059;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+}
+
+.user-profile-btn:hover {
+  background: #F8F0DD;
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 220px;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 1050;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-item-custom {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #333333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.dropdown-item-custom:hover {
+  background: #f8f9fa;
+}
+
+.btn-logout {
+  background: #F8F9FA;
+  border: 1px solid #E9ECEF;
+  color: #495057;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.btn-logout:hover {
+  background: #C5A059;
+  border-color: #C5A059;
+  color: #FFFFFF;
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+.sidebar {
+  background: #FFFFFF !important;
+  border-right: 1px solid #E9ECEF !important;
+  position: sticky;
+  top: 70px;
+  height: calc(100vh - 70px);
+  overflow-y: auto;
+  z-index: 1020;
+}
+
+.nav-link {
+  color: #495057;
+  padding: 10px 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 0.88rem;
+}
+
+.nav-link:hover, .nav-link.active {
+  background: #FDF8ED;
+  color: #9A7B3E;
+}
+
+/* ============================================
+   MODAL FLOTANTE (Z-INDEX ABSOLUTO)
+   ============================================ */
+.modal-backdrop-custom {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(4px);
+  z-index: 999999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.modal-dialog-custom {
+  width: 100%;
+  max-width: 400px;
+  padding: 16px;
+  position: relative;
+  z-index: 1000000 !important;
+}
+
+.modal-content-custom {
+  background: #ffffff !important;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e9ecef;
+  overflow: hidden;
+}
+
+.modal-header-custom {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fdf8ed;
+}
+
+.btn-close-custom {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #6c757d;
+  cursor: pointer;
+}
+
+.modal-body-custom {
+  padding: 20px;
+}
+
+.btn-primary-custom {
+  background: #c5a059;
+  border-color: #c5a059;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.btn-primary-custom:hover {
+  background: #9a7b3e;
+}
+
+/* ============================================
+   INPUT DE CONTRASEÑA CON BOTÓN DE OJITO
+   ============================================ */
+.input-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-eye {
+  padding-right: 36px !important; /* Espacio para que el texto no choque con el icono */
+}
+
+.btn-eye {
+  position: absolute;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: #6c757d;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.btn-eye:hover {
+  color: #c5a059;
+}
