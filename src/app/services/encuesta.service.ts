@@ -2,16 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Encuesta, EstadisticasGenerales, Pregunta } from '../models/encuesta.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EncuestaService {
-  // Para desarrollo local:
-  private apiUrl = 'http://localhost:8080/api/encuestas';
+  // Configuración dinámica usando el entorno (Render en prod, localhost en dev)
+  private apiUrl = `${environment.apiUrl}/encuestas`;
 
-  // Para desarrollo local:
-  private frontendUrl = 'http://localhost:4200';
+  // Toma la URL base actual donde esté corriendo la App (Render o Localhost)
+  private get frontendUrl(): string {
+    return window.location.origin;
+  }
 
   logos: { [key: number]: string } = {
     1: 'Toyota.png',
@@ -63,7 +66,6 @@ export class EncuestaService {
     return this.http.get<any>(`${this.apiUrl}/estadisticas/generales`);
   }
 
-  // MODIFICADO: Usa this.frontendUrl en lugar de hardcodear la URL de Vercel
   generarLinkEncuesta(token: string): string {
     return `${this.frontendUrl}/responder/${token}`;
   }
