@@ -23,7 +23,7 @@ export class ImportarEncuestasComponent {
   tipoPlantilla: 'POSTVENTA' | 'VENTA' = 'POSTVENTA';
   mostrarSelectorPlantilla = false;
 
-  // MAPEO LIMPIO SIN REPETICIONES
+  // MAPEO LIMPIO
   marcasMap: { [key: string]: number } = {
     'Subaru': 5,
     'Toyota Pachuca': 1,
@@ -35,7 +35,7 @@ export class ImportarEncuestasComponent {
     'Compro Pachuca': 7
   };
 
-  // IMÁGENES ASIGNADAS CORRECTAMENTE
+  // IMÁGENES ASIGNADAS
   imagenesMarca: { [key: string]: string } = {
     'Subaru': 'assets/whatsapp/subaruPachuca.png',
     'Toyota Pachuca': 'assets/whatsapp/toyotaPachuca.jpeg',
@@ -299,19 +299,20 @@ export class ImportarEncuestasComponent {
 
     pendientes.forEach((cliente, index) => {
       setTimeout(() => {
-        const nombreCompleto = cliente.nombreCliente;
+        const nombreCompleto = (cliente.nombreCliente || 'Cliente').trim();
         const partes = nombreCompleto.split(' ');
-        const nombre = partes[0] || '';
-        const apellido = partes.slice(1).join(' ') || '';
-        const marcaId = cliente.marcaId || 5;
+        const nombre = partes[0] || 'Cliente';
+        const apellido = partes.slice(1).join(' ') || 'General';
+        const marcaId = cliente.marcaId || 1;
 
+        // DTO SANEADO PARA CUMPLIR CON LA VALIDACIÓN EN SPRING BOOT
         const data = {
           nombre: nombre,
           apellido: apellido,
-          email: '',
-          telefono: cliente.telefono || '5512345678',
-          serie: cliente.serie || '',
-          asesor: cliente.asesor || '',
+          email: cliente.email || 'sin_correo@inmotion.com',
+          telefono: cliente.telefono ? cliente.telefono.toString().replace(/\D/g, '') : '7710000000',
+          serie: cliente.serie || 'SN',
+          asesor: cliente.asesor || 'Atención a Clientes',
           marcaId: marcaId,
           tipo: this.tipoPlantilla,
           respuestas: []
@@ -328,42 +329,43 @@ export class ImportarEncuestasComponent {
             this.exitosos++;
             this.encuestasGeneradas.push({
               cliente: cliente.nombreCliente,
-              marca: cliente.marcaNombre || 'Subaru',
+              marca: cliente.marcaNombre || 'Agencia',
               token: response.token,
               link: link,
               plantilla: plantillaCompleta,
               mostrarPlantilla: false,
-              imagenUrl: this.obtenerUrlImagen(cliente.marcaNombre || 'Subaru')
+              imagenUrl: this.obtenerUrlImagen(cliente.marcaNombre || '')
             });
             completados++;
             if (completados === pendientes.length) {
-              this.procesando = false;
-              this.mostrarSelectorPlantilla = false;
-              this.mostrarMensaje(
-                'Se generaron ' + this.exitosos + ' encuestas, ' + this.fallidos + ' fallaron',
-                this.fallidos === 0 ? 'success' : 'warning'
-              );
+              this.finalizarProceso();
             }
           },
           error: (error) => {
             cliente.procesado = true;
             cliente.exito = false;
-            cliente.error = error.message || 'Error al crear encuesta';
+            
+            const detalleError = error.error?.message || error.message || 'Error al crear encuesta';
+            cliente.error = detalleError;
             this.fallidos++;
-            this.errores.push(cliente.nombreCliente + ': ' + cliente.error);
+            this.errores.push(`${cliente.nombreCliente}: ${detalleError}`);
             completados++;
             if (completados === pendientes.length) {
-              this.procesando = false;
-              this.mostrarSelectorPlantilla = false;
-              this.mostrarMensaje(
-                'Se generaron ' + this.exitosos + ' encuestas, ' + this.fallidos + ' fallaron',
-                this.fallidos === 0 ? 'success' : 'warning'
-              );
+              this.finalizarProceso();
             }
           }
         });
-      }, index * 500);
+      }, index * 300);
     });
+  }
+
+  private finalizarProceso() {
+    this.procesando = false;
+    this.mostrarSelectorPlantilla = false;
+    this.mostrarMensaje(
+      `Se generaron ${this.exitosos} encuestas, ${this.fallidos} fallaron`,
+      this.fallidos === 0 ? 'success' : 'warning'
+    );
   }
 
   cambiarPlantilla(tipo: 'POSTVENTA' | 'VENTA') {

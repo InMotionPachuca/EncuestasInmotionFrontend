@@ -116,7 +116,7 @@
     <div *ngIf="encuestasGeneradas.length > 0" class="generated-section">
       <h4>Encuestas Generadas</h4>
       <div class="table-responsive">
-        <table class="table">
+        <table class="table align-middle">
           <thead>
             <tr>
               <th>Cliente</th>
@@ -129,9 +129,22 @@
           <tbody>
             <ng-container *ngFor="let item of encuestasGeneradas">
               <tr>
-                <td>{{ item.cliente }}</td>
+                <td><strong>{{ item.cliente }}</strong></td>
                 <td>{{ item.marca }}</td>
-                <td><code class="link-code">{{ item.link }}</code></td>
+                <td>
+                  <!-- ENLACE MEJORADO: INPUT CON BOTÓN COPIAR -->
+                  <div class="d-flex align-items-center gap-1" style="max-width: 260px;">
+                    <input type="text" 
+                           class="form-control form-control-sm text-truncate bg-light border" 
+                           [value]="item.link" 
+                           readonly />
+                    <button class="btn btn-sm btn-outline-secondary" 
+                            (click)="copiarLink(item.token)" 
+                            title="Copiar enlace">
+                      <i class="fas fa-copy"></i>
+                    </button>
+                  </div>
+                </td>
                 <td>
                   <button class="btn-ver-plantilla" (click)="item.mostrarPlantilla = !item.mostrarPlantilla">
                     <i class="fas me-1" [class.fa-eye]="!item.mostrarPlantilla" [class.fa-eye-slash]="item.mostrarPlantilla"></i>
