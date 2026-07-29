@@ -1,8 +1,5 @@
 /* ============================================
-   NAVBAR INSTITUCIONAL DORADO
-   ============================================ */
-/* ============================================
-   NAVBAR BLANCA Y LOGO ADAPTADO
+   NAVBAR Y DESPLEGABLE DE USUARIO
    ============================================ */
 .navbar {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
@@ -14,19 +11,60 @@
   border-bottom: 2px solid #C5A059;
 }
 
-/* 
-   Convierte el logo blanco (inmo1.webp) a un tono carbón/negro sobrio 
-   para que resalte sobre el fondo blanco.
-*/
-.navbar-brand img[src*="inmo1.webp"],
-.navbar-brand img {
-  filter: brightness(0) opacity(0.85);
-  transition: filter 0.3s ease;
+.user-dropdown-container {
+  position: relative;
+  display: inline-block;
 }
 
-/* Opcional: efecto sutil al pasar el cursor sobre el logo */
-.navbar-brand img:hover {
-  filter: brightness(0) opacity(1);
+.user-profile-btn {
+  background: #FDF8ED;
+  border: 1px solid #C5A059;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+}
+
+.user-profile-btn:hover {
+  background: #F8F0DD;
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 220px;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 1050;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-item-custom {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #333333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.dropdown-item-custom:hover {
+  background: #f8f9fa;
 }
 
 .btn-logout {
@@ -42,29 +80,16 @@
   gap: 8px;
   transition: all 0.25s ease;
   cursor: pointer;
-  font-family: 'Inter', sans-serif;
 }
 
 .btn-logout:hover {
   background: #C5A059;
   border-color: #C5A059;
   color: #FFFFFF;
-  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.25);
-  transform: translateY(-1px);
-}
-
-.logout-icon {
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.logout-text {
-  font-size: 0.85rem;
-  font-weight: 500;
 }
 
 /* ============================================
-   SIDEBAR MEJORADO
+   SIDEBAR
    ============================================ */
 .sidebar {
   background: #FFFFFF !important;
@@ -76,25 +101,6 @@
   z-index: 1020;
 }
 
-.sidebar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: #C5A059;
-  border-radius: 4px;
-}
-
-.sidebar-header .tracking-wide {
-  letter-spacing: 0.5px;
-  font-family: 'Montserrat', sans-serif;
-  color: #212529;
-}
-
 .nav-link {
   color: #495057;
   padding: 10px 14px;
@@ -102,123 +108,109 @@
   transition: all 0.2s ease;
   font-weight: 500;
   font-size: 0.88rem;
-  position: relative;
-  font-family: 'Inter', sans-serif;
 }
 
-.nav-link:hover {
-  background: #FDF8ED;
-  color: #C5A059;
-  transform: translateX(3px);
-}
-
-.nav-link.active {
+.nav-link:hover, .nav-link.active {
   background: #FDF8ED;
   color: #9A7B3E;
+}
+
+/* ============================================
+   MODAL FLOTANTE (Z-INDEX ABSOLUTO)
+   ============================================ */
+.modal-backdrop-custom {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(4px);
+  z-index: 999999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.modal-dialog-custom {
+  width: 100%;
+  max-width: 400px;
+  padding: 16px;
+  position: relative;
+  z-index: 1000000 !important;
+}
+
+.modal-content-custom {
+  background: #ffffff !important;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e9ecef;
+  overflow: hidden;
+}
+
+.modal-header-custom {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fdf8ed;
+}
+
+.btn-close-custom {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #6c757d;
+  cursor: pointer;
+}
+
+.modal-body-custom {
+  padding: 20px;
+}
+
+.btn-primary-custom {
+  background: #c5a059;
+  border-color: #c5a059;
+  color: #ffffff;
   font-weight: 600;
 }
 
-.nav-link.active::before {
-  content: '';
+.btn-primary-custom:hover {
+  background: #9a7b3e;
+}
+
+/* ============================================
+   INPUT DE CONTRASEÑA CON BOTÓN DE OJITO
+   ============================================ */
+.input-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-eye {
+  padding-right: 36px !important; /* Espacio para que el texto no choque con el icono */
+}
+
+.btn-eye {
   position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 22px;
-  background: #C5A059;
-  border-radius: 0 4px 4px 0;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: #6c757d;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
 }
 
-.menu-icon {
-  font-size: 1.1rem;
-  width: 24px;
-  text-align: center;
-}
-
-.badge {
-  font-size: 0.6rem;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-weight: 600;
-  background: #C5A059;
-  color: #FFFFFF;
-}
-
-.sidebar-footer {
-  font-size: 0.7rem;
-  color: #6C757D;
-}
-
-/* ============================================
-   CONTENIDO PRINCIPAL
-   ============================================ */
-.flex-grow-1 {
-  background: #F8F9FA !important;
-}
-
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-@media (max-width: 768px) {
-  .navbar {
-    padding: 8px 16px !important;
-  }
-
-  .navbar-brand img {
-    height: 35px !important;
-  }
-
-  .btn-logout {
-    padding: 6px 12px;
-    font-size: 0.8rem;
-  }
-
-  .logout-text {
-    display: none;
-  }
-
-  .sidebar {
-    width: 200px !important;
-    position: fixed;
-    top: 60px;
-    left: 0;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 1040;
-    box-shadow: 4px 0 15px rgba(0,0,0,0.06);
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .flex-grow-1 {
-    padding: 16px !important;
-    margin-left: 0 !important;
-  }
-
-  .nav-link {
-    font-size: 0.85rem;
-    padding: 8px 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar-brand span {
-    display: none;
-  }
-
-  .navbar-brand img {
-    height: 30px !important;
-  }
-
-  .btn-logout {
-    padding: 4px 10px;
-    font-size: 0.7rem;
-  }
-
-  .logout-icon {
-    font-size: 0.9rem;
-  }
+.btn-eye:hover {
+  color: #c5a059;
 }

@@ -193,6 +193,40 @@
   border-color: #EB0A1E;
 }
 
+/* ============================================
+   ESTILOS PARA EL OJITO (TOGGLE PASSWORD)
+   ============================================ */
+.input-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-with-eye {
+  padding-right: 42px !important;
+}
+
+.btn-eye {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #666666;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  z-index: 2;
+  transition: color 0.2s ease;
+}
+
+.btn-eye:hover {
+  color: #EB0A1E;
+}
+
 .error-text {
   color: #EB0A1E;
   font-size: 0.75rem;
@@ -299,15 +333,7 @@
     text-align: center;
   }
 
-  .subtitle {
-    text-align: center;
-  }
-
-  .description {
-    text-align: center;
-  }
-
-  .brand-footer {
+  .subtitle, .description, .brand-footer {
     text-align: center;
   }
 

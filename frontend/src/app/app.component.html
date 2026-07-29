@@ -20,12 +20,33 @@
       </div>
       
       <div class="d-flex align-items-center gap-3">
-  <!-- Texto del usuario en dorado sobrio -->
-<span class="small d-none d-md-block" style="color: #495057;">
-  <i class="fas fa-user me-1" style="color: #C5A059;"></i> 
-  <strong style="color: #9A7B3E;">{{ getUserName() }}</strong>
-</span>
-        <!-- Botón Salir adaptado con borde y texto dorado -->
+        <!-- ÁREA DEL USUARIO -->
+        <div class="user-dropdown-container">
+          <button 
+            type="button" 
+            class="user-profile-btn" 
+            (click)="toggleUserMenu()" 
+            title="Opciones de perfil"
+          >
+            <i class="fas fa-user-circle me-1" style="color: #C5A059; font-size: 1.1rem;"></i> 
+            <strong style="color: #9A7B3E;">{{ getUserName() }}</strong>
+            <i class="fas fa-chevron-down ms-1" style="font-size: 0.7rem; color: #9A7B3E;"></i>
+          </button>
+
+          <!-- Menú Flotante Desplegable -->
+          <div class="user-dropdown-menu shadow" *ngIf="mostrarMenuUsuario">
+            <div class="dropdown-header border-bottom pb-2 mb-2">
+              <small class="text-muted d-block" style="font-size: 0.75rem;">Sesión activa:</small>
+              <span class="fw-bold text-dark small text-truncate d-block">{{ getUserEmail() }}</span>
+            </div>
+            
+            <button class="dropdown-item-custom" (click)="abrirModalPassword()">
+              <i class="fas fa-key text-warning me-2"></i> Cambiar Contraseña
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón Salir Principal -->
         <button class="btn-logout" (click)="logout()" style="border-color: #C5A059; color: #9A7B3E; background: #FDF8ED;">
           <span class="logout-icon" style="color: #C5A059;">⏻</span>
           <span class="logout-text">Salir</span>
@@ -34,7 +55,7 @@
     </div>
   </nav>
 
-  <!-- SIDEBAR + CONTENIDO -->
+  <!-- SIDEBAR + CONTENIDO PRINCIPAL -->
   <div class="d-flex">
     <div class="sidebar bg-white vh-100 p-3 shadow-sm" style="width: 240px; border-right: 1px solid #f0f0f0;">
       <div class="sidebar-header mb-4 pb-3 border-bottom">
@@ -45,7 +66,6 @@
           <a class="nav-link d-flex align-items-center gap-3" 
              [routerLink]="item.route" 
              routerLinkActive="active">
-            <!-- Icono cargado mediante Font Awesome -->
             <i [class]="item.icon" class="menu-icon" style="width: 20px; text-align: center;"></i>
             <span>{{ item.label }}</span>
             <span class="badge ms-auto" [class]="item.badgeClass" *ngIf="item.badge">{{ item.badge }}</span>
@@ -66,3 +86,78 @@
     </div>
   </div>
 </ng-container>
+
+<!-- MODAL CAMBIAR CONTRASEÑA -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalPassword">
+  <div class="modal-dialog-custom">
+    <div class="modal-content-custom">
+      <div class="modal-header-custom">
+        <h5 class="m-0 fw-bold fs-6"><i class="fas fa-lock me-2 text-warning"></i>Cambiar Contraseña</h5>
+        <button type="button" class="btn-close-custom" (click)="cerrarModalPassword()">×</button>
+      </div>
+
+      <div class="modal-body-custom">
+        <form [formGroup]="passwordForm" (ngSubmit)="cambiarPassword()">
+          
+          <!-- Contraseña Actual con Ojito -->
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-dark">Contraseña Actual</label>
+            <div class="input-password-wrapper">
+              <input 
+                [type]="mostrarPasswordActual ? 'text' : 'password'" 
+                formControlName="passwordActual" 
+                class="form-control form-control-sm input-with-eye"
+                placeholder="Ingresa tu contraseña actual"
+              >
+              <button 
+                type="button" 
+                class="btn-eye" 
+                (click)="toggleVerPasswordActual()"
+                title="Mostrar/Ocultar contraseña"
+              >
+                <i [class]="mostrarPasswordActual ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Nueva Contraseña con Ojito -->
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-dark">Nueva Contraseña</label>
+            <div class="input-password-wrapper">
+              <input 
+                [type]="mostrarNuevaPassword ? 'text' : 'password'" 
+                formControlName="nuevaPassword" 
+                class="form-control form-control-sm input-with-eye"
+                placeholder="Mínimo 8 caracteres"
+              >
+              <button 
+                type="button" 
+                class="btn-eye" 
+                (click)="toggleVerNuevaPassword()"
+                title="Mostrar/Ocultar contraseña"
+              >
+                <i [class]="mostrarNuevaPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="mensajePasswordError" class="alert alert-danger py-2 small mb-3">
+            {{ mensajePasswordError }}
+          </div>
+
+          <div *ngIf="mensajePasswordSuccess" class="alert alert-success py-2 small mb-3">
+            {{ mensajePasswordSuccess }}
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-light btn-sm" (click)="cerrarModalPassword()">Cancelar</button>
+            <button type="submit" class="btn btn-primary-custom btn-sm" [disabled]="loadingPassword || passwordForm.invalid">
+              <span *ngIf="!loadingPassword">Guardar Contraseña</span>
+              <span *ngIf="loadingPassword">Actualizando...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

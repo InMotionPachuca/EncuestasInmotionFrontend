@@ -1,0 +1,282 @@
+/* ============================================
+   ESTILOS GENERALES Y ENCABEZADO
+   ============================================ */
+.header-title {
+  color: #1A1A1A;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.text-gold {
+  color: #C5A059 !important;
+}
+
+.btn-gold-action {
+  background: #C5A059;
+  border: 1px solid #C5A059;
+  color: #FFFFFF;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+}
+
+.btn-gold-action:hover:not(:disabled) {
+  background: #9A7B3E;
+  border-color: #9A7B3E;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.25);
+}
+
+.btn-gold-action:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   TARJETA Y TABLA
+   ============================================ */
+.card-custom {
+  background: #FFFFFF;
+  border-radius: 12px;
+  border: 1px solid #E9ECEF !important;
+}
+
+.custom-table {
+  width: 100%;
+}
+
+.custom-table thead th {
+  background-color: #FDF8ED;
+  color: #9A7B3E;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 14px;
+  border-bottom: 2px solid #F3E7CA;
+}
+
+.custom-table tbody td {
+  padding: 14px;
+  border-bottom: 1px solid #F0F0F0;
+  font-size: 0.88rem;
+}
+
+.table-row-hover:hover {
+  background-color: #FAFAFA;
+}
+
+.avatar-icon {
+  color: #C5A059;
+  font-size: 1.2rem;
+}
+
+.email-badge {
+  background: #F8F9FA;
+  border: 1px solid #E0E0E0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: monospace;
+  color: #495057;
+  font-size: 0.82rem;
+}
+
+/* ROLES */
+.badge-role {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.role-admin {
+  background: #1A1A1A;
+  color: #C5A059;
+  border: 1px solid #C5A059;
+}
+
+.role-gerente {
+  background: #FDF8ED;
+  color: #9A7B3E;
+  border: 1px solid #C5A059;
+}
+
+.role-user {
+  background: #F1F3F5;
+  color: #495057;
+  border: 1px solid #CED4DA;
+}
+
+/* ESTADO (PILLS) */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.dot-indicator {
+  font-size: 0.45rem;
+}
+
+.status-active {
+  background: #E6F4EA;
+  color: #137333;
+}
+
+.status-inactive {
+  background: #FCE8E6;
+  color: #C5221F;
+}
+
+/* BOTONES DE ACCIÓN */
+.btn-action-state {
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  transition: all 0.2s;
+}
+
+.btn-deactivate {
+  background: #FFFFFF;
+  border: 1px solid #CED4DA;
+  color: #6C757D;
+}
+
+.btn-deactivate:hover {
+  background: #F8F9FA;
+  color: #343A40;
+}
+
+.btn-activate {
+  background: #E6F4EA;
+  border: 1px solid #137333;
+  color: #137333;
+}
+
+.btn-activate:hover {
+  background: #137333;
+  color: #FFFFFF;
+}
+
+.btn-action-delete {
+  background: #FFFFFF;
+  border: 1px solid #F5C2C7;
+  color: #DC3545;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.btn-action-delete:hover {
+  background: #DC3545;
+  color: #FFFFFF;
+}
+
+/* ============================================
+   MODAL FLOTANTE MODERNO
+   ============================================ */
+.modal-backdrop-custom {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(4px);
+  z-index: 999999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.modal-dialog-custom {
+  width: 100%;
+  max-width: 420px;
+  padding: 16px;
+}
+
+.modal-content-custom {
+  background: #ffffff !important;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  border: 1px solid #E9ECEF;
+  overflow: hidden;
+}
+
+.modal-header-custom {
+  padding: 14px 18px;
+  border-bottom: 1px solid #F3E7CA;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FDF8ED;
+  color: #1A1A1A;
+}
+
+.btn-close-custom {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #9A7B3E;
+  cursor: pointer;
+}
+
+.modal-body-custom {
+  padding: 22px;
+}
+
+.form-control-custom, .form-select-custom {
+  border: 1px solid #CED4DA;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.88rem;
+  transition: border-color 0.2s;
+}
+
+.form-control-custom:focus, .form-select-custom:focus {
+  border-color: #C5A059;
+  box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15);
+}
+
+.input-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-eye {
+  padding-right: 38px !important;
+}
+
+.btn-eye {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #6C757D;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.btn-eye:hover {
+  color: #C5A059;
+}
+
+.btn-cancel-custom {
+  background: #F1F3F5;
+  border: 1px solid #CED4DA;
+  color: #495057;
+  border-radius: 8px;
+}
+
+.btn-cancel-custom:hover {
+  background: #E9ECEF;
+}

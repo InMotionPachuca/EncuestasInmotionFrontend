@@ -8,6 +8,8 @@ import { ListarEncuestasComponent } from './components/listar-encuestas/listar-e
 import { ImportarEncuestasComponent } from './components/importar-encuestas/importar-encuestas.component';
 import { ContestarEncuestaManualComponent } from './components/contestar-encuesta/contestar-encuesta-manual.component';
 import { AsesoresComponent } from './components/asesores/asesores.component';
+import { UsuariosComponent } from './components/usuarios/usuarios.component';
+import { AdminGuard } from './guards/admin.guard'; // <-- Importación agregada
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -18,7 +20,12 @@ const routes: Routes = [
   { path: 'listar', component: ListarEncuestasComponent },
   { path: 'importar', component: ImportarEncuestasComponent },
   { path: 'contestar-manual', component: ContestarEncuestaManualComponent },
-  { path: 'asesores', component: AsesoresComponent }
+  { path: 'asesores', component: AsesoresComponent },
+  { 
+    path: 'usuarios', 
+    component: UsuariosComponent,
+    canActivate: [AdminGuard] // <-- Protección por Guard agregada
+  }
 ];
 
 @NgModule({

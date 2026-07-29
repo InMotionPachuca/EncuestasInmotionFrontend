@@ -14,8 +14,9 @@ import { ListarEncuestasComponent } from './components/listar-encuestas/listar-e
 import { ToastComponent } from './components/toast/toast.component';
 import { ImportarEncuestasComponent } from './components/importar-encuestas/importar-encuestas.component';
 import { ContestarEncuestaManualComponent } from './components/contestar-encuesta/contestar-encuesta-manual.component';
-import { AsesoresComponent } from './components/asesores/asesores.component'; // <--- AGREGADO
+import { AsesoresComponent } from './components/asesores/asesores.component'; 
 import { EncuestaService } from './services/encuesta.service';
+import { UsuariosComponent } from './components/usuarios/usuarios.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { EncuestaService } from './services/encuesta.service';
     ToastComponent,
     ImportarEncuestasComponent,
     ContestarEncuestaManualComponent,
-    AsesoresComponent 
+    AsesoresComponent,
+    UsuariosComponent
   ],
   imports: [
     BrowserModule,

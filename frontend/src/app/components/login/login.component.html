@@ -2,12 +2,10 @@
   <!-- Lado izquierdo -->
   <div class="login-left">
     <div class="login-left-content">
-      <!-- Logo Team InMotion -->
       <div class="logo-container">
-        <img src="assets/logo-team-inmotion.png" alt="Team InMotion" class="logo-team-inmotion">
+        <img src="assets/inmo1.webp" alt="Team InMotion" class="logo-team-inmotion">
       </div>
 
-      <!-- Títulos -->
       <h1>PORTAL PRIVADO</h1>
       <p class="subtitle">Control Atencion a Clientes</p>
 
@@ -16,7 +14,6 @@
         dar seguimiento a procesos y administrar.
       </p>
 
-      <!-- Footer -->
       <div class="brand-footer">
         <div class="brand-logos">
           <img src="assets/logos/Toyota.png" alt="Toyota" class="footer-toyota">
@@ -40,7 +37,7 @@
           <input 
             type="email" 
             formControlName="email" 
-            placeholder="correo@empresa.com"
+            placeholder="correo@toyotapachuca.com.mx"
             [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
           >
           <small *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-text">
@@ -48,14 +45,21 @@
           </small>
         </div>
 
+        <!-- CAMPO CONTRASEÑA CON TOGGLE DE OJITO -->
         <div class="form-group">
           <label>Contraseña</label>
-          <input 
-            type="password" 
-            formControlName="password" 
-            placeholder="Tu contraseña"
-            [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-          >
+          <div class="input-password-wrapper">
+            <input 
+              [type]="mostrarPassword ? 'text' : 'password'" 
+              formControlName="password" 
+              placeholder="Tu contraseña"
+              class="input-with-eye"
+              [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            >
+            <button type="button" class="btn-eye" (click)="toggleVerPassword()" title="Mostrar/Ocultar contraseña">
+              <i [class]="mostrarPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </button>
+          </div>
           <small *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-text">
             La contraseña debe tener al menos 6 caracteres
           </small>
@@ -74,7 +78,6 @@
         </button>
       </form>
 
-      <!-- Toyota logo debajo del boton -->
       <div class="login-footer">
         <img src="assets/logos/Toyota.png" alt="Toyota" class="footer-toyota-small">
       </div>
