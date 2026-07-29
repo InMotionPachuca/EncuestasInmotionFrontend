@@ -128,9 +128,12 @@ export class ImportarEncuestasComponent {
           const serie = row['SERIE'] || row['D'] || '';
           const unidad = row['UNIDAD'] || row['E'] || '';
           const anio = row['AÑO'] || row['F'] || '';
-          const asesor = row['ASESOR'] || row['G'] || '';
           
-          // LECTURA FLEXIBLE DE MARCA (SOPORTA 'MARCA', 'Marca', 'marca', 'SUCURSAL', etc.)
+          // LECTURA DE ASESOR: Prioriza la columna 'ASESOR' sobre 'ADV'
+          const asesorRaw = row['ASESOR'] || row['Asesor'] || row['asesor'] || row['ADV'] || row['G'] || '';
+          const asesor = asesorRaw ? asesorRaw.toString().trim() : 'Asesor de Servicio';
+          
+          // LECTURA DE MARCA
           const marcaNombreRaw = row['MARCA'] || row['Marca'] || row['marca'] || row['SUCURSAL'] || row['sucursal'] || '';
           const marcaNombre = marcaNombreRaw ? marcaNombreRaw.toString().trim() : 'Carsline Pachuca';
 
@@ -149,7 +152,7 @@ export class ImportarEncuestasComponent {
               serie: serie ? serie.toString().trim() : '',
               unidad: unidad ? unidad.toString().trim() : '',
               anio: anio ? anio.toString().trim() : '',
-              asesor: asesor ? asesor.toString().trim() : '',
+              asesor: asesor,
               marcaNombre: marcaNombre,
               marcaId: marcaId,
               nombreCliente: nombreCliente.toString().trim(),
@@ -184,7 +187,7 @@ export class ImportarEncuestasComponent {
   }
 
   obtenerMarcaId(nombreMarca: string): number {
-    if (!nombreMarca) return 2; // Carsline Pachuca por defecto
+    if (!nombreMarca) return 2;
     const nombreLimpio = this.normalizarTexto(nombreMarca);
 
     if (nombreLimpio.includes('toyota') && nombreLimpio.includes('tulancingo')) return 1;
@@ -196,7 +199,7 @@ export class ImportarEncuestasComponent {
     if (nombreLimpio.includes('compro') && nombreLimpio.includes('queretaro')) return 6;
     if (nombreLimpio.includes('compro')) return 7;
 
-    return 2; // ID 2 (Carsline Pachuca) si no coincide
+    return 2; // Default a Carsline Pachuca
   }
 
   obtenerImagenMarca(nombreMarca: string): string {
@@ -266,28 +269,29 @@ export class ImportarEncuestasComponent {
     const nombreAsesor = cliente.asesor || 'Asesor de Servicio';
     const nombreMarca = cliente.marcaNombre || 'Agencia';
     const modeloAuto = cliente.unidad || 'su vehiculo';
+    const anioAuto = cliente.anio ? ` ${cliente.anio}` : '';
+    const vehiculoCompleto = `${modeloAuto}${anioAuto}`.trim();
     const fechaVisita = cliente.fecha ? this.formatearFecha(cliente.fecha) : 'fecha de visita';
 
     let plantilla = '';
 
     if (this.tipoPlantilla === 'VENTA') {
-      plantilla += 'Buen día, Sr./Srita. *' + nombreCliente + '*.\n';
-      plantilla += 'Mi nombre es *' + nombreAsesor + '* y formo parte del area de Satisfacción a Clientes de *' + nombreMarca + '* ' + this.emojis.manosArriba + '.\n';
-      plantilla += 'Agradecemos sinceramente el tiempo que nos brindó al visitarnos. Fue un placer atenderle y acompañarle durante la adquisición de su *' + modeloAuto + '*.\n';
-      plantilla += 'Nos gustaría conocer su opinión sobre la atención recibida tanto por parte de nuestra agencia como de su asesor *' + nombreAsesor + '*. Por ello, le invitamos a responder nuestra encuesta de satisfacción, la cual le tomara solo unos minutos.\n';
-      plantilla += 'Para participar, por favor haga click en el siguiente enlace:\n';
-      plantilla += this.emojis.punto + ' ' + link + '\n';
-      plantilla += 'Muchas gracias por su tiempo y confianza.\n';
-      plantilla += '¡Le damos la mas cordial bienvenida a la familia *' + nombreMarca + '*! ' + this.emojis.bienvenida + ' ' + this.emojis.auto;
+      plantilla += `Buen día, Sr./Srita. *${nombreCliente}*.\n`;
+      plantilla += `Mi nombre es *${nombreAsesor}* y formo parte del área de Satisfacción a Clientes de *${nombreMarca}*. ${this.emojis.manosArriba}\n`;
+      plantilla += `Agradecemos sinceramente el tiempo que nos brindó al visitarnos. Fue un placer atenderle y acompañarle durante la adquisición de su ${vehiculoCompleto}.\n`;
+      plantilla += `Nos gustaría conocer su opinión sobre la atención recibida tanto por parte de nuestra agencia como de su asesor *${nombreAsesor}*. Por ello, le invitamos a responder nuestra encuesta de satisfacción, la cual le tomará solo unos minutos.\n`;
+      plantilla += `Para participar, por favor haga clic en el siguiente enlace:\n`;
+      plantilla += `${this.emojis.punto} ${link}\n`;
+      plantilla += `Muchas gracias por su tiempo y confianza.\n`;
+      plantilla += `¡Le damos la más cordial bienvenida a la familia *${nombreMarca}*! ${this.emojis.gracias}${this.emojis.auto}`;
     } else {
-      plantilla += 'Buen día, Sr./Srita. *' + nombreCliente + '*.\n';
-      plantilla += 'Mi nombre es *' + nombreAsesor + '* de Satisfacción a Clientes de *' + nombreMarca + '* ' + this.emojis.manosArriba + '.\n';
-      plantilla += 'Agradecemos sinceramente el tiempo que nos brindó al visitarnos en nuestra agencia, fue un gusto atenderle y acompanarle durante su estancia.\n';
-      plantilla += 'Nos gustaría conocer su opinión respecto al servicio realizado a su *' + modeloAuto + '* el día *' + fechaVisita + '* ' + this.emojis.auto + this.emojis.herramienta + '.\n';
-      plantilla += 'Lo invitamos a responder nuestra encuesta de satisfaccion; le tomara solo unos minutos.\n\n';
-      plantilla += 'Por favor, haz click en el siguiente enlace para participar:\n';
-      plantilla += this.emojis.punto + ' ' + link + '\n';
-      plantilla += '¡Muchas gracias por su tiempo! ' + this.emojis.gracias + ' ' + this.emojis.auto;
+      plantilla += `Buen día, Sr./Srita. *${nombreCliente}* Mi nombre es *${nombreAsesor}* de Satisfacción a Clientes de *${nombreMarca}*${this.emojis.manosArriba}\n`;
+      plantilla += `Agradecemos sinceramente el tiempo que nos brindó al visitarnos en nuestra agencia, fue un gusto atenderle y acompañarle durante su estancia.\n`;
+      plantilla += `Nos gustaría conocer su opinión respecto al servicio realizado a su *${vehiculoCompleto}* el día *${fechaVisita}*.${this.emojis.auto}${this.emojis.herramienta}\n`;
+      plantilla += `Lo invitamos a responder nuestra encuesta de satisfacción; le tomará solo unos minutos.\n`;
+      plantilla += `Por favor, haz clic en el siguiente enlace para participar:\n`;
+      plantilla += `${this.emojis.punto} ${link}\n`;
+      plantilla += `  ¡Muchas gracias por su tiempo! ${this.emojis.gracias}${this.emojis.auto}`;
     }
 
     return plantilla;

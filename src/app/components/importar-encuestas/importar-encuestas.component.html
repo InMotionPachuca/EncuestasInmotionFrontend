@@ -18,7 +18,7 @@
         <i class="fas fa-file-excel"></i>
       </div>
       <h3>Seleccione el archivo Excel</h3>
-      <p>El archivo debe contener las columnas: FECHA, NOMBRE CLIENTE, ASESOR, TELEFONO, UNIDAD, MARCA</p>
+      <p>El archivo debe contener las columnas: FECHA ORDEN, NOMBRE CLIENTE, ASESOR, TELEFONO 1, UNIDAD, MARCA</p>
       <input type="file" accept=".xlsx,.xls" (change)="onFileChange($event)" #fileInput>
     </div>
 
@@ -100,8 +100,8 @@
             <td><strong>{{ cliente.nombreCliente }}</strong></td>
             <td>{{ cliente.telefono }}</td>
             <td>{{ cliente.asesor }}</td>
-            <td>{{ cliente.unidad }}</td>
-            <td>{{ cliente.marcaNombre || 'Subaru' }}</td>
+            <td>{{ cliente.unidad }} {{ cliente.anio }}</td>
+            <td>{{ cliente.marcaNombre }}</td>
             <td>
               <span *ngIf="!cliente.procesado" class="badge badge-pending"><i class="fas fa-clock me-1"></i>Pendiente</span>
               <span *ngIf="cliente.procesado && cliente.exito" class="badge badge-success"><i class="fas fa-check me-1"></i>Éxito</span>
@@ -132,7 +132,6 @@
                 <td><strong>{{ item.cliente }}</strong></td>
                 <td>{{ item.marca }}</td>
                 <td>
-                  <!-- ENLACE MEJORADO: INPUT CON BOTÓN COPIAR -->
                   <div class="d-flex align-items-center gap-1" style="max-width: 260px;">
                     <input type="text" 
                            class="form-control form-control-sm text-truncate bg-light border" 
