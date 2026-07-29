@@ -23,28 +23,36 @@ export class ImportarEncuestasComponent {
   tipoPlantilla: 'POSTVENTA' | 'VENTA' = 'POSTVENTA';
   mostrarSelectorPlantilla = false;
 
-  // MAPEO LIMPIO
+  // MAPEO DE MARCAS E IDS
   marcasMap: { [key: string]: number } = {
-    'Subaru': 5,
-    'Toyota Pachuca': 1,
-    'Toyota Tulancingo': 1,
-    'Carsline Pachuca': 2,
-    'Carsline Queretaro': 3,
-    'GWM': 4,
-    'ComproCars Queretaro': 6,
-    'Compro Pachuca': 7
+    'toyota pachuca': 1,
+    'toyota tulancingo': 1,
+    'toyota': 1,
+    'carsline pachuca': 2,
+    'carsline queretaro': 3,
+    'carsline': 2,
+    'gwm': 4,
+    'subaru pachuca': 5,
+    'subaru': 5,
+    'comprocars queretaro': 6,
+    'compro pachuca': 7,
+    'comprocars pachuca': 7,
+    'comprocars': 7
   };
 
-  // IMÁGENES ASIGNADAS
+  // IMÁGENES ASIGNADAS PARA WHATSAPP
   imagenesMarca: { [key: string]: string } = {
-    'Subaru': 'assets/whatsapp/subaruPachuca.png',
     'Toyota Pachuca': 'assets/whatsapp/toyotaPachuca.jpeg',
     'Toyota Tulancingo': 'assets/whatsapp/toyotaTulancingo.jpeg',
+    'Toyota': 'assets/whatsapp/toyotaPachuca.jpeg',
     'Carsline Pachuca': 'assets/whatsapp/carsline.png',
     'Carsline Queretaro': 'assets/whatsapp/carsline.png',
+    'Carsline': 'assets/whatsapp/carsline.png',
     'GWM': 'assets/whatsapp/gwm.png',
+    'Subaru': 'assets/whatsapp/subaruPachuca.png',
     'ComproCars Queretaro': 'assets/whatsapp/comproCars.png',
-    'Compro Pachuca': 'assets/whatsapp/comproCars.png'
+    'Compro Pachuca': 'assets/whatsapp/comproCars.png',
+    'ComproCars': 'assets/whatsapp/comproCars.png'
   };
 
   emojis = {
@@ -100,7 +108,7 @@ export class ImportarEncuestasComponent {
         jsonData.forEach((row: any, index: number) => {
           let fecha = '';
           
-          const posiblesNombresFecha = ['FECHA', 'fecha', 'Fecha', 'A', 'Fecha Venta', 'FECHA VENTA'];
+          const posiblesNombresFecha = ['FECHA ORDEN', 'FECHA DE FACTURACIÓN', 'FECHA DE FACTURACION', 'FECHA', 'fecha', 'Fecha', 'A', 'Fecha Venta', 'FECHA VENTA'];
           for (const nombre of posiblesNombresFecha) {
             if (row[nombre] !== undefined && row[nombre] !== null && row[nombre] !== '') {
               fecha = row[nombre];
@@ -115,15 +123,19 @@ export class ImportarEncuestasComponent {
             }
           }
 
-          const noFactura = row['NO FACTURA'] || row['B'] || '';
-          const tipo = row['ALTA/BAJA'] || row['C'] || '';
+          const noFactura = row['# ORDEN'] || row['NO FACTURA'] || row['B'] || '';
+          const tipo = row['TIPO'] || row['ALTA/BAJA'] || row['C'] || '';
           const serie = row['SERIE'] || row['D'] || '';
           const unidad = row['UNIDAD'] || row['E'] || '';
           const anio = row['AÑO'] || row['F'] || '';
           const asesor = row['ASESOR'] || row['G'] || '';
-          const marcaNombre = row['Marca'] || row['marca'] || '';
+          
+          // LECTURA FLEXIBLE DE MARCA (SOPORTA 'MARCA', 'Marca', 'marca', 'SUCURSAL', etc.)
+          const marcaNombreRaw = row['MARCA'] || row['Marca'] || row['marca'] || row['SUCURSAL'] || row['sucursal'] || '';
+          const marcaNombre = marcaNombreRaw ? marcaNombreRaw.toString().trim() : 'Carsline Pachuca';
+
           const nombreCliente = row['NOMBRE CLIENTE'] || row['H'] || '';
-          const telefono = row['TELEFONO'] || row['I'] || '';
+          const telefono = row['TELEFONO 1'] || row['TELEFONO'] || row['I'] || '';
 
           if (nombreCliente && nombreCliente.toString().trim()) {
             const marcaId = this.obtenerMarcaId(marcaNombre);
@@ -138,7 +150,7 @@ export class ImportarEncuestasComponent {
               unidad: unidad ? unidad.toString().trim() : '',
               anio: anio ? anio.toString().trim() : '',
               asesor: asesor ? asesor.toString().trim() : '',
-              marcaNombre: marcaNombre ? marcaNombre.toString().trim() : 'Subaru',
+              marcaNombre: marcaNombre,
               marcaId: marcaId,
               nombreCliente: nombreCliente.toString().trim(),
               telefono: telefono ? telefono.toString().trim() : '',
@@ -172,27 +184,33 @@ export class ImportarEncuestasComponent {
   }
 
   obtenerMarcaId(nombreMarca: string): number {
-    if (!nombreMarca) return 5;
+    if (!nombreMarca) return 2; // Carsline Pachuca por defecto
     const nombreLimpio = this.normalizarTexto(nombreMarca);
-    for (const key of Object.keys(this.marcasMap)) {
-      const keyLimpia = this.normalizarTexto(key);
-      if (nombreLimpio === keyLimpia || nombreLimpio.includes(keyLimpia) || keyLimpia.includes(nombreLimpio)) {
-        return this.marcasMap[key];
-      }
-    }
-    return 5;
+
+    if (nombreLimpio.includes('toyota') && nombreLimpio.includes('tulancingo')) return 1;
+    if (nombreLimpio.includes('toyota')) return 1;
+    if (nombreLimpio.includes('carsline') && nombreLimpio.includes('queretaro')) return 3;
+    if (nombreLimpio.includes('carsline')) return 2;
+    if (nombreLimpio.includes('gwm')) return 4;
+    if (nombreLimpio.includes('subaru')) return 5;
+    if (nombreLimpio.includes('compro') && nombreLimpio.includes('queretaro')) return 6;
+    if (nombreLimpio.includes('compro')) return 7;
+
+    return 2; // ID 2 (Carsline Pachuca) si no coincide
   }
 
   obtenerImagenMarca(nombreMarca: string): string {
-    if (!nombreMarca) return 'assets/whatsapp/subaruPachuca.png';
+    if (!nombreMarca) return 'assets/whatsapp/carsline.png';
     const nombreLimpio = this.normalizarTexto(nombreMarca);
-    for (const key of Object.keys(this.imagenesMarca)) {
-      const keyLimpia = this.normalizarTexto(key);
-      if (nombreLimpio === keyLimpia || nombreLimpio.includes(keyLimpia) || keyLimpia.includes(nombreLimpio)) {
-        return this.imagenesMarca[key];
-      }
-    }
-    return 'assets/whatsapp/subaruPachuca.png';
+
+    if (nombreLimpio.includes('toyota') && nombreLimpio.includes('tulancingo')) return 'assets/whatsapp/toyotaTulancingo.jpeg';
+    if (nombreLimpio.includes('toyota')) return 'assets/whatsapp/toyotaPachuca.jpeg';
+    if (nombreLimpio.includes('carsline')) return 'assets/whatsapp/carsline.png';
+    if (nombreLimpio.includes('gwm')) return 'assets/whatsapp/gwm.png';
+    if (nombreLimpio.includes('subaru')) return 'assets/whatsapp/subaruPachuca.png';
+    if (nombreLimpio.includes('compro')) return 'assets/whatsapp/comproCars.png';
+
+    return 'assets/whatsapp/carsline.png';
   }
 
   obtenerUrlImagen(marcaNombre: string): string {
@@ -246,7 +264,7 @@ export class ImportarEncuestasComponent {
   generarPlantilla(cliente: any, link: string): string {
     const nombreCliente = cliente.nombreCliente || 'Cliente';
     const nombreAsesor = cliente.asesor || 'Asesor de Servicio';
-    const nombreMarca = cliente.marcaNombre || 'Subaru';
+    const nombreMarca = cliente.marcaNombre || 'Agencia';
     const modeloAuto = cliente.unidad || 'su vehiculo';
     const fechaVisita = cliente.fecha ? this.formatearFecha(cliente.fecha) : 'fecha de visita';
 
@@ -303,9 +321,8 @@ export class ImportarEncuestasComponent {
         const partes = nombreCompleto.split(' ');
         const nombre = partes[0] || 'Cliente';
         const apellido = partes.slice(1).join(' ') || 'General';
-        const marcaId = cliente.marcaId || 1;
+        const marcaId = cliente.marcaId || 2;
 
-        // DTO SANEADO PARA CUMPLIR CON LA VALIDACIÓN EN SPRING BOOT
         const data = {
           nombre: nombre,
           apellido: apellido,
@@ -329,12 +346,12 @@ export class ImportarEncuestasComponent {
             this.exitosos++;
             this.encuestasGeneradas.push({
               cliente: cliente.nombreCliente,
-              marca: cliente.marcaNombre || 'Agencia',
+              marca: cliente.marcaNombre || 'Carsline Pachuca',
               token: response.token,
               link: link,
               plantilla: plantillaCompleta,
               mostrarPlantilla: false,
-              imagenUrl: this.obtenerUrlImagen(cliente.marcaNombre || '')
+              imagenUrl: this.obtenerUrlImagen(cliente.marcaNombre || 'Carsline Pachuca')
             });
             completados++;
             if (completados === pendientes.length) {
