@@ -1,0 +1,104 @@
+<div class="listar-encuestas-container">
+  <!-- HEADER NEGRO Y DORADO PARA MÓDULO QR -->
+  <div class="listar-header">
+    <div>
+      <h1>Encuestas QR</h1>
+      <p class="header-subtitle mt-1 mb-0">Listado de respuestas capturadas desde el código QR en sucursal</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-refresh" (click)="cargarEncuestasQr()">
+        <i class="fas fa-sync-alt me-1"></i> Actualizar
+      </button>
+      <button class="btn-export" (click)="exportarExcel()">
+        <i class="fas fa-file-excel me-1"></i> Exportar Excel
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filtros-container">
+    <div class="filtros-box">
+      <input 
+        type="text" 
+        class="filtro-input"
+        placeholder="Buscar por cliente o teléfono..." 
+        [(ngModel)]="filtroTexto"
+        (input)="filtrarEncuestas()"
+      >
+      <select class="filtro-select" [(ngModel)]="filtroMarca" (change)="filtrarEncuestas()">
+        <option value="">Todas las marcas</option>
+        <option *ngFor="let marca of marcas" [value]="marca.nombre">
+          {{ marca.nombre }}
+        </option>
+      </select>
+      <button class="btn-clear" (click)="limpiarFiltros()">
+        <i class="fas fa-eraser me-1"></i> Limpiar
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="loading" class="cargando">
+    <p><i class="fas fa-spinner fa-spin me-2"></i> Cargando encuestas QR...</p>
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="error" class="error-mensaje">
+    <p><i class="fas fa-exclamation-triangle me-2"></i> {{ error }}</p>
+  </div>
+
+  <!-- TABLA DE RESULTADOS QR -->
+  <div *ngIf="!loading && !error" class="tabla-container">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Teléfono</th>
+            <th>Agencia</th>
+            <th>Fecha</th>
+            <th>Experiencia</th>
+            <th>Atención</th>
+            <th>Tiempo Ad.</th>
+            <th>¿Recomienda?</th>
+            <th>Comentarios</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let enc of encuestasFiltradas">
+            <td><strong>{{ obtenerRespuestaTexto(enc, 1) }}</strong></td>
+            <td>{{ obtenerTelefono(enc) }}</td>
+            <td>{{ enc.marcaNombre }}</td>
+            <td>{{ formatFecha(enc.fechaRespuesta || enc.fechaEnvio) }}</td>
+            <td><span class="calificacion">{{ obtenerRespuestaTexto(enc, 2) }}</span></td>
+            <td><span class="calificacion">{{ obtenerRespuestaTexto(enc, 3) }}</span></td>
+            <td>
+              <span class="badge" 
+                    [class.badge-respondida]="obtenerRespuestaTexto(enc, 4) === 'SÍ'" 
+                    [class.badge-expirada]="obtenerRespuestaTexto(enc, 4) === 'NO'">
+                {{ obtenerRespuestaTexto(enc, 4) }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" 
+                    [class.badge-respondida]="obtenerRespuestaTexto(enc, 5) === 'SÍ'" 
+                    [class.badge-expirada]="obtenerRespuestaTexto(enc, 5) === 'NO'">
+                {{ obtenerRespuestaTexto(enc, 5) }}
+              </span>
+            </td>
+            <td>
+              <span style="font-style: italic; color: #495057;">
+                {{ obtenerComentario(enc) }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="encuestasFiltradas.length === 0">
+            <td colspan="9" class="sin-resultados">
+              <p>No hay encuestas QR registradas</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

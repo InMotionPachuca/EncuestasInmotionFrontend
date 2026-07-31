@@ -13,6 +13,7 @@ import { AdminGuard } from './guards/admin.guard';
 import { EncuestaEstaticaComponent } from './components/encuesta-estatica/encuesta-estatica.component';
 import { GenerarQrComponent } from './components/generar-qr/generar-qr.component';
 import { DashboardQrComponent } from './components/dashboard-qr/dashboard-qr.component'; 
+import { ListarEncuestasQrComponent } from './components/listar-encuestas-qr/listar-encuestas-qr.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'crear', component: CrearEncuestaComponent },
   { path: 'responder/:token', component: ResponderEncuestaComponent },
   { path: 'listar', component: ListarEncuestasComponent },
+  { path: 'encuestas-qr', component: ListarEncuestasQrComponent },
   { path: 'importar', component: ImportarEncuestasComponent },
   { path: 'contestar-manual', component: ContestarEncuestaManualComponent },
   { path: 'asesores', component: AsesoresComponent },

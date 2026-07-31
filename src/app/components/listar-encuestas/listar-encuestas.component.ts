@@ -11,23 +11,34 @@ import * as XLSX from 'xlsx';
   styleUrls: ['./listar-encuestas.component.css']
 })
 export class ListarEncuestasComponent implements OnInit {
-  encuestas: Encuesta[] = [];
-  encuestasFiltradas: Encuesta[] = [];
-  marcas: any[] = [];
-  loading: boolean = true;
-  error: string = '';
+  pestanaActiva: 'tradicionales' | 'qr' = 'tradicionales';
 
+  // --- ARREGLOS ENCUESTAS TRADICIONALES ---
+  encuestasTradicionales: Encuesta[] = [];
+  encuestasFiltradas: Encuesta[] = [];
   filtroTexto: string = '';
   filtroMarca: string = '';
   filtroEstado: string = '';
 
+  // --- ARREGLOS ENCUESTAS QR ---
+  encuestasQr: Encuesta[] = [];
+  encuestasQrFiltradas: Encuesta[] = [];
+  filtroTextoQr: string = '';
+  filtroMarcaQr: string = '';
+
+  // Control de estado expandido/contraído para comentarios largos en QR
+  comentariosExpandidos: { [key: number]: boolean } = {};
+
+  marcas: any[] = [];
+  loading: boolean = true;
+  error: string = '';
+
+  // Modal
   mostrarDetalles: boolean = false;
-  mostrarPlantilla: boolean = false;
   encuestaSeleccionada: Encuesta | null = null;
   plantillaActual: string = '';
   imagenUrl: string = '';
 
-  // DICCIONARIO LIMPIO Y SIN DUPLICADOS
   imagenesMarca: { [key: string]: string } = {
     'Subaru': 'assets/whatsapp/subaruPachuca.png',
     'Toyota Pachuca': 'assets/whatsapp/toyotaPachuca.jpeg',
@@ -60,6 +71,10 @@ export class ListarEncuestasComponent implements OnInit {
     this.cargarEncuestas();
   }
 
+  cambiarPestana(pestana: 'tradicionales' | 'qr') {
+    this.pestanaActiva = pestana;
+  }
+
   normalizarTexto(texto: string): string {
     return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
   }
@@ -68,8 +83,16 @@ export class ListarEncuestasComponent implements OnInit {
     this.loading = true;
     this.encuestaService.listarEncuestas().subscribe({
       next: (data: Encuesta[]) => {
-        this.encuestas = data;
-        this.encuestasFiltradas = data;
+        const listado = data || [];
+        
+        // 1. Filtrar Tradicionales
+        this.encuestasTradicionales = listado.filter(e => e.tipo !== 'QR' && e.serie !== 'QR-GENERAL');
+        this.encuestasFiltradas = [...this.encuestasTradicionales];
+
+        // 2. Filtrar QR
+        this.encuestasQr = listado.filter(e => e.tipo === 'QR' || e.serie === 'QR-GENERAL');
+        this.encuestasQrFiltradas = [...this.encuestasQr];
+
         this.loading = false;
       },
       error: (error: any) => {
@@ -80,17 +103,15 @@ export class ListarEncuestasComponent implements OnInit {
     });
   }
 
+  // --- MÉTODOS FILTRO TRADICIONALES ---
   filtrarEncuestas() {
-    this.encuestasFiltradas = this.encuestas.filter(encuesta => {
-      const textoMatch = this.filtroTexto === '' ||
+    this.encuestasFiltradas = this.encuestasTradicionales.filter(encuesta => {
+      const textoMatch = !this.filtroTexto ||
         encuesta.clienteNombre.toLowerCase().includes(this.filtroTexto.toLowerCase()) ||
         encuesta.clienteEmail.toLowerCase().includes(this.filtroTexto.toLowerCase());
 
-      const marcaMatch = this.filtroMarca === '' ||
-        encuesta.marcaNombre === this.filtroMarca;
-
-      const estadoMatch = this.filtroEstado === '' ||
-        encuesta.estado === this.filtroEstado;
+      const marcaMatch = !this.filtroMarca || encuesta.marcaNombre === this.filtroMarca;
+      const estadoMatch = !this.filtroEstado || encuesta.estado === this.filtroEstado;
 
       return textoMatch && marcaMatch && estadoMatch;
     });
@@ -100,9 +121,64 @@ export class ListarEncuestasComponent implements OnInit {
     this.filtroTexto = '';
     this.filtroMarca = '';
     this.filtroEstado = '';
-    this.encuestasFiltradas = this.encuestas;
+    this.encuestasFiltradas = [...this.encuestasTradicionales];
   }
 
+  // --- MÉTODOS FILTRO QR ---
+  filtrarEncuestasQr() {
+    this.encuestasQrFiltradas = this.encuestasQr.filter(enc => {
+      const telefono = this.obtenerTelefono(enc);
+      const textoMatch = !this.filtroTextoQr ||
+        (enc.clienteNombre && enc.clienteNombre.toLowerCase().includes(this.filtroTextoQr.toLowerCase())) ||
+        (telefono && telefono.includes(this.filtroTextoQr));
+
+      const marcaMatch = !this.filtroMarcaQr || enc.marcaNombre === this.filtroMarcaQr;
+
+      return textoMatch && marcaMatch;
+    });
+  }
+
+  limpiarFiltrosQr() {
+    this.filtroTextoQr = '';
+    this.filtroMarcaQr = '';
+    this.encuestasQrFiltradas = [...this.encuestasQr];
+  }
+
+  // --- CONTROL DE COMENTARIO DESPLEGABLE EN TABLA (ACEPTA UNDEFINED) ---
+  toggleComentario(encuestaId?: number): void {
+    if (encuestaId === undefined || encuestaId === null) return;
+    this.comentariosExpandidos[encuestaId] = !this.comentariosExpandidos[encuestaId];
+  }
+
+  isComentarioExpandido(encuestaId?: number): boolean {
+    if (encuestaId === undefined || encuestaId === null) return false;
+    return !!this.comentariosExpandidos[encuestaId];
+  }
+
+  // --- HELPERS RESPUESTAS QR ---
+  obtenerTelefono(e: Encuesta): string {
+    const enc = e as any;
+    return enc.clienteTelefono || enc.telefono || 'Sin teléfono';
+  }
+
+  obtenerRespuestaTexto(encuesta: Encuesta, preguntaId: number): string {
+    const resp = encuesta.respuestas?.find(r => r.preguntaId === preguntaId);
+    if (!resp) return '-';
+    if (resp.valorTexto) return resp.valorTexto;
+    if (resp.valorNumerico) return `${resp.valorNumerico} ★`;
+    if (resp.opcionId) return resp.opcionId === 1 ? 'SÍ' : 'NO';
+    return '-';
+  }
+
+  obtenerComentario(encuesta: Encuesta): string {
+    const resp = encuesta.respuestas?.find(r => r.preguntaId === 6);
+    if (!resp || !resp.valorTexto || resp.valorTexto.trim() === '') {
+      return '';
+    }
+    return resp.valorTexto;
+  }
+
+  // --- PLANTILLA Y MODAL DE TRADICIONALES ---
   obtenerImagenMarca(nombreMarca: string): string {
     if (!nombreMarca) return 'assets/whatsapp/subaruPachuca.png';
     const nombreLimpio = this.normalizarTexto(nombreMarca);
@@ -113,23 +189,14 @@ export class ListarEncuestasComponent implements OnInit {
         return this.imagenesMarca[key];
       }
     }
-    
     return 'assets/whatsapp/subaruPachuca.png';
-  }
-
-  obtenerUrlImagen(marcaNombre: string): string {
-    return this.obtenerImagenMarca(marcaNombre);
   }
 
   formatearFecha(fechaStr: Date | string): string {
     if (!fechaStr) return 'fecha de visita';
     const fecha = new Date(fechaStr);
     if (!isNaN(fecha.getTime())) {
-      return fecha.toLocaleDateString('es-MX', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+      return fecha.toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
     }
     return String(fechaStr) || 'fecha de visita';
   }
@@ -167,11 +234,10 @@ export class ListarEncuestasComponent implements OnInit {
     return plantilla;
   }
 
-  // MÉTODO ÚNICO PARA VER DETALLES Y PLANTILLA
   verDetallesYPlantilla(encuesta: Encuesta) {
     this.encuestaSeleccionada = encuesta;
     this.plantillaActual = this.generarPlantilla(encuesta);
-    this.imagenUrl = this.obtenerUrlImagen(encuesta.marcaNombre || 'Subaru');
+    this.imagenUrl = this.obtenerImagenMarca(encuesta.marcaNombre || 'Subaru');
     this.mostrarDetalles = true;
   }
 
@@ -198,13 +264,8 @@ export class ListarEncuestasComponent implements OnInit {
           const ctx = canvas.getContext('2d');
           if (ctx) {
             ctx.drawImage(img, 0, 0);
-            canvas.toBlob((blob) => {
-              if (blob) resolve(blob);
-              else reject('Error procesando imagen');
-            }, 'image/png');
-          } else {
-            reject('Contexto no disponible');
-          }
+            canvas.toBlob((blob) => blob ? resolve(blob) : reject('Error'), 'image/png');
+          } else { reject('Error ctx'); }
         };
         img.onerror = (err) => reject(err);
         img.src = imagenUrl;
@@ -214,31 +275,44 @@ export class ListarEncuestasComponent implements OnInit {
       await navigator.clipboard.write([clipboardItem]);
       this.notificationService.show('Imagen copiada. Lista para pegar en WhatsApp', 'success');
     } catch (error) {
-      console.error('Error al copiar la imagen:', error);
       this.notificationService.show('No se pudo copiar la imagen al portapapeles', 'error');
     }
   }
 
+  // --- ELIMINAR ENCUESTA TRADICIONAL ---
   eliminarEncuesta(encuesta: Encuesta) {
-    if (!encuesta.id) {
-      this.notificationService.show('No se puede eliminar: ID no encontrado', 'error');
-      return;
-    }
-
-    if (confirm('¿Estas seguro de eliminar la encuesta de ' + encuesta.clienteNombre + '? Esta accion no se puede deshacer.')) {
+    if (!encuesta.id) return;
+    if (confirm('¿Estas seguro de eliminar la encuesta de ' + encuesta.clienteNombre + '?')) {
       this.encuestaService.eliminarEncuesta(encuesta.id).subscribe({
         next: () => {
-          this.notificationService.show('Encuesta de ' + encuesta.clienteNombre + ' eliminada correctamente', 'success');
+          this.notificationService.show('Encuesta eliminada correctamente', 'success');
+          this.cargarEncuestas();
+        },
+        error: () => this.notificationService.show('Error al eliminar la encuesta', 'error')
+      });
+    }
+  }
+
+  // --- ELIMINAR ENCUESTA QR ---
+  eliminarEncuestaQr(encuesta: Encuesta) {
+    if (!encuesta.id) return;
+    const nombreCliente = this.obtenerRespuestaTexto(encuesta, 1);
+    
+    if (confirm(`¿Estás seguro de eliminar la encuesta QR de ${nombreCliente}? Esta acción no se puede deshacer.`)) {
+      this.encuestaService.eliminarEncuesta(encuesta.id).subscribe({
+        next: () => {
+          this.notificationService.show(`Encuesta QR de ${nombreCliente} eliminada correctamente`, 'success');
           this.cargarEncuestas();
         },
         error: (error) => {
-          console.error('Error al eliminar:', error);
-          this.notificationService.show('Error al eliminar la encuesta', 'error');
+          console.error('Error al eliminar QR:', error);
+          this.notificationService.show('Error al eliminar la encuesta QR', 'error');
         }
       });
     }
   }
 
+  // --- EXPORTAR EXCEL DE CADA SECCIÓN ---
   exportarExcel() {
     if (this.encuestasFiltradas.length === 0) {
       this.notificationService.show('No hay encuestas para exportar', 'warning');
@@ -252,32 +326,40 @@ export class ListarEncuestasComponent implements OnInit {
       'Marca': e.marcaNombre,
       'Estado': this.getEstadoTexto(e.estado),
       'Fecha Envio': e.fechaEnvio ? new Date(e.fechaEnvio).toLocaleString('es-MX') : '',
-      'Fecha Respuesta': e.fechaRespuesta ? new Date(e.fechaRespuesta).toLocaleString('es-MX') : '',
       'Token': e.token,
       'Link': this.generarLink(e.token)
     }));
 
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Encuestas');
-    
-    const colWidths = [
-      { wch: 35 },
-      { wch: 30 },
-      { wch: 25 },
-      { wch: 25 },
-      { wch: 12 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 40 },
-      { wch: 50 }
-    ];
-    ws['!cols'] = colWidths;
-
-    const fileName = 'encuestas_' + new Date().toISOString().split('T')[0] + '.xlsx';
-    XLSX.writeFile(wb, fileName);
-    
+    XLSX.utils.book_append_sheet(wb, ws, 'Encuestas_Servicio');
+    XLSX.writeFile(wb, 'encuestas_servicio_' + new Date().toISOString().split('T')[0] + '.xlsx');
     this.notificationService.show('Encuestas exportadas correctamente', 'success');
+  }
+
+  exportarExcelQr() {
+    if (this.encuestasQrFiltradas.length === 0) {
+      this.notificationService.show('No hay datos QR para exportar', 'warning');
+      return;
+    }
+
+    const data = this.encuestasQrFiltradas.map(e => ({
+      'Cliente': this.obtenerRespuestaTexto(e, 1),
+      'Teléfono': this.obtenerTelefono(e),
+      'Agencia': e.marcaNombre,
+      'Fecha': this.formatFecha(e.fechaRespuesta || e.fechaEnvio),
+      'Experiencia (★)': this.obtenerRespuestaTexto(e, 2),
+      'Atención (★)': this.obtenerRespuestaTexto(e, 3),
+      'Tiempo Adecuado': this.obtenerRespuestaTexto(e, 4),
+      '¿Recomienda?': this.obtenerRespuestaTexto(e, 5),
+      'Comentarios': this.obtenerComentario(e) || 'Sin comentarios'
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Encuestas_QR');
+    XLSX.writeFile(wb, 'encuestas_qr_' + new Date().toISOString().split('T')[0] + '.xlsx');
+    this.notificationService.show('Archivo de encuestas QR exportado correctamente', 'success');
   }
 
   getEstadoClass(estado: string): string {
@@ -301,12 +383,7 @@ export class ListarEncuestasComponent implements OnInit {
   formatFecha(fecha: Date | string): string {
     if (!fecha) return '-';
     const d = new Date(fecha);
-    const dia = String(d.getDate()).padStart(2, '0');
-    const mes = String(d.getMonth() + 1).padStart(2, '0');
-    const anio = d.getFullYear();
-    const horas = String(d.getHours()).padStart(2, '0');
-    const minutos = String(d.getMinutes()).padStart(2, '0');
-    return dia + '/' + mes + '/' + anio + ' ' + horas + ':' + minutos;
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   }
 
   generarLink(token: string): string {
@@ -317,8 +394,6 @@ export class ListarEncuestasComponent implements OnInit {
     const link = this.generarLink(token);
     navigator.clipboard.writeText(link).then(() => {
       this.notificationService.show('Link copiado para ' + clienteNombre, 'success');
-    }).catch(() => {
-      prompt('Copia el link para ' + clienteNombre + ':', link);
     });
   }
 }

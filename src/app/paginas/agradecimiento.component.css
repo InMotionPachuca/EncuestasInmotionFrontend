@@ -1,0 +1,74 @@
+.gracias-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 85vh;
+  padding: 20px;
+  background: #F8F9FA;
+  font-family: 'Inter', sans-serif;
+}
+
+.card-gracias {
+  text-align: center;
+  padding: 45px 40px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border-top: 5px solid #8A6D3B;
+  border-left: 1px solid #E9ECEF;
+  border-right: 1px solid #E9ECEF;
+  border-bottom: 1px solid #E9ECEF;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logo-box {
+  margin-bottom: 20px;
+}
+
+.logo-inmotion {
+  height: 60px;
+  width: auto;
+  filter: sepia(1) saturate(3.5) hue-rotate(-10deg) brightness(0.7);
+}
+
+.check-icon {
+  font-size: 3.5rem;
+  color: #8A6D3B;
+  margin-bottom: 16px;
+}
+
+.card-gracias h2 {
+  color: #111111;
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.subtitle {
+  color: #6C757D;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #8A6D3B 50%, transparent 100%);
+  margin: 20px auto;
+  width: 80%;
+}
+
+.footer-text {
+  color: #495057;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0;
+}

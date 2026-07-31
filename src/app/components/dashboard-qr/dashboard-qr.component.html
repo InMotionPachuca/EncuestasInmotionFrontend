@@ -19,7 +19,7 @@
     </div>
   </div>
 
-  <!-- FILTROS -->
+  <!-- FILTROS DE AGENCIA -->
   <div class="filtros-container">
     <div class="filtros-left">
       <span class="filtros-label">Filtrar por Agencia:</span>
@@ -30,7 +30,7 @@
     </div>
   </div>
 
-  <!-- METRICAS DE ENCUESTAS QR -->
+  <!-- TARJETAS DE MÉTRICAS CLAVE -->
   <div class="stats-grid">
     <div class="stat-card total">
       <div class="stat-icon"><i class="fas fa-qrcode"></i></div>
@@ -54,64 +54,219 @@
       </div>
     </div>
     <div class="stat-card pendientes">
-      <div class="stat-icon"><i class="fas fa-thumbs-up"></i></div>
+      <div class="stat-icon"><i class="fas fa-clock"></i></div>
       <div class="stat-content">
-        <h3>% Recomienda</h3>
-        <p class="stat-number">{{ porcentajeRecomienda }}%</p>
+        <h3>Tiempo Adecuado</h3>
+        <p class="stat-number">{{ porcentajeTiempoAdecuado }}%</p>
       </div>
     </div>
   </div>
 
-  <!-- GRÁFICO QR -->
-  <div class="graficos-container">
+  <!-- SECCIÓN 1: NPS SCORE Y DISTRIBUCIÓN DE CALIFICACIONES -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px;">
+    
+    <!-- CARD SCORE NPS -->
+    <div class="grafico-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+      <h3 class="grafico-title">
+        <span class="title-icon"><i class="fas fa-chart-line me-1"></i></span> NPS Score de Clientes QR
+      </h3>
+      <div style="text-align: center; padding: 15px 0;">
+        <div style="font-size: 3.2rem; font-weight: 800; font-family: 'Montserrat', sans-serif;" 
+             [style.color]="npsData.score >= 50 ? '#198754' : (npsData.score >= 0 ? '#C5A059' : '#DC3545')">
+          {{ npsData.score }}
+        </div>
+        <span class="badge" style="padding: 6px 16px; font-size: 0.85rem;"
+              [style.background]="npsData.score >= 50 ? '#D1E7DD' : (npsData.score >= 0 ? '#FAF6EE' : '#F8D7DA')"
+              [style.color]="npsData.score >= 50 ? '#0F5132' : (npsData.score >= 0 ? '#8A6D3B' : '#842029')">
+          {{ npsData.label }}
+        </span>
+      </div>
+      <div style="display: flex; justify-content: space-around; border-top: 1px solid #E9ECEF; padding-top: 12px; margin-top: 10px; font-size: 0.82rem;">
+        <div><strong style="color: #198754;">{{ npsData.promotores }}</strong> <span style="color: #6C757D;">Promotores (5★)</span></div>
+        <div><strong style="color: #C5A059;">{{ npsData.pasivos }}</strong> <span style="color: #6C757D;">Pasivos (4★)</span></div>
+        <div><strong style="color: #DC3545;">{{ npsData.detractores }}</strong> <span style="color: #6C757D;">Detractores (&lt;4★)</span></div>
+      </div>
+    </div>
+
+    <!-- GRÁFICO BARRA DISTRIBUCIÓN ESTRELLAS -->
     <div class="grafico-card">
       <h3 class="grafico-title">
-        <span class="title-icon"><i class="fas fa-chart-pie me-1"></i></span> Encuestas QR por Agencia
+        <span class="title-icon"><i class="fas fa-chart-bar me-1"></i></span> Distribución de Calificaciones (1 a 5 Estrellas)
+      </h3>
+      <div class="grafico-wrapper">
+        <canvas #graficoEstrellasCanvas></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SECCIÓN 2: GRÁFICO DE DONA Y TABLA DE RENDIMIENTO POR SUCURSAL -->
+  <div class="graficos-container" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+    
+    <!-- DONA POR AGENCIA -->
+    <div class="grafico-card">
+      <h3 class="grafico-title">
+        <span class="title-icon"><i class="fas fa-chart-pie me-1"></i></span> Participación de Encuestas QR por Agencia
       </h3>
       <div class="grafico-wrapper">
         <canvas #graficoMarcasQr></canvas>
       </div>
     </div>
+
+    <!-- TABLA DE DESEMPEÑO COMPARATIVO POR SUCURSAL CORREGIDA -->
+    <div class="grafico-card">
+      <h3 class="grafico-title">
+        <span class="title-icon"><i class="fas fa-trophy me-1"></i></span> Métricas de Desempeño por Sucursal
+      </h3>
+      <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Agencia</th>
+              <th>Total</th>
+              <th>Experiencia</th>
+              <th>Atención</th>
+              <th>% Recomienda</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of resumenAgencias">
+              <td><strong>{{ item.nombre }}</strong></td>
+              <td>{{ item.total }}</td>
+              <td><span class="calificacion">{{ item.exp }} ★</span></td>
+              <td><span class="calificacion">{{ item.atencion }} ★</span></td>
+              <td>
+                <span class="badge" 
+                      [class.badge-respondida]="(item.rec || 0) >= 70" 
+                      [class.badge-expirada]="(item.rec || 0) < 70">
+                  {{ item.rec !== undefined && item.rec !== null ? item.rec : 0 }}%
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="resumenAgencias.length === 0">
+              <td colspan="5" class="sin-encuestas">Sin datos disponibles.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
-  <!-- TABLA DE ENCUESTAS RESPONDIDAS POR QR -->
-  <div class="encuestas-recientes">
-    <h2 class="marcas-title"><i class="fas fa-list me-2"></i>Listado de Encuestas QR</h2>
+  <!-- SECCIÓN 3: TABLA DETALLADA DE ENCUESTAS QR (ENTERPRISE) -->
+  <div class="encuestas-recientes mt-4">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+      <h2 class="marcas-title mb-0">
+        <i class="fas fa-list me-2"></i>Listado Detallado de Encuestas QR
+      </h2>
+      <div style="position: relative; min-width: 260px;">
+        <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #A0A0A0; font-size: 0.85rem;"></i>
+        <input 
+          type="text" 
+          class="form-control" 
+          placeholder="Buscar cliente, teléfono..." 
+          [(ngModel)]="filtroTextoTabla" 
+          (input)="aplicarFiltros()"
+          style="padding-left: 34px; height: 38px; border-radius: 8px; border: 1px solid #CED4DA; font-size: 0.85rem;"
+        >
+      </div>
+    </div>
+
     <div class="table-responsive">
-      <table class="table">
+      <table class="table table-hover align-middle">
         <thead>
           <tr>
-            <th>Cliente</th>
-            <th>Teléfono</th>
-            <th>Experiencia</th>
-            <th>Atención</th>
-            <th>¿Recomienda?</th>
+            <th style="width: 220px;">Cliente</th>
+            <th style="width: 130px;">Teléfono</th>
+            <th style="width: 140px;">Agencia</th>
+            <th style="width: 120px;">Experiencia</th>
+            <th style="width: 120px;">Atención</th>
+            <th style="width: 110px;">Tiempo Ad.</th>
+            <th style="width: 110px;">¿Recomienda?</th>
             <th>Comentarios / Sugerencias</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let enc of encuestasFiltradas">
+          <tr *ngFor="let enc of encuestasTablaFiltradas">
+            <!-- CLIENTE CON AVATAR -->
             <td>
-              <div class="cliente-info">
-                <strong>{{ obtenerRespuestaTexto(enc, 1) }}</strong>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="avatar-circle">
+                  {{ obtenerIniciales(obtenerRespuestaTexto(enc, 1)) }}
+                </div>
+                <div class="cliente-info">
+                  <strong style="color: #212529; font-size: 0.88rem; font-weight: 600;">
+                    {{ obtenerRespuestaTexto(enc, 1) }}
+                  </strong>
+                  <span style="font-size: 0.72rem; color: #888888; display: block;">
+                    {{ formatFechaRelativa(enc.fechaRespuesta || enc.fechaEnvio) }}
+                  </span>
+                </div>
               </div>
             </td>
-            <td>{{ enc.telefono || 'No proporcionado' }}</td>
-            <td><span class="calificacion">{{ obtenerRespuestaTexto(enc, 2) }}</span></td>
-            <td><span class="calificacion">{{ obtenerRespuestaTexto(enc, 3) }}</span></td>
+
+            <!-- TELÉFONO -->
             <td>
-              <span class="badge" 
-                    [class.badge-respondida]="obtenerRespuestaTexto(enc, 4) === 'SÍ'" 
-                    [class.badge-expirada]="obtenerRespuestaTexto(enc, 4) === 'NO'">
+              <span class="phone-chip">
+                <i class="fas fa-phone-alt me-1" style="font-size: 0.7rem; color: #8A6D3B;"></i>
+                {{ obtenerTelefono(enc) }}
+              </span>
+            </td>
+
+            <!-- AGENCIA -->
+            <td>
+              <div class="agencia-badge-enterprise">
+                <span class="brand-dot" [class]="'brand-' + enc.marcaId"></span>
+                <span class="agencia-texto">{{ enc.marcaNombre }}</span>
+              </div>
+            </td>
+
+            <!-- EXPERIENCIA -->
+            <td>
+              <span class="star-rating-pill" [class]="getRatingClass(obtenerCalificacionNum(enc, 2))">
+                <i class="fas fa-star me-1"></i> {{ obtenerCalificacionNum(enc, 2) }} / 5
+              </span>
+            </td>
+
+            <!-- ATENCIÓN -->
+            <td>
+              <span class="star-rating-pill" [class]="getRatingClass(obtenerCalificacionNum(enc, 3))">
+                <i class="fas fa-star me-1"></i> {{ obtenerCalificacionNum(enc, 3) }} / 5
+              </span>
+            </td>
+
+            <!-- TIEMPO ADECUADO -->
+            <td>
+              <span class="boolean-chip" [class.positive]="obtenerRespuestaTexto(enc, 4) === 'SÍ'" [class.negative]="obtenerRespuestaTexto(enc, 4) === 'NO'">
+                <i class="fas" [class.fa-check-circle]="obtenerRespuestaTexto(enc, 4) === 'SÍ'" [class.fa-times-circle]="obtenerRespuestaTexto(enc, 4) === 'NO'"></i>
                 {{ obtenerRespuestaTexto(enc, 4) }}
               </span>
             </td>
+
+            <!-- ¿RECOMIENDA? -->
             <td>
-              <span>{{ obtenerRespuestaTexto(enc, 5) }}</span>
+              <span class="boolean-chip" [class.positive]="obtenerRespuestaTexto(enc, 5) === 'SÍ'" [class.negative]="obtenerRespuestaTexto(enc, 5) === 'NO'">
+                <i class="fas" [class.fa-thumbs-up]="obtenerRespuestaTexto(enc, 5) === 'SÍ'" [class.fa-thumbs-down]="obtenerRespuestaTexto(enc, 5) === 'NO'"></i>
+                {{ obtenerRespuestaTexto(enc, 5) }}
+              </span>
+            </td>
+
+            <!-- COMENTARIOS -->
+            <td>
+              <div *ngIf="obtenerComentario(enc) !== 'Sin comentarios'; else sinComentarioText" class="comentario-box">
+                <i class="fas fa-quote-left me-1" style="color: #C5A059; font-size: 0.75rem;"></i>
+                {{ obtenerComentario(enc) }}
+              </div>
+              <ng-template #sinComentarioText>
+                <span style="color: #B0B0B0; font-style: italic; font-size: 0.8rem;">Sin observaciones</span>
+              </ng-template>
             </td>
           </tr>
-          <tr *ngIf="encuestasFiltradas.length === 0">
-            <td colspan="6" class="sin-encuestas">No se han registrado encuestas QR para esta selección.</td>
+
+          <tr *ngIf="encuestasTablaFiltradas.length === 0">
+            <td colspan="8" class="text-center py-4" style="color: #888888; font-style: italic;">
+              No se encontraron coincidencias para la búsqueda.
+            </td>
           </tr>
         </tbody>
       </table>

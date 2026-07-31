@@ -1,119 +1,257 @@
 <div class="listar-encuestas-container">
-  <!-- HEADER NEGRO Y DORADO -->
-  <div class="listar-header">
-    <div>
-      <h1>Encuestas</h1>
-      <p class="header-subtitle mt-1 mb-0">Visualice todas las encuestas generadas</p>
+  
+  <!-- TABS DE NAVEGACIÓN -->
+  <div class="tabs-navigation mb-4">
+    <button 
+      class="tab-btn" 
+      [class.active]="pestanaActiva === 'tradicionales'"
+      (click)="cambiarPestana('tradicionales')">
+      <i class="fas fa-file-excel me-2"></i> Encuestas Servicio / Venta ({{ encuestasTradicionales.length }})
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="pestanaActiva === 'qr'"
+      (click)="cambiarPestana('qr')">
+      <i class="fas fa-qrcode me-2"></i> Encuestas QR ({{ encuestasQr.length }})
+    </button>
+  </div>
+
+  <!-- PESTAÑA 1: ENCUESTAS TRADICIONALES -->
+  <div *ngIf="pestanaActiva === 'tradicionales'">
+    <div class="listar-header">
+      <div>
+        <h1>Encuestas de Servicio / Venta</h1>
+        <p class="header-subtitle mt-1 mb-0">Visualice las encuestas generadas a partir de la data exportada</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-refresh" (click)="cargarEncuestas()">
+          <i class="fas fa-sync-alt me-1"></i> Actualizar
+        </button>
+        <button class="btn-export" (click)="exportarExcel()">
+          <i class="fas fa-file-excel me-1"></i> Exportar Excel
+        </button>
+      </div>
     </div>
-    <div class="header-actions">
-      <button class="btn-refresh" (click)="cargarEncuestas()">
-        <i class="fas fa-sync-alt me-1"></i> Actualizar
-      </button>
-      <button class="btn-export" (click)="exportarExcel()">
-        <i class="fas fa-file-excel me-1"></i> Exportar Excel
-      </button>
+
+    <!-- FILTROS -->
+    <div class="filtros-container">
+      <div class="filtros-box">
+        <input 
+          type="text" 
+          class="filtro-input"
+          placeholder="Buscar por cliente o email..." 
+          [(ngModel)]="filtroTexto"
+          (input)="filtrarEncuestas()"
+        >
+        <select class="filtro-select" [(ngModel)]="filtroMarca" (change)="filtrarEncuestas()">
+          <option value="">Todas las marcas</option>
+          <option *ngFor="let marca of marcas" [value]="marca.nombre">
+            {{ marca.nombre }}
+          </option>
+        </select>
+        <select class="filtro-select" [(ngModel)]="filtroEstado" (change)="filtrarEncuestas()">
+          <option value="">Todos los estados</option>
+          <option value="ENVIADA">Enviada</option>
+          <option value="RESPONDIDA">Respondida</option>
+          <option value="EXPIRADA">Expirada</option>
+        </select>
+        <button class="btn-clear" (click)="limpiarFiltros()">
+          <i class="fas fa-eraser me-1"></i> Limpiar
+        </button>
+      </div>
+    </div>
+
+    <!-- TABLA TRADICIONAL CON EMAIL TOTALMENTE SEPARADO -->
+    <div *ngIf="!loading && !error" class="tabla-container">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Marca</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let encuesta of encuestasFiltradas">
+              <td>
+                <div class="cliente-info" style="display: flex; flex-direction: column;">
+                  <strong style="display: block; color: #212529;">{{ encuesta.clienteNombre }}</strong>
+                  <span style="display: block; color: #6C757D; font-size: 0.78rem;">{{ encuesta.clienteEmail || 'Sin correo' }}</span>
+                </div>
+              </td>
+              <td>{{ encuesta.marcaNombre }}</td>
+              <td>
+                <span class="badge" [class]="getEstadoClass(encuesta.estado)">
+                  {{ getEstadoTexto(encuesta.estado) }}
+                </span>
+              </td>
+              <td>{{ formatFecha(encuesta.fechaEnvio) }}</td>
+              <td>
+                <div class="btn-actions">
+                  <button class="btn-sm btn-ver" (click)="verDetallesYPlantilla(encuesta)">
+                    <i class="fas fa-eye me-1"></i> Ver / Plantilla
+                  </button>
+                  <button class="btn-sm btn-copiar" (click)="copiarLink(encuesta.token, encuesta.clienteNombre)">
+                    <i class="fas fa-copy me-1"></i> Link
+                  </button>
+                  <button class="btn-sm btn-eliminar" (click)="eliminarEncuesta(encuesta)">
+                    <i class="fas fa-trash-alt me-1"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="encuestasFiltradas.length === 0">
+              <td colspan="5" class="sin-resultados">
+                <p>No hay encuestas tradicionales disponibles</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tabla-footer" *ngIf="encuestasFiltradas.length > 0">
+        <span>Total: {{ encuestasFiltradas.length }} encuestas</span>
+      </div>
     </div>
   </div>
 
-  <!-- FILTROS -->
-  <div class="filtros-container">
-    <div class="filtros-box">
-      <input 
-        type="text" 
-        class="filtro-input"
-        placeholder="Buscar por cliente o email..." 
-        [(ngModel)]="filtroTexto"
-        (input)="filtrarEncuestas()"
-      >
-      <select class="filtro-select" [(ngModel)]="filtroMarca" (change)="filtrarEncuestas()">
-        <option value="">Todas las marcas</option>
-        <option *ngFor="let marca of marcas" [value]="marca.nombre">
-          {{ marca.nombre }}
-        </option>
-      </select>
-      <select class="filtro-select" [(ngModel)]="filtroEstado" (change)="filtrarEncuestas()">
-        <option value="">Todos los estados</option>
-        <option value="ENVIADA">Enviada</option>
-        <option value="RESPONDIDA">Respondida</option>
-        <option value="EXPIRADA">Expirada</option>
-      </select>
-      <button class="btn-clear" (click)="limpiarFiltros()">
-        <i class="fas fa-eraser me-1"></i> Limpiar
-      </button>
+  <!-- PESTAÑA 2: ENCUESTAS QR -->
+  <div *ngIf="pestanaActiva === 'qr'">
+    <div class="listar-header">
+      <div>
+        <h1>Encuestas por Código QR</h1>
+        <p class="header-subtitle mt-1 mb-0">Listado de respuestas capturadas desde el formulario QR en sucursal</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-refresh" (click)="cargarEncuestas()">
+          <i class="fas fa-sync-alt me-1"></i> Actualizar
+        </button>
+        <button class="btn-export" (click)="exportarExcelQr()">
+          <i class="fas fa-file-excel me-1"></i> Exportar Excel QR
+        </button>
+      </div>
+    </div>
+
+    <!-- FILTROS QR -->
+    <div class="filtros-container">
+      <div class="filtros-box">
+        <input 
+          type="text" 
+          class="filtro-input"
+          placeholder="Buscar por cliente o teléfono..." 
+          [(ngModel)]="filtroTextoQr"
+          (input)="filtrarEncuestasQr()"
+        >
+        <select class="filtro-select" [(ngModel)]="filtroMarcaQr" (change)="filtrarEncuestasQr()">
+          <option value="">Todas las agencias</option>
+          <option *ngFor="let marca of marcas" [value]="marca.nombre">
+            {{ marca.nombre }}
+          </option>
+        </select>
+        <button class="btn-clear" (click)="limpiarFiltrosQr()">
+          <i class="fas fa-eraser me-1"></i> Limpiar
+        </button>
+      </div>
+    </div>
+
+    <!-- TABLA QR -->
+    <div *ngIf="!loading && !error" class="tabla-container">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Teléfono</th>
+              <th>Agencia</th>
+              <th>Fecha</th>
+              <th>Experiencia</th>
+              <th>Atención</th>
+              <th>Tiempo Ad.</th>
+              <th>¿Recomienda?</th>
+              <th>Comentarios / Observaciones</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let enc of encuestasQrFiltradas">
+              <td><strong>{{ obtenerRespuestaTexto(enc, 1) }}</strong></td>
+              <td>{{ obtenerTelefono(enc) }}</td>
+              <td>{{ enc.marcaNombre }}</td>
+              <td>{{ formatFecha(enc.fechaRespuesta || enc.fechaEnvio) }}</td>
+              <td><span class="calificacion">{{ obtenerRespuestaTexto(enc, 2) }}</span></td>
+              <td><span class="calificacion">{{ obtenerRespuestaTexto(enc, 3) }}</span></td>
+              <td>
+                <span class="badge" 
+                      [class.badge-respondida]="obtenerRespuestaTexto(enc, 4) === 'SÍ'" 
+                      [class.badge-expirada]="obtenerRespuestaTexto(enc, 4) === 'NO'">
+                  {{ obtenerRespuestaTexto(enc, 4) }}
+                </span>
+              </td>
+              <td>
+                <span class="badge" 
+                      [class.badge-respondida]="obtenerRespuestaTexto(enc, 5) === 'SÍ'" 
+                      [class.badge-expirada]="obtenerRespuestaTexto(enc, 5) === 'NO'">
+                  {{ obtenerRespuestaTexto(enc, 5) }}
+                </span>
+              </td>
+
+              <!-- CELDA DESPLEGABLE -->
+              <td style="max-width: 250px;">
+                <div *ngIf="obtenerComentario(enc) as comentario; else sinComentarios">
+                  <span *ngIf="comentario.length <= 35" style="font-style: italic; color: #495057;">
+                    {{ comentario }}
+                  </span>
+                  <div *ngIf="comentario.length > 35">
+                    <span style="font-style: italic; color: #495057; display: block; word-break: break-word;">
+                      {{ isComentarioExpandido(enc.id) ? comentario : (comentario | slice:0:35) + '...' }}
+                    </span>
+                    <button 
+                      type="button" 
+                      class="btn-toggle-comentario"
+                      (click)="toggleComentario(enc.id)">
+                      <i class="fas" [class.fa-chevron-down]="!isComentarioExpandido(enc.id)" [class.fa-chevron-up]="isComentarioExpandido(enc.id)"></i>
+                      {{ isComentarioExpandido(enc.id) ? 'Ver menos' : 'Ver más' }}
+                    </button>
+                  </div>
+                </div>
+                <ng-template #sinComentarios>
+                  <span style="color: #ADB5BD; font-style: italic;">Sin comentarios</span>
+                </ng-template>
+              </td>
+
+              <td>
+                <div class="btn-actions">
+                  <button class="btn-sm btn-eliminar" (click)="eliminarEncuestaQr(enc)">
+                    <i class="fas fa-trash-alt me-1"></i> Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="encuestasQrFiltradas.length === 0">
+              <td colspan="10" class="sin-resultados">
+                <p>No hay encuestas QR registradas</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tabla-footer" *ngIf="encuestasQrFiltradas.length > 0">
+        <span>Total QR: {{ encuestasQrFiltradas.length }} encuestas</span>
+      </div>
     </div>
   </div>
 
-  <!-- LOADING -->
   <div *ngIf="loading" class="cargando">
-    <p><i class="fas fa-spinner fa-spin me-2"></i> Cargando encuestas...</p>
+    <p><i class="fas fa-spinner fa-spin me-2"></i> Cargando información...</p>
   </div>
-
-  <!-- ERROR -->
   <div *ngIf="error" class="error-mensaje">
     <p><i class="fas fa-exclamation-triangle me-2"></i> {{ error }}</p>
   </div>
-
-  <!-- TABLA DE RESULTADOS -->
-  <div *ngIf="!loading && !error" class="tabla-container">
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Cliente</th>
-            <th>Marca</th>
-            <th>Estado</th>
-            <th>Fecha</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let encuesta of encuestasFiltradas">
-            <td>
-              <div class="cliente-info">
-                <strong>{{ encuesta.clienteNombre }}</strong>
-                <span>{{ encuesta.clienteEmail }}</span>
-              </div>
-            </td>
-            <td>{{ encuesta.marcaNombre }}</td>
-            <td>
-              <span class="badge" [class]="getEstadoClass(encuesta.estado)">
-                {{ getEstadoTexto(encuesta.estado) }}
-              </span>
-            </td>
-            <td>{{ formatFecha(encuesta.fechaEnvio) }}</td>
-            <td>
-              <div class="btn-actions">
-                <button class="btn-sm btn-ver" (click)="verDetallesYPlantilla(encuesta)">
-                  <i class="fas fa-eye me-1"></i> Ver / Plantilla
-                </button>
-
-                <button class="btn-sm btn-copiar" (click)="copiarLink(encuesta.token, encuesta.clienteNombre)">
-                  <i class="fas fa-copy me-1"></i> Link
-                </button>
-
-                <button class="btn-sm btn-eliminar" (click)="eliminarEncuesta(encuesta)">
-                  <i class="fas fa-trash-alt me-1"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-
-          <tr *ngIf="encuestasFiltradas.length === 0">
-            <td colspan="5" class="sin-resultados">
-              <p>No hay encuestas disponibles</p>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="tabla-footer" *ngIf="encuestasFiltradas.length > 0">
-      <span>Total: {{ encuestasFiltradas.length }} encuestas</span>
-    </div>
-  </div>
 </div>
 
-<!-- MODAL UNIFICADO: DETALLES + PLANTILLA DE WHATSAPP -->
+<!-- MODAL UNIFICADO -->
 <div class="modal-overlay" *ngIf="mostrarDetalles" (click)="cerrarDetalles()">
   <div class="modal-card" style="max-width: 700px; max-height: 90vh; overflow-y: auto;" (click)="$event.stopPropagation()">
     <div class="modal-head">
@@ -124,7 +262,6 @@
     </div>
     
     <div class="modal-body" *ngIf="encuestaSeleccionada">
-      <!-- SECCIÓN 1: DETALLES DE LA ENCUESTA -->
       <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 20px;">
         <div class="detail-row"><b>Cliente:</b> {{ encuestaSeleccionada.clienteNombre }}</div>
         <div class="detail-row"><b>Email:</b> {{ encuestaSeleccionada.clienteEmail || 'Sin correo' }}</div>
@@ -149,19 +286,8 @@
         </div>
       </div>
 
-      <!-- SECCIÓN RESPUESTAS (SI TIENE) -->
-      <div class="respuestas-box" *ngIf="encuestaSeleccionada.respuestas && encuestaSeleccionada.respuestas.length > 0" style="margin-bottom: 20px;">
-        <h4>Respuestas del Cliente</h4>
-        <div *ngFor="let respuesta of encuestaSeleccionada.respuestas" class="respuesta-line">
-          <p><b>{{ respuesta.preguntaTexto || 'Pregunta ' + respuesta.preguntaId }}</b></p>
-          <p>{{ respuesta.valorTexto || respuesta.valorNumerico || respuesta.opcionTexto || 'Sin respuesta' }}</p>
-        </div>
-      </div>
-
-      <!-- SECCIÓN 2: PLANTILLA DE WHATSAPP -->
       <div style="border-top: 2px solid #C5A059; padding-top: 15px;">
         <div class="plantilla-box">
-          <!-- VISTA PREVIA Y BARRA DE ACCIONES DE COPIADO JUNTAS -->
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 12px; padding: 10px; background-color: #f8f9fa; border-radius: 6px; border: 1px solid #e9ecef; flex-wrap: wrap;">
             <div style="display: flex; align-items: center; gap: 12px;">
               <img 
@@ -174,7 +300,6 @@
               </span>
             </div>
 
-            <!-- BOTONES DE COPIAR JUNTOS -->
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <button 
                 class="btn-copy" 
@@ -194,7 +319,6 @@
             </div>
           </div>
 
-          <!-- TEXTAREA DE LA PLANTILLA -->
           <textarea readonly rows="10" class="plantilla-textarea" style="width: 100%; resize: vertical;">{{ plantillaActual }}</textarea>
         </div>
       </div>
