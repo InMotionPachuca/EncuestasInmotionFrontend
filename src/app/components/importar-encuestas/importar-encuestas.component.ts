@@ -277,15 +277,15 @@ export class ImportarEncuestasComponent {
 
     if (this.tipoPlantilla === 'VENTA') {
       plantilla += `Buen día, Sr./Srita. *${nombreCliente}*.\n`;
-      plantilla += `Mi nombre es *${nombreAsesor}* y formo parte del área de Satisfacción a Clientes de *${nombreMarca}*. ${this.emojis.manosArriba}\n`;
+      plantilla += `Mi nombre es *Cecilia Juárez* y formo parte del área de Satisfacción a Clientes de *${nombreMarca}*. ${this.emojis.manosArriba}\n`;
       plantilla += `Agradecemos sinceramente el tiempo que nos brindó al visitarnos. Fue un placer atenderle y acompañarle durante la adquisición de su ${vehiculoCompleto}.\n`;
       plantilla += `Nos gustaría conocer su opinión sobre la atención recibida tanto por parte de nuestra agencia como de su asesor *${nombreAsesor}*. Por ello, le invitamos a responder nuestra encuesta de satisfacción, la cual le tomará solo unos minutos.\n`;
-      plantilla += `Para participar, por favor haga clic en el siguiente enlace:\n`;
+      plantilla += `Para participar, por favor haga click en el siguiente enlace:\n`;
       plantilla += `${this.emojis.punto} ${link}\n`;
       plantilla += `Muchas gracias por su tiempo y confianza.\n`;
       plantilla += `¡Le damos la más cordial bienvenida a la familia *${nombreMarca}*! ${this.emojis.gracias}${this.emojis.auto}`;
     } else {
-      plantilla += `Buen día, Sr./Srita. *${nombreCliente}* Mi nombre es *${nombreAsesor}* de Satisfacción a Clientes de *${nombreMarca}*${this.emojis.manosArriba}\n`;
+      plantilla += `Buen día, Sr./Srita. *${nombreCliente}* Mi nombre es *Cecilia Juárez* de Satisfacción a Clientes de *${nombreMarca}*${this.emojis.manosArriba}\n`;
       plantilla += `Agradecemos sinceramente el tiempo que nos brindó al visitarnos en nuestra agencia, fue un gusto atenderle y acompañarle durante su estancia.\n`;
       plantilla += `Nos gustaría conocer su opinión respecto al servicio realizado a su *${vehiculoCompleto}* el día *${fechaVisita}*.${this.emojis.auto}${this.emojis.herramienta}\n`;
       plantilla += `Lo invitamos a responder nuestra encuesta de satisfacción; le tomará solo unos minutos.\n`;
