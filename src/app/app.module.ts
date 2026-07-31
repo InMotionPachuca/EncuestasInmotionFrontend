@@ -17,6 +17,9 @@ import { ContestarEncuestaManualComponent } from './components/contestar-encuest
 import { AsesoresComponent } from './components/asesores/asesores.component'; 
 import { EncuestaService } from './services/encuesta.service';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
+import { EncuestaEstaticaComponent } from './components/encuesta-estatica/encuesta-estatica.component';
+import { GenerarQrComponent } from './components/generar-qr/generar-qr.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 @NgModule({
   declarations: [
@@ -30,7 +33,9 @@ import { UsuariosComponent } from './components/usuarios/usuarios.component';
     ImportarEncuestasComponent,
     ContestarEncuestaManualComponent,
     AsesoresComponent,
-    UsuariosComponent
+    UsuariosComponent,
+    EncuestaEstaticaComponent,
+    GenerarQrComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +43,8 @@ import { UsuariosComponent } from './components/usuarios/usuarios.component';
     ReactiveFormsModule,
     FormsModule,
     CommonModule,
-    AppRoutingModule
+    AppRoutingModule,
+    QRCodeModule
   ],
   providers: [EncuestaService],
   bootstrap: [AppComponent]

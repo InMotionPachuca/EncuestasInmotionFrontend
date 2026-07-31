@@ -9,7 +9,9 @@ import { ImportarEncuestasComponent } from './components/importar-encuestas/impo
 import { ContestarEncuestaManualComponent } from './components/contestar-encuesta/contestar-encuesta-manual.component';
 import { AsesoresComponent } from './components/asesores/asesores.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
-import { AdminGuard } from './guards/admin.guard'; // <-- Importación agregada
+import { AdminGuard } from './guards/admin.guard';
+import { EncuestaEstaticaComponent } from './components/encuesta-estatica/encuesta-estatica.component';
+import { GenerarQrComponent } from './components/generar-qr/generar-qr.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -24,8 +26,10 @@ const routes: Routes = [
   { 
     path: 'usuarios', 
     component: UsuariosComponent,
-    canActivate: [AdminGuard] // <-- Protección por Guard agregada
-  }
+    canActivate: [AdminGuard]
+  },
+  { path: 'evaluar', component: EncuestaEstaticaComponent },
+  { path: 'generar-qr', component: GenerarQrComponent }
 ];
 
 @NgModule({

@@ -1,0 +1,33 @@
+<div class="container my-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-dark text-white d-flex align-items-center justify-content-between py-3">
+      <h5 class="mb-0 text-gold"><i class="fas fa-qrcode me-2"></i>Código QR Estático de Satisfacción</h5>
+    </div>
+    <div class="card-body text-center p-4">
+      <p class="text-muted mb-4">
+        Imprime este código QR y colócalo en recepción, salas de espera o módulos de entrega.<br>
+        Los clientes podrán escanearlo desde cualquier teléfono para responder la encuesta sin vencer.
+      </p>
+
+      <div class="d-flex justify-content-center mb-4">
+        <div class="qrcode-container p-3 bg-white border rounded shadow-sm">
+          <qrcode [qrdata]="qrUrl" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <small class="text-secondary d-block mb-1">Enlace directo al que apunta el QR:</small>
+        <code class="fs-6 bg-light p-2 rounded border">{{ qrUrl }}</code>
+      </div>
+
+      <div class="d-flex justify-content-center gap-2">
+        <button class="btn btn-warning fw-bold text-dark px-4" (click)="descargarQR()">
+          <i class="fas fa-download me-2"></i> Descargar Imagen QR (PNG)
+        </button>
+        <a [href]="qrUrl" target="_blank" class="btn btn-outline-secondary">
+          <i class="fas fa-external-link-alt me-2"></i> Probar Encuesta
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
