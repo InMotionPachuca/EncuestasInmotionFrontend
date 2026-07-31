@@ -46,6 +46,19 @@ export class AuthService {
     });
   }
 
+  // Comprueba si existe un token en localStorage (sesión activa)
+  isLoggedIn(): boolean {
+    const token = localStorage.getItem('token');
+    return !!token;
+  }
+
+  // Cierra la sesión y limpia el almacenamiento
+  logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('userEmail');
+  }
+
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.authUrl}/login`, credentials);
   }

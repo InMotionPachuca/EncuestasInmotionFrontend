@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
+// Componentes
 import { LoginComponent } from './components/login/login.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CrearEncuestaComponent } from './components/crear-encuesta/crear-encuesta.component';
@@ -9,31 +11,38 @@ import { ImportarEncuestasComponent } from './components/importar-encuestas/impo
 import { ContestarEncuestaManualComponent } from './components/contestar-encuesta/contestar-encuesta-manual.component';
 import { AsesoresComponent } from './components/asesores/asesores.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
-import { AdminGuard } from './guards/admin.guard';
 import { EncuestaEstaticaComponent } from './components/encuesta-estatica/encuesta-estatica.component';
 import { GenerarQrComponent } from './components/generar-qr/generar-qr.component';
 import { DashboardQrComponent } from './components/dashboard-qr/dashboard-qr.component'; 
 import { ListarEncuestasQrComponent } from './components/listar-encuestas-qr/listar-encuestas-qr.component';
 
+// Guards funcionales
+import { authGuard, adminGuard } from './guards/admin.guard';
+
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
+
+  // --- RUTAS PÚBLICAS ---
   { path: 'login', component: LoginComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'dashboard-qr', component: DashboardQrComponent }, 
-  { path: 'crear', component: CrearEncuestaComponent },
-  { path: 'responder/:token', component: ResponderEncuestaComponent },
-  { path: 'listar', component: ListarEncuestasComponent },
-  { path: 'encuestas-qr', component: ListarEncuestasQrComponent },
-  { path: 'importar', component: ImportarEncuestasComponent },
-  { path: 'contestar-manual', component: ContestarEncuestaManualComponent },
-  { path: 'asesores', component: AsesoresComponent },
-  { 
-    path: 'usuarios', 
-    component: UsuariosComponent,
-    canActivate: [AdminGuard]
-  },
   { path: 'evaluar', component: EncuestaEstaticaComponent },
-  { path: 'generar-qr', component: GenerarQrComponent }
+  { path: 'responder/:token', component: ResponderEncuestaComponent },
+
+  // --- RUTAS PROTEGIDAS (Cualquier usuario logueado) ---
+  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+  { path: 'dashboard-qr', component: DashboardQrComponent, canActivate: [authGuard] },
+  { path: 'listar', component: ListarEncuestasComponent, canActivate: [authGuard] },
+  { path: 'encuestas-qr', component: ListarEncuestasQrComponent, canActivate: [authGuard] },
+  { path: 'contestar-manual', component: ContestarEncuestaManualComponent, canActivate: [authGuard] },
+
+  // --- RUTAS PROTEGIDAS EXCLUSIVAS DE ADMIN (oolguin@toyotapachuca.com.mx) ---
+  { path: 'asesores', component: AsesoresComponent, canActivate: [adminGuard] },
+  { path: 'crear', component: CrearEncuestaComponent, canActivate: [adminGuard] },
+  { path: 'importar', component: ImportarEncuestasComponent, canActivate: [adminGuard] },
+  { path: 'usuarios', component: UsuariosComponent, canActivate: [adminGuard] },
+  { path: 'generar-qr', component: GenerarQrComponent, canActivate: [adminGuard] },
+
+  // --- CUALQUIER OTRA RUTA INEXISTENTE O NO AUTORIZADA ---
+  { path: '**', redirectTo: '/login' }
 ];
 
 @NgModule({

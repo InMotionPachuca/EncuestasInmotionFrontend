@@ -1,20 +1,39 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AdminGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+/**
+ * Guard para proteger rutas que requieren cualquier usuario logueado
+ */
+export const authGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  canActivate(): boolean {
-    if (this.authService.isAdmin()) {
-      return true; // Acceso permitido a oolguin@toyotapachuca.com.mx
-    }
-
-    // Redirige al Dashboard si intenta ingresar otro usuario
-    this.router.navigate(['/dashboard']);
-    return false;
+  if (authService.isLoggedIn()) {
+    return true; // Permite el acceso
   }
-}
+
+  // Si no ha iniciado sesión, redirige al login
+  return router.createUrlTree(['/login']);
+};
+
+/**
+ * Guard para proteger rutas exclusivas del Administrador (oolguin@toyotapachuca.com.mx)
+ */
+export const adminGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  // Valida que el email guardado corresponda al admin
+  if (authService.isAdmin()) {
+    return true; // Permite el acceso
+  }
+
+  // Si está logueado pero no es Admin, lo manda al Dashboard
+  if (authService.isLoggedIn()) {
+    return router.createUrlTree(['/dashboard']);
+  }
+
+  // Si no está ni logueado, lo manda al Login
+  return router.createUrlTree(['/login']);
+};
