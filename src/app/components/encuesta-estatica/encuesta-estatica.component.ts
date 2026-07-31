@@ -25,6 +25,7 @@ export class EncuestaEstaticaComponent implements OnInit {
       telefono: [''],
       experiencia: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
       atencion: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
+      tiempoAdecuado: ['', [Validators.required]],
       recomienda: ['', [Validators.required]],
       comentarios: ['']
     });
