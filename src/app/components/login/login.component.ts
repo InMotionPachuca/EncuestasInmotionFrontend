@@ -13,7 +13,7 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   loading = false;
   error = '';
-  mostrarPassword = false; // <-- Controla el tipo de input ('text' o 'password')
+  mostrarPassword = false; 
 
   readonly DOMINIOS_PERMITIDOS = [
     '@inmotion.com',
