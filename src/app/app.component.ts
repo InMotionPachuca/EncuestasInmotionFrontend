@@ -15,13 +15,14 @@ export class AppComponent {
   // Todos los ítems de navegación marcando cuáles requieren ser Admin
   private todosLosMenuItems = [
     { route: '/dashboard', label: 'CXI', icon: 'fas fa-chart-pie', badge: null, badgeClass: '', adminOnly: false },
+    { route: '/dashboard-qr', label: 'CXI QR', icon: 'fas fa-qrcode', badge: 'Nuevo', badgeClass: 'bg-warning text-dark', adminOnly: false },
     { route: '/usuarios', label: 'Usuarios', icon: 'fas fa-users-cog', badge: null, badgeClass: '', adminOnly: true },
     { route: '/asesores', label: 'Asesores', icon: 'fas fa-user-tie', badge: null, badgeClass: '', adminOnly: false },
     { route: '/crear', label: 'Crear Encuesta', icon: 'fas fa-plus-circle', badge: null, badgeClass: 'bg-danger', adminOnly: false },
     { route: '/listar', label: 'Encuestas', icon: 'fas fa-list-alt', badge: null, badgeClass: '', adminOnly: false },
     { route: '/importar', label: 'Importar Datos', icon: 'fas fa-file-upload', badge: null, badgeClass: '', adminOnly: false },
     { route: '/contestar-manual', label: 'Contestar Manual', icon: 'fas fa-edit', badge: null, badgeClass: '', adminOnly: false },
-    { route: '/generar-qr', label: 'Encuesta QR Estática', icon: 'fas fa-qrcode', badge: 'Nuevo', badgeClass: 'bg-warning text-dark', adminOnly: false } // 👈 MÓDULO NUEVO AGREGADO
+    { route: '/generar-qr', label: 'Generar QR', icon: 'fas fa-qrcode', badge: null, badgeClass: '', adminOnly: false }
   ];
 
   mostrarMenuUsuario = false;
@@ -49,16 +50,15 @@ export class AppComponent {
   // Getter que filtra las opciones según quien haya iniciado sesión
   get menuItems() {
     if (this.authService.isAdmin()) {
-      return this.todosLosMenuItems; // oolguin@toyotapachuca.com.mx ve todo
+      return this.todosLosMenuItems;
     }
-    // Cualquier otro correo NO verá la opción de Usuarios
     return this.todosLosMenuItems.filter(item => !item.adminOnly);
   }
 
   // RUTAS PÚBLICAS SIN NAVBAR NI SIDEBAR
   isPublicRoute(): boolean {
     const url = this.router.url;
-    return url.includes('/login') || url.includes('/responder') || url.includes('/evaluar'); // 👈 RUTA PÚBLICA /evaluar AGREGADA
+    return url.includes('/login') || url.includes('/responder') || url.includes('/evaluar');
   }
 
   toggleUserMenu() {

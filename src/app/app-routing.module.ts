@@ -12,11 +12,13 @@ import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { AdminGuard } from './guards/admin.guard';
 import { EncuestaEstaticaComponent } from './components/encuesta-estatica/encuesta-estatica.component';
 import { GenerarQrComponent } from './components/generar-qr/generar-qr.component';
+import { DashboardQrComponent } from './components/dashboard-qr/dashboard-qr.component'; 
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'dashboard-qr', component: DashboardQrComponent }, 
   { path: 'crear', component: CrearEncuestaComponent },
   { path: 'responder/:token', component: ResponderEncuestaComponent },
   { path: 'listar', component: ListarEncuestasComponent },

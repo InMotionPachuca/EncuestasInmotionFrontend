@@ -78,7 +78,7 @@ export class EncuestaEstaticaComponent implements OnInit {
       serie: 'QR-GENERAL',
       asesor: 'Atención General QR',
       marcaId: Number(formValue.marcaId),
-      tipo: 'POSTVENTA',
+      tipo: 'QR', // Distintivo para separar del dashboard principal
       respuestas: [
         { preguntaId: 1, valorTexto: nombreCompleto, valorNumerico: null, opcionId: null },
         { preguntaId: 2, valorTexto: '', valorNumerico: formValue.experiencia, opcionId: null },

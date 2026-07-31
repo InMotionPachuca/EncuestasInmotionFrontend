@@ -101,15 +101,38 @@
 }
 
 .btn-pdf {
-  background: #C5A059;
-  border: none;
-  color: #FFFFFF;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', sans-serif;
+  background: transparent;
+  border: 1px solid #DC3545;
+  color: #DC3545;
 }
 
 .btn-pdf:hover {
-  background: #9A7B3E;
+  background: #DC3545;
+  color: #FFFFFF;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+}
+
+.btn-pdf:active {
+  transform: translateY(0);
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
 }
 
 /* ========== FILTROS ========== */

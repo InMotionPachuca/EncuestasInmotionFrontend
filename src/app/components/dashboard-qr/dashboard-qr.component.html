@@ -1,0 +1,120 @@
+<div class="dashboard-container">
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <div>
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <h1>CXI QR</h1>
+      </div>
+      <p class="header-subtitle mt-1 mb-0" style="font-size:0.9rem;">
+        Módulo independiente de atención y satisfacción de clientes por código QR
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-refresh" (click)="refrescar()">
+        <i class="fas fa-sync-alt me-1" [class.spinning]="refrescando"></i> Actualizar
+      </button>
+      <button class="btn-pdf" (click)="exportarPDF()">
+        <i class="fas fa-file-pdf me-1"></i> PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filtros-container">
+    <div class="filtros-left">
+      <span class="filtros-label">Filtrar por Agencia:</span>
+      <select class="filtro-select-sm" [(ngModel)]="filtroMarca" (change)="aplicarFiltros()">
+        <option value="">Todas las Agencias</option>
+        <option *ngFor="let m of marcas" [value]="m.id">{{ m.nombre }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- METRICAS DE ENCUESTAS QR -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon"><i class="fas fa-qrcode"></i></div>
+      <div class="stat-content">
+        <h3>Respuestas QR</h3>
+        <p class="stat-number">{{ totalRespuestas }}</p>
+      </div>
+    </div>
+    <div class="stat-card tasa">
+      <div class="stat-icon"><i class="fas fa-star"></i></div>
+      <div class="stat-content">
+        <h3>Prom. Experiencia</h3>
+        <p class="stat-number">{{ promedioExperiencia }} / 5</p>
+      </div>
+    </div>
+    <div class="stat-card respondidas">
+      <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+      <div class="stat-content">
+        <h3>Prom. Atención</h3>
+        <p class="stat-number">{{ promedioAtencion }} / 5</p>
+      </div>
+    </div>
+    <div class="stat-card pendientes">
+      <div class="stat-icon"><i class="fas fa-thumbs-up"></i></div>
+      <div class="stat-content">
+        <h3>% Recomienda</h3>
+        <p class="stat-number">{{ porcentajeRecomienda }}%</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRÁFICO QR -->
+  <div class="graficos-container">
+    <div class="grafico-card">
+      <h3 class="grafico-title">
+        <span class="title-icon"><i class="fas fa-chart-pie me-1"></i></span> Encuestas QR por Agencia
+      </h3>
+      <div class="grafico-wrapper">
+        <canvas #graficoMarcasQr></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA DE ENCUESTAS RESPONDIDAS POR QR -->
+  <div class="encuestas-recientes">
+    <h2 class="marcas-title"><i class="fas fa-list me-2"></i>Listado de Encuestas QR</h2>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Teléfono</th>
+            <th>Experiencia</th>
+            <th>Atención</th>
+            <th>¿Recomienda?</th>
+            <th>Comentarios / Sugerencias</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let enc of encuestasFiltradas">
+            <td>
+              <div class="cliente-info">
+                <strong>{{ obtenerRespuestaTexto(enc, 1) }}</strong>
+              </div>
+            </td>
+            <td>{{ enc.telefono || 'No proporcionado' }}</td>
+            <td><span class="calificacion">{{ obtenerRespuestaTexto(enc, 2) }}</span></td>
+            <td><span class="calificacion">{{ obtenerRespuestaTexto(enc, 3) }}</span></td>
+            <td>
+              <span class="badge" 
+                    [class.badge-respondida]="obtenerRespuestaTexto(enc, 4) === 'SÍ'" 
+                    [class.badge-expirada]="obtenerRespuestaTexto(enc, 4) === 'NO'">
+                {{ obtenerRespuestaTexto(enc, 4) }}
+              </span>
+            </td>
+            <td>
+              <span>{{ obtenerRespuestaTexto(enc, 5) }}</span>
+            </td>
+          </tr>
+          <tr *ngIf="encuestasFiltradas.length === 0">
+            <td colspan="6" class="sin-encuestas">No se han registrado encuestas QR para esta selección.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

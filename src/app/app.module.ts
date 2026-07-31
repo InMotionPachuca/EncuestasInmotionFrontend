@@ -19,6 +19,7 @@ import { EncuestaService } from './services/encuesta.service';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { EncuestaEstaticaComponent } from './components/encuesta-estatica/encuesta-estatica.component';
 import { GenerarQrComponent } from './components/generar-qr/generar-qr.component';
+import { DashboardQrComponent } from './components/dashboard-qr/dashboard-qr.component'; 
 import { QRCodeModule } from 'angularx-qrcode';
 
 @NgModule({
@@ -35,7 +36,8 @@ import { QRCodeModule } from 'angularx-qrcode';
     AsesoresComponent,
     UsuariosComponent,
     EncuestaEstaticaComponent,
-    GenerarQrComponent
+    GenerarQrComponent,
+    DashboardQrComponent 
   ],
   imports: [
     BrowserModule,

@@ -2,12 +2,14 @@ export interface Encuesta {
   id?: number;
   token: string;
   tipo: string;
+  serie?: string;
   estado: 'ENVIADA' | 'RESPONDIDA' | 'EXPIRADA';
   fechaEnvio: Date;
   fechaExpiracion?: Date;
   fechaRespuesta?: Date;
   clienteNombre: string;
   clienteEmail: string;
+  telefono?: string;
   asesor?: string;
   marcaNombre: string;
   marcaId?: number;
