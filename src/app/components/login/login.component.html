@@ -1,15 +1,19 @@
-<div class="login-wrapper">
+<div class="login-wrapper" style="position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background-color: #0A0B0E !important; background-image: radial-gradient(circle at 100% 0%, rgba(197, 160, 89, 0.35) 0%, transparent 55%), radial-gradient(circle at 0% 100%, rgba(138, 109, 59, 0.35) 0%, transparent 55%) !important; z-index: 99999 !important; display: flex !important; align-items: center !important; justify-content: center !important;">
   <div class="main-card">
     
-    <!-- LADO IZQUIERDO: DEGRADADO OSCURO + LOGO GRANDE BLANCO -->
+    <!-- LADO IZQUIERDO: FONDO OSCURO + LOGO GRANDE BLANCO FORZADO -->
     <div class="card-left">
       <div class="glow-top"></div>
       <div class="glow-bottom"></div>
 
       <div class="card-left-content">
-        <!-- LOGO PRINCIPAL -->
+        <!-- LOGO PRINCIPAL (FORZADO EN LÍNEA A BLANCO GIGANTE) -->
         <div class="logo-box">
-          <img src="assets/logos/inmotion.png" alt="Grupo InMotion" class="img-logo-main">
+          <img 
+            src="assets/logos/inmotion.png" 
+            alt="Grupo InMotion" 
+            style="height: 130px !important; width: auto !important; max-width: 90% !important; filter: brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0,0,0,0.5)) !important; display: block !important; margin-bottom: 20px !important;"
+          >
         </div>
 
         <div class="portal-badge-container">
@@ -25,7 +29,7 @@
       </div>
     </div>
 
-    <!-- LADO DERECHO: FORMULARIO + TEXTO CENTRADO Y GRANDE -->
+    <!-- LADO DERECHO: FORMULARIO + FOOTER CENTRADO Y MÁS GRANDE -->
     <div class="card-right">
       <div class="form-container">
         
@@ -35,13 +39,14 @@
         </div>
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          
           <div class="form-group">
             <label>Correo electrónico</label>
             <div class="input-wrapper">
               <input 
                 [type]="mostrarEmail ? 'text' : 'email'" 
                 formControlName="email" 
-                placeholder="oolguin@toyotapachuca.com.mx"
+                placeholder="correo@toyotapachuca.com.mx"
                 class="input-custom"
                 [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
               >
@@ -49,6 +54,9 @@
                 <i [class]="mostrarEmail ? 'fas fa-envelope-open' : 'fas fa-envelope'"></i>
               </button>
             </div>
+            <small *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-text">
+              Ingrese un correo institucional válido
+            </small>
           </div>
 
           <div class="form-group">
@@ -57,7 +65,7 @@
               <input 
                 [type]="mostrarPassword ? 'text' : 'password'" 
                 formControlName="password" 
-                placeholder="••••••••••••"
+                placeholder="Tu contraseña"
                 class="input-custom"
                 [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
               >
@@ -65,6 +73,9 @@
                 <i [class]="mostrarPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
               </button>
             </div>
+            <small *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-text">
+              La contraseña debe tener al menos 6 caracteres
+            </small>
           </div>
 
           <div *ngIf="error" class="error-message">
@@ -77,11 +88,11 @@
           </button>
         </form>
 
-        <!-- FOOTER DERECHO: MÁS GRANDE Y CENTRADO -->
-        <div class="card-right-footer">
-          <p class="footer-title">Atención a Clientes</p>
-          <p class="copyright">2026 - INMOTION AUTO PACHUCA</p>
-          <p class="version">Sistema de Control de Atención a Clientes v2.0</p>
+        <!-- FOOTER DERECHO: TEXTO CENTRADO Y DE MAYOR TAMAÑO -->
+        <div class="card-right-footer" style="margin-top: 32px !important; padding-top: 20px !important; border-top: 1px solid #E5E7EB !important; text-align: center !important; width: 100% !important;">
+          <p class="footer-title" style="color: #9A7B3E !important; font-size: 1.05rem !important; font-weight: 700 !important; letter-spacing: 0.3px !important; margin-bottom: 6px !important; display: block !important;">Atención a Clientes</p>
+          <p class="copyright" style="font-size: 0.85rem !important; color: #4B5563 !important; font-weight: 600 !important; margin: 4px 0 !important; display: block !important;">2026 - INMOTION AUTO PACHUCA</p>
+          <p class="version" style="font-size: 0.78rem !important; color: #9A7B3E !important; font-weight: 500 !important; margin: 0 !important; display: block !important;">Sistema de Control de Atención a Clientes v2.0</p>
         </div>
 
       </div>
