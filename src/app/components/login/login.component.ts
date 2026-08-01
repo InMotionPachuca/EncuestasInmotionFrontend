@@ -13,7 +13,10 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   loading = false;
   error = '';
-  mostrarPassword = false; 
+  
+  // Toggles de visibilidad
+  mostrarPassword = false;
+  mostrarEmail = false;
 
   readonly DOMINIOS_PERMITIDOS = [
     '@inmotion.com',
@@ -33,9 +36,12 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  // Alterna la visibilidad de la contraseña al hacer clic en el ojito
   toggleVerPassword(): void {
     this.mostrarPassword = !this.mostrarPassword;
+  }
+
+  toggleVerEmail(): void {
+    this.mostrarEmail = !this.mostrarEmail;
   }
 
   private esDominioValido(email: string): boolean {

@@ -208,3 +208,70 @@ table th, table td {
     --shadow-hover: 0 6px 20px rgba(197, 160, 89, 0.10);
   }
 }
+
+/* ============================================
+   FORZAR ESTILOS DEL LOGIN (OVERRIDE GLOBAL)
+   ============================================ */
+
+/* 1. Fondo de pantalla completa garantizado */
+.login-wrapper {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: #0A0B0E !important;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.16) 0%, transparent 65%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 35px 35px, 35px 35px !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 2. LOGO IZQUIERDO: Gigante en Blanco Puro */
+.img-logo-main {
+  height: 140px !important;
+  width: auto !important;
+  max-width: 90% !important;
+  filter: brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0,0,0,0.5)) !important;
+  display: block !important;
+  margin: 0 auto 20px 0 !important;
+}
+
+/* 3. FOOTER DERECHO: Texto ampliado y perfectamente centrado */
+.card-right-footer {
+  margin-top: 32px !important;
+  padding-top: 20px !important;
+  border-top: 1px solid #E5E7EB !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.footer-title {
+  color: #9A7B3E !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.3px !important;
+  margin-bottom: 6px !important;
+  display: block !important;
+}
+
+.copyright {
+  font-size: 0.85rem !important;
+  color: #4B5563 !important;
+  font-weight: 600 !important;
+  margin: 4px 0 !important;
+  display: block !important;
+}
+
+.version {
+  font-size: 0.78rem !important;
+  color: #9A7B3E !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+  display: block !important;
+}

@@ -1,167 +1,170 @@
-/* ============================================
-   LOGIN - INMOTION / TOYOTA STYLE (DORADO & NEGRO)
-   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-.login-container {
-  display: flex;
-  min-height: 100vh;
-  background: #FFFFFF;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+/* ============================================
+   BACKGROUND GLOBAL FORZADO (PANTALLA COMPLETA)
+   ============================================ */
+.login-wrapper {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+  /* Sobrescribe el body de styles.css */
+  background-color: #0B0D12 !important;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.16) 0%, transparent 65%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 35px 35px, 35px 35px !important;
+  
+  z-index: 99999 !important;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
 }
 
 /* ============================================
-   LADO IZQUIERDO (NEGRO ELEGANTE Y DORADO)
+   TARJETA CONTENEDORA
    ============================================ */
-.login-left {
-  flex: 1.2;
+.main-card {
+  display: flex;
+  width: 100%;
+  max-width: 980px;
+  min-height: 560px;
+  background: #FFFFFF !important;
+  border-radius: 26px !important;
+  overflow: hidden !important;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 45px rgba(197, 160, 89, 0.12) !important;
+}
+
+/* ============================================
+   LADO IZQUIERDO: DEGRADADO Y LOGO GRANDE EN BLANCO
+   ============================================ */
+.card-left {
+  flex: 1.15;
+  background: linear-gradient(145deg, #07080A 0%, #15171D 50%, #4D3A19 100%) !important;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 50px 40px 70px;
-  background: linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 40%, #8A6D3B 100%);
-  position: relative;
+  padding: 45px 50px;
   overflow: hidden;
 }
 
-.login-left::before {
-  content: '';
+.glow-top {
   position: absolute;
-  top: -30%;
-  right: -20%;
-  width: 60%;
-  height: 80%;
-  background: radial-gradient(ellipse, rgba(197, 160, 89, 0.18) 0%, transparent 70%);
-  border-radius: 50%;
+  top: -20%;
+  right: -10%;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(197, 160, 89, 0.22) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-.login-left::after {
-  content: '';
+.glow-bottom {
   position: absolute;
   bottom: -20%;
   left: -10%;
-  width: 40%;
-  height: 50%;
-  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-  border-radius: 50%;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-.login-left-content {
-  max-width: 560px;
-  width: 100%;
-  color: white;
+.card-left-content {
   position: relative;
-  z-index: 1;
-}
-
-.logo-container {
-  margin-bottom: 30px;
-  text-align: left;
-}
-
-.logo-team-inmotion {
-  height: 100px;
-  width: auto;
-  max-width: 100%;
-  display: block;
-  filter: brightness(0) invert(1);
-}
-
-.login-left h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
+  z-index: 2;
   color: #FFFFFF;
-  margin-bottom: 5px;
-  letter-spacing: 1.5px;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.subtitle {
-  font-size: 1.1rem;
-  color: #C5A059; /* Dorado Principal */
-  font-weight: 600;
-  margin-bottom: 20px;
-  letter-spacing: 0.5px;
-}
-
-.description {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.75);
-  line-height: 1.7;
-  margin-bottom: 40px;
-}
-
-.brand-footer {
-  border-top: 1px solid rgba(197, 160, 89, 0.2);
-  padding-top: 25px;
-}
-
-.brand-logos {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-
-.footer-toyota {
-  height: 90px;
-  width: auto;
-  filter: brightness(0) invert(1);
-}
-
-.brand-text {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 300;
-  letter-spacing: 1px;
-}
-
-.copyright {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
-  margin: 3px 0;
-}
-
-.version {
-  font-size: 0.7rem;
-  color: rgba(197, 160, 89, 0.6);
-}
-
-/* ============================================
-   LADO DERECHO (TARJETA DE ACCESO)
-   ============================================ */
-.login-right {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 70px 40px 30px;
-  background: #FFFFFF;
-}
-
-.login-card {
-  max-width: 400px;
   width: 100%;
-  background: white;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  border-top: 4px solid #C5A059;
 }
 
-.login-card h2 {
-  font-size: 1.6rem;
-  color: #111111;
-  margin-bottom: 5px;
+.logo-box {
+  margin-bottom: 24px;
+}
+
+/* 💥 AQUÍ ESTÁ EL TRUCO: Convierte el logo a BLANCO GIGANTE en la izquierda */
+.img-logo-main {
+  height: 120px !important;
+  width: auto !important;
+  max-width: 100% !important;
+  filter: brightness(0) invert(1) !important; /* Fuerza color blanco puro */
+  display: block !important;
+}
+
+.portal-badge-container {
+  margin-bottom: 18px;
+}
+
+.portal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(197, 160, 89, 0.15);
+  border: 1px solid rgba(197, 160, 89, 0.35);
+  color: #D4AF37 !important;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.72rem;
   font-weight: 700;
-  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.main-title {
+  font-size: 2.2rem !important;
+  font-weight: 800 !important;
+  line-height: 1.15;
+  color: #FFFFFF !important;
+  margin-bottom: 10px;
   letter-spacing: -0.02em;
 }
 
-.login-subtitle {
-  color: #6C757D;
-  font-size: 0.9rem;
-  margin-bottom: 28px;
+.card-left .description {
+  font-size: 0.92rem !important;
+  color: rgba(255, 255, 255, 0.72) !important;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ============================================
+   LADO DERECHO: FORMULARIO Y LOGO ORIGINAL PEQUEÑO
+   ============================================ */
+.card-right {
+  flex: 1;
+  background: #FFFFFF !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 45px 50px;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 350px;
+}
+
+.form-header {
+  margin-bottom: 24px;
+}
+
+.card-right h2 {
+  font-size: 1.75rem !important;
+  font-weight: 800 !important;
+  color: #111827 !important;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.form-subtitle {
+  font-size: 0.85rem !important;
+  color: #6B7280 !important;
+  margin: 0;
 }
 
 .form-group {
@@ -170,112 +173,105 @@
 
 .form-group label {
   display: block;
-  font-weight: 600;
-  color: #212529;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
   margin-bottom: 6px;
-  font-size: 0.88rem;
 }
 
-.form-group input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1.5px solid #CED4DA;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  transition: border-color 0.25s, box-shadow 0.25s;
-  background: #FAFAFA;
-  font-family: 'Inter', sans-serif;
-  color: #212529;
-  box-sizing: border-box;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #C5A059;
-  box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.18);
-  background: white;
-}
-
-.form-group input.error {
-  border-color: #DC3545;
-}
-
-/* ============================================
-   ESTILOS PARA EL OJITO (TOGGLE PASSWORD)
-   ============================================ */
-.input-password-wrapper {
+.input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+}
+
+.input-custom {
   width: 100%;
+  padding: 12px 42px 12px 16px;
+  background: #F8F9FA !important;
+  border: 1.5px solid #E5E7EB !important;
+  border-radius: 12px !important;
+  font-size: 0.88rem !important;
+  color: #111827 !important;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
-.input-with-eye {
-  padding-right: 42px !important;
+.input-custom:focus {
+  background: #FFFFFF !important;
+  border-color: #9A7B3E !important;
+  box-shadow: 0 0 0 4px rgba(154, 123, 62, 0.14) !important;
 }
 
-.btn-eye {
+.input-custom.error {
+  border-color: #EF4444 !important;
+  background: #FEF2F2 !important;
+}
+
+.btn-toggle-input {
   position: absolute;
   right: 12px;
   background: transparent;
   border: none;
-  color: #6C757D;
-  font-size: 1rem;
+  color: #9CA3AF;
+  font-size: 0.95rem;
   cursor: pointer;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  z-index: 2;
   transition: color 0.2s ease;
 }
 
-.btn-eye:hover {
-  color: #C5A059;
+.btn-toggle-input:hover {
+  color: #9A7B3E;
 }
 
-/* MENSAJES DE ERROR */
 .error-text {
-  color: #DC3545;
-  font-size: 0.78rem;
+  color: #EF4444 !important;
+  font-size: 0.75rem !important;
   margin-top: 4px;
   display: block;
 }
 
 .error-message {
-  background: #F8D7DA;
-  color: #842029;
+  background: #FEF2F2 !important;
+  color: #991B1B !important;
   padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  margin-bottom: 15px;
-  border-left: 4px solid #DC3545;
+  border-radius: 10px;
+  font-size: 0.8rem !important;
+  margin-bottom: 16px;
+  border-left: 4px solid #EF4444 !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* BOTÓN DE LOGIN DORADO INSTITUCIONAL */
-.btn-login {
+/* BOTÓN DE ENTRADA DORADO/CAFÉ */
+.btn-submit {
   width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #C5A059 0%, #8A6D3B 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
+  padding: 13px;
+  background: linear-gradient(135deg, #9A7B3E 0%, #7A5F29 100%) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.3px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
   margin-top: 8px;
-  font-family: 'Inter', sans-serif;
-  box-shadow: 0 4px 12px rgba(138, 109, 59, 0.2);
+  box-shadow: 0 4px 14px rgba(154, 123, 62, 0.28) !important;
 }
 
-.btn-login:hover:not(:disabled) {
-  background: linear-gradient(135deg, #A88344 0%, #705526 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(138, 109, 59, 0.35);
+.btn-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #876A31 0%, #634C1E 100%) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(154, 123, 62, 0.38) !important;
 }
 
-.btn-login:disabled {
+.btn-submit:disabled {
   opacity: 0.65;
   cursor: not-allowed;
 }
@@ -284,14 +280,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .spinner {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border-top-color: #FFFFFF;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -300,109 +296,143 @@
   to { transform: rotate(360deg); }
 }
 
-.login-footer {
-  margin-top: 25px;
-  text-align: center;
+/* ============================================
+   FOOTER DERECHO CON LOGO PEQUEÑO ORIGINAL
+   ============================================ */
+.card-right-footer {
+  margin-top: 26px;
   padding-top: 18px;
-  border-top: 1px solid #E9ECEF;
+  border-top: 1px solid #F3F4F6 !important;
+  text-align: left;
 }
 
-.footer-toyota-small {
-  height: 55px;
-  width: auto;
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+/* LOGO DERECHO: Mantiene sus colores originales sin filtro */
+.footer-logo {
+  height: 40px !important;
+  width: auto !important;
+  filter: none !important; /* Mantiene colores originales */
+  object-fit: contain;
+}
+
+.footer-title {
+  font-size: 0.9rem !important;
+  color: #9A7B3E !important; /* Dorado institucional */
+  font-weight: 700 !important;
+  letter-spacing: 0.2px;
+}
+
+.copyright {
+  font-size: 0.74rem !important;
+  color: #4B5563 !important;
+  font-weight: 600 !important;
+  margin: 4px 0 2px 0;
+}
+
+.version {
+  font-size: 0.7rem !important;
+  color: #9A7B3E !important;
+  font-weight: 500 !important;
+  margin: 0;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 850px) {
+  .login-wrapper {
+    position: relative !important;
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+
+  .main-card {
+    flex-direction: column;
+    max-width: 450px;
+  }
+
+  .card-left {
+    padding: 35px 30px;
+  }
+
+  .img-logo-main {
+    height: 90px !important;
+  }
+
+  .main-title {
+    font-size: 1.8rem !important;
+  }
+
+  .card-right {
+    padding: 35px 30px;
+  }
 }
 
 /* ============================================
-   RESPONSIVE
+   FORZAR ESTILOS DEL LOGIN (SIN LOGO EN FOOTER)
    ============================================ */
-@media (max-width: 968px) {
-  .login-container {
-    flex-direction: column;
-  }
 
-  .login-left {
-    flex: 1;
-    padding: 40px 30px;
-    min-height: 320px;
-  }
-
-  .login-left-content {
-    max-width: 100%;
-  }
-
-  .logo-container {
-    text-align: center;
-  }
-
-  .logo-team-inmotion {
-    height: 80px;
-    margin: 0 auto;
-  }
-
-  .login-left h1 {
-    font-size: 2rem;
-    text-align: center;
-  }
-
-  .subtitle, .description, .brand-footer {
-    text-align: center;
-  }
-
-  .brand-logos {
-    justify-content: center;
-  }
-
-  .login-right {
-    flex: 1;
-    padding: 30px 20px 50px;
-  }
-
-  .login-card {
-    max-width: 100%;
-    padding: 30px;
-  }
+/* 1. Fondo de pantalla completa garantizado */
+.login-wrapper {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: #0A0B0E !important;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.16) 0%, transparent 65%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 35px 35px, 35px 35px !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-@media (max-width: 480px) {
-  .login-left {
-    padding: 30px 20px;
-    min-height: 240px;
-  }
-
-  .logo-team-inmotion {
-    height: 60px;
-  }
-
-  .login-left h1 {
-    font-size: 1.6rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-  }
-
-  .description {
-    font-size: 0.85rem;
-  }
-
-  .footer-toyota {
-    height: 60px;
-  }
-
-  .login-card {
-    padding: 24px 20px;
-  }
-
-  .login-card h2 {
-    font-size: 1.3rem;
-  }
-
-  .footer-toyota-small {
-    height: 42px;
-  }
-
-  .btn-login {
-    padding: 12px;
-    font-size: 0.95rem;
-  }
+/* 2. LOGO IZQUIERDO: Gigante, centrado y blanco luminoso */
+.img-logo-main {
+  height: 140px !important;
+  width: auto !important;
+  max-width: 90% !important;
+  filter: brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0,0,0,0.5)) !important;
+  display: block !important;
+  margin: 0 auto 20px 0 !important;
 }
+
+/* 3. FOOTER DERECHO CENTRADO Y LIMPIO */
+.card-right-footer {
+  margin-top: 30px !important;
+  padding-top: 18px !important;
+  border-top: 1px solid #F3F4F6 !important;
+  text-align: center !important; /* Centra todo el contenido */
+}
+
+.footer-title {
+  color: #9A7B3E !important; /* Dorado institucional */
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  margin-bottom: 4px !important;
+  text-transform: uppercase !important;
+}
+
+.copyright {
+  font-size: 0.74rem !important;
+  color: #6B7280 !important;
+  font-weight: 600 !important;
+  margin: 3px 0 !important;
+}
+
+.version {
+  font-size: 0.7rem !important;
+  color: #9A7B3E !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+}
+
