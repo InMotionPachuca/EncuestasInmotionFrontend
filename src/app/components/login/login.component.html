@@ -1,25 +1,23 @@
 <div class="login-wrapper">
   <div class="main-card">
     
-    <!-- LADO IZQUIERDO: SECCIÓN OSCURA CON LOGO GRANDE Y BLANCO -->
+    <!-- LADO IZQUIERDO: DEGRADADO OSCURO + LOGO GRANDE BLANCO -->
     <div class="card-left">
       <div class="glow-top"></div>
       <div class="glow-bottom"></div>
 
       <div class="card-left-content">
-        <!-- Logo Principal Grande (InMotion) -->
+        <!-- LOGO PRINCIPAL -->
         <div class="logo-box">
           <img src="assets/logos/inmotion.png" alt="Grupo InMotion" class="img-logo-main">
         </div>
 
-        <!-- Tag Portal Privado -->
         <div class="portal-badge-container">
           <span class="portal-badge">
             <i class="fas fa-shield-alt"></i> PORTAL PRIVADO
           </span>
         </div>
 
-        <!-- Textos Principales -->
         <h1 class="main-title">Atención a Clientes</h1>
         <p class="description">
           Ingresa al sistema para consultar y gestionar las operaciones de ATC.
@@ -27,7 +25,7 @@
       </div>
     </div>
 
-    <!-- LADO DERECHO: FORMULARIO + FOOTER SOLO TEXTO CENTRADO -->
+    <!-- LADO DERECHO: FORMULARIO + TEXTO CENTRADO Y GRANDE -->
     <div class="card-right">
       <div class="form-container">
         
@@ -37,15 +35,13 @@
         </div>
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-          
-          <!-- CORREO ELECTRÓNICO CON TOGGLE -->
           <div class="form-group">
             <label>Correo electrónico</label>
             <div class="input-wrapper">
               <input 
                 [type]="mostrarEmail ? 'text' : 'email'" 
                 formControlName="email" 
-                placeholder="correo@toyota.com.mx"
+                placeholder="oolguin@toyotapachuca.com.mx"
                 class="input-custom"
                 [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
               >
@@ -53,19 +49,15 @@
                 <i [class]="mostrarEmail ? 'fas fa-envelope-open' : 'fas fa-envelope'"></i>
               </button>
             </div>
-            <small *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-text">
-              Ingrese un correo institucional válido
-            </small>
           </div>
 
-          <!-- CONTRASEÑA CON TOGGLE -->
           <div class="form-group">
             <label>Contraseña</label>
             <div class="input-wrapper">
               <input 
                 [type]="mostrarPassword ? 'text' : 'password'" 
                 formControlName="password" 
-                placeholder="Tu contraseña"
+                placeholder="••••••••••••"
                 class="input-custom"
                 [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
               >
@@ -73,29 +65,21 @@
                 <i [class]="mostrarPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
               </button>
             </div>
-            <small *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-text">
-              La contraseña debe tener al menos 6 caracteres
-            </small>
           </div>
 
-          <!-- MENSAJE DE ERROR GLOBAL -->
           <div *ngIf="error" class="error-message">
             <i class="fas fa-exclamation-circle"></i> {{ error }}
           </div>
 
-          <!-- BOTÓN DE INGRESO -->
           <button type="submit" class="btn-submit" [disabled]="loading">
             <span *ngIf="!loading">Entrar al sistema</span>
-            <span *ngIf="loading" class="loading-text">
-              <span class="spinner"></span>
-              Cargando...
-            </span>
+            <span *ngIf="loading" class="loading-text">Cargando...</span>
           </button>
         </form>
 
-        <!-- FOOTER DERECHO: SOLO TEXTO INSTITUCIONAL CENTRADO -->
+        <!-- FOOTER DERECHO: MÁS GRANDE Y CENTRADO -->
         <div class="card-right-footer">
-          <p class="footer-title">GRUPO INMOTION · Atención a Clientes</p>
+          <p class="footer-title">Atención a Clientes</p>
           <p class="copyright">2026 - INMOTION AUTO PACHUCA</p>
           <p class="version">Sistema de Control de Atención a Clientes v2.0</p>
         </div>
