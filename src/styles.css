@@ -210,10 +210,10 @@ table th, table td {
 }
 
 /* ============================================
-   FORZAR ESTILOS DEL LOGIN (OVERRIDE GLOBAL)
+   FORZAR ESTILOS DEL LOGIN (OPCIÓN B: DESTELLOS EN ESQUINAS)
    ============================================ */
 
-/* 1. Fondo de pantalla completa garantizado */
+/* 1. Fondo de pantalla completa con doble luz en esquinas opuestas */
 .login-wrapper {
   position: fixed !important;
   top: 0 !important;
@@ -221,11 +221,15 @@ table th, table td {
   width: 100vw !important;
   height: 100vh !important;
   background-color: #0A0B0E !important;
+  
+  /* LUZ 1: Superior Derecha (100% 0%) | LUZ 2: Inferior Izquierda (0% 100%) */
   background-image: 
-    radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.16) 0%, transparent 65%),
+    radial-gradient(circle at 100% 0%, rgba(197, 160, 89, 0.28) 0%, transparent 55%),
+    radial-gradient(circle at 0% 100%, rgba(138, 109, 59, 0.28) 0%, transparent 55%),
     linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px) !important;
-  background-size: 100% 100%, 35px 35px, 35px 35px !important;
+    
+  background-size: 100% 100%, 100% 100%, 35px 35px, 35px 35px !important;
   z-index: 99999 !important;
   display: flex !important;
   align-items: center !important;
@@ -242,7 +246,7 @@ table th, table td {
   margin: 0 auto 20px 0 !important;
 }
 
-/* 3. FOOTER DERECHO: Texto ampliado y perfectamente centrado */
+/* 3. FOOTER DERECHO: Texto ampliado y centrado */
 .card-right-footer {
   margin-top: 32px !important;
   padding-top: 20px !important;
