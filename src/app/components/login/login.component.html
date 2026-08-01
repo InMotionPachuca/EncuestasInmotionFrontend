@@ -45,7 +45,7 @@
               <input 
                 [type]="mostrarEmail ? 'text' : 'email'" 
                 formControlName="email" 
-                placeholder="oolguin@toyotapachuca.com.mx"
+                placeholder="correo@toyota.com.mx"
                 class="input-custom"
                 [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
               >
@@ -65,7 +65,7 @@
               <input 
                 [type]="mostrarPassword ? 'text' : 'password'" 
                 formControlName="password" 
-                placeholder="••••••••••••"
+                placeholder="Tu contraseña"
                 class="input-custom"
                 [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
               >
