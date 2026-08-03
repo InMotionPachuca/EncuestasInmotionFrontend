@@ -1,32 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 /* ============================================
-   BACKGROUND GLOBAL FORZADO (PANTALLA COMPLETA)
+   BACKGROUND GLOBAL
    ============================================ */
 .login-wrapper {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  min-height: 100vh !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  
-  /* Sobrescribe el body de styles.css */
-  background-color: #0B0D12 !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0A0B0E;
   background-image: 
     radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.16) 0%, transparent 65%),
     linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px) !important;
-  background-size: 100% 100%, 35px 35px, 35px 35px !important;
-  
-  z-index: 99999 !important;
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 35px 35px, 35px 35px;
+  z-index: 99999;
   padding: 20px;
   box-sizing: border-box;
   overflow-y: auto;
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 /* ============================================
@@ -37,18 +34,19 @@
   width: 100%;
   max-width: 980px;
   min-height: 560px;
-  background: #FFFFFF !important;
-  border-radius: 26px !important;
-  overflow: hidden !important;
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 45px rgba(197, 160, 89, 0.12) !important;
+  background: #FFFFFF;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 45px rgba(197, 160, 89, 0.12);
+  margin: auto;
 }
 
 /* ============================================
-   LADO IZQUIERDO: DEGRADADO Y LOGO GRANDE EN BLANCO
+   LADO IZQUIERDO (BANNER)
    ============================================ */
 .card-left {
   flex: 1.15;
-  background: linear-gradient(145deg, #07080A 0%, #15171D 50%, #4D3A19 100%) !important;
+  background: linear-gradient(145deg, #07080A 0%, #15171D 50%, #4D3A19 100%);
   position: relative;
   display: flex;
   align-items: center;
@@ -85,16 +83,15 @@
 }
 
 .logo-box {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
-/* 💥 AQUÍ ESTÁ EL TRUCO: Convierte el logo a BLANCO GIGANTE en la izquierda */
 .img-logo-main {
-  height: 120px !important;
-  width: auto !important;
-  max-width: 100% !important;
-  filter: brightness(0) invert(1) !important; /* Fuerza color blanco puro */
-  display: block !important;
+  height: 120px;
+  width: auto;
+  max-width: 100%;
+  filter: brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  display: block;
 }
 
 .portal-badge-container {
@@ -107,7 +104,7 @@
   gap: 8px;
   background: rgba(197, 160, 89, 0.15);
   border: 1px solid rgba(197, 160, 89, 0.35);
-  color: #D4AF37 !important;
+  color: #D4AF37;
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 0.72rem;
@@ -117,27 +114,27 @@
 }
 
 .main-title {
-  font-size: 2.2rem !important;
-  font-weight: 800 !important;
+  font-size: 2.2rem;
+  font-weight: 800;
   line-height: 1.15;
-  color: #FFFFFF !important;
+  color: #FFFFFF;
   margin-bottom: 10px;
   letter-spacing: -0.02em;
 }
 
 .card-left .description {
-  font-size: 0.92rem !important;
-  color: rgba(255, 255, 255, 0.72) !important;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.72);
   line-height: 1.6;
   margin: 0;
 }
 
 /* ============================================
-   LADO DERECHO: FORMULARIO Y LOGO ORIGINAL PEQUEÑO
+   LADO DERECHO (FORMULARIO)
    ============================================ */
 .card-right {
   flex: 1;
-  background: #FFFFFF !important;
+  background: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -154,16 +151,16 @@
 }
 
 .card-right h2 {
-  font-size: 1.75rem !important;
-  font-weight: 800 !important;
-  color: #111827 !important;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
   margin-bottom: 6px;
   letter-spacing: -0.02em;
 }
 
 .form-subtitle {
-  font-size: 0.85rem !important;
-  color: #6B7280 !important;
+  font-size: 0.85rem;
+  color: #6B7280;
   margin: 0;
 }
 
@@ -173,9 +170,9 @@
 
 .form-group label {
   display: block;
-  font-size: 0.8rem !important;
-  font-weight: 600 !important;
-  color: #374151 !important;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
   margin-bottom: 6px;
 }
 
@@ -188,25 +185,25 @@
 .input-custom {
   width: 100%;
   padding: 12px 42px 12px 16px;
-  background: #F8F9FA !important;
-  border: 1.5px solid #E5E7EB !important;
-  border-radius: 12px !important;
-  font-size: 0.88rem !important;
-  color: #111827 !important;
+  background: #F8F9FA;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  color: #111827;
   outline: none;
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
 .input-custom:focus {
-  background: #FFFFFF !important;
-  border-color: #9A7B3E !important;
-  box-shadow: 0 0 0 4px rgba(154, 123, 62, 0.14) !important;
+  background: #FFFFFF;
+  border-color: #9A7B3E;
+  box-shadow: 0 0 0 4px rgba(154, 123, 62, 0.14);
 }
 
 .input-custom.error {
-  border-color: #EF4444 !important;
-  background: #FEF2F2 !important;
+  border-color: #EF4444;
+  background: #FEF2F2;
 }
 
 .btn-toggle-input {
@@ -229,46 +226,45 @@
 }
 
 .error-text {
-  color: #EF4444 !important;
-  font-size: 0.75rem !important;
+  color: #EF4444;
+  font-size: 0.75rem;
   margin-top: 4px;
   display: block;
 }
 
 .error-message {
-  background: #FEF2F2 !important;
-  color: #991B1B !important;
+  background: #FEF2F2;
+  color: #991B1B;
   padding: 10px 14px;
   border-radius: 10px;
-  font-size: 0.8rem !important;
+  font-size: 0.8rem;
   margin-bottom: 16px;
-  border-left: 4px solid #EF4444 !important;
+  border-left: 4px solid #EF4444;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* BOTÓN DE ENTRADA DORADO/CAFÉ */
 .btn-submit {
   width: 100%;
   padding: 13px;
-  background: linear-gradient(135deg, #9A7B3E 0%, #7A5F29 100%) !important;
-  color: #FFFFFF !important;
-  border: none !important;
-  border-radius: 12px !important;
-  font-size: 0.92rem !important;
-  font-weight: 700 !important;
+  background: linear-gradient(135deg, #9A7B3E 0%, #7A5F29 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
   letter-spacing: 0.3px;
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 8px;
-  box-shadow: 0 4px 14px rgba(154, 123, 62, 0.28) !important;
+  box-shadow: 0 4px 14px rgba(154, 123, 62, 0.28);
 }
 
 .btn-submit:hover:not(:disabled) {
-  background: linear-gradient(135deg, #876A31 0%, #634C1E 100%) !important;
+  background: linear-gradient(135deg, #876A31 0%, #634C1E 100%);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(154, 123, 62, 0.38) !important;
+  box-shadow: 0 6px 18px rgba(154, 123, 62, 0.38);
 }
 
 .btn-submit:disabled {
@@ -297,142 +293,125 @@
 }
 
 /* ============================================
-   FOOTER DERECHO CON LOGO PEQUEÑO ORIGINAL
+   FOOTER DERECHO
    ============================================ */
 .card-right-footer {
-  margin-top: 26px;
-  padding-top: 18px;
-  border-top: 1px solid #F3F4F6 !important;
-  text-align: left;
-}
-
-.footer-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-/* LOGO DERECHO: Mantiene sus colores originales sin filtro */
-.footer-logo {
-  height: 40px !important;
-  width: auto !important;
-  filter: none !important; /* Mantiene colores originales */
-  object-fit: contain;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #E5E7EB;
+  text-align: center;
+  width: 100%;
 }
 
 .footer-title {
-  font-size: 0.9rem !important;
-  color: #9A7B3E !important; /* Dorado institucional */
-  font-weight: 700 !important;
-  letter-spacing: 0.2px;
+  color: #9A7B3E;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  margin-bottom: 6px;
+  display: block;
 }
 
 .copyright {
-  font-size: 0.74rem !important;
-  color: #4B5563 !important;
-  font-weight: 600 !important;
-  margin: 4px 0 2px 0;
+  font-size: 0.85rem;
+  color: #4B5563;
+  font-weight: 600;
+  margin: 4px 0;
+  display: block;
 }
 
 .version {
-  font-size: 0.7rem !important;
-  color: #9A7B3E !important;
-  font-weight: 500 !important;
+  font-size: 0.78rem;
+  color: #9A7B3E;
+  font-weight: 500;
   margin: 0;
+  display: block;
 }
 
-/* RESPONSIVE DESIGN */
-@media (max-width: 850px) {
+/* ============================================
+   MEDIA QUERIES (RESPONSIVE)
+   ============================================ */
+
+/* Tablets y pantallas medianas (máx. 880px) */
+@media (max-width: 880px) {
   .login-wrapper {
-    position: relative !important;
-    height: auto !important;
-    min-height: 100vh !important;
+    position: relative;
+    height: auto;
+    min-height: 100vh;
+    padding: 24px 16px;
   }
 
   .main-card {
     flex-direction: column;
-    max-width: 450px;
+    max-width: 480px;
+    min-height: auto;
   }
 
   .card-left {
-    padding: 35px 30px;
+    padding: 35px 25px;
+    text-align: center;
   }
 
   .img-logo-main {
-    height: 90px !important;
+    height: 90px;
+    margin: 0 auto;
   }
 
   .main-title {
-    font-size: 1.8rem !important;
+    font-size: 1.75rem;
+  }
+
+  .card-left .description {
+    font-size: 0.88rem;
   }
 
   .card-right {
-    padding: 35px 30px;
+    padding: 35px 25px;
   }
 }
 
-/* ============================================
-   FORZAR ESTILOS DEL LOGIN (SIN LOGO EN FOOTER)
-   ============================================ */
+/* Teléfonos móviles (máx. 480px) */
+@media (max-width: 480px) {
+  .login-wrapper {
+    padding: 12px;
+  }
 
-/* 1. Fondo de pantalla completa garantizado */
-.login-wrapper {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  background-color: #0A0B0E !important;
-  background-image: 
-    radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.16) 0%, transparent 65%),
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px) !important;
-  background-size: 100% 100%, 35px 35px, 35px 35px !important;
-  z-index: 99999 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  .main-card {
+    border-radius: 20px;
+  }
+
+  .card-left, .card-right {
+    padding: 25px 20px;
+  }
+
+  .img-logo-main {
+    height: 75px;
+  }
+
+  .main-title {
+    font-size: 1.5rem;
+  }
+
+  .card-right h2 {
+    font-size: 1.5rem;
+  }
+
+  .input-custom {
+    padding: 10px 38px 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .btn-submit {
+    padding: 11px;
+    font-size: 0.88rem;
+  }
 }
 
-/* 2. LOGO IZQUIERDO: Gigante, centrado y blanco luminoso */
-.img-logo-main {
-  height: 140px !important;
-  width: auto !important;
-  max-width: 90% !important;
-  filter: brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0,0,0,0.5)) !important;
-  display: block !important;
-  margin: 0 auto 20px 0 !important;
+/* Orientación horizontal reducida */
+@media (max-height: 620px) {
+  .login-wrapper {
+    position: relative;
+    height: auto;
+    min-height: 100vh;
+  }
 }
-
-/* 3. FOOTER DERECHO CENTRADO Y LIMPIO */
-.card-right-footer {
-  margin-top: 30px !important;
-  padding-top: 18px !important;
-  border-top: 1px solid #F3F4F6 !important;
-  text-align: center !important; /* Centra todo el contenido */
-}
-
-.footer-title {
-  color: #9A7B3E !important; /* Dorado institucional */
-  font-size: 0.88rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.5px !important;
-  margin-bottom: 4px !important;
-  text-transform: uppercase !important;
-}
-
-.copyright {
-  font-size: 0.74rem !important;
-  color: #6B7280 !important;
-  font-weight: 600 !important;
-  margin: 3px 0 !important;
-}
-
-.version {
-  font-size: 0.7rem !important;
-  color: #9A7B3E !important;
-  font-weight: 500 !important;
-  margin: 0 !important;
-}
-
