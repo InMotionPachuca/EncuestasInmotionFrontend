@@ -207,10 +207,10 @@
   font-weight: 600;
 }
 
+.badge-enviada { background: #E9ECEF; color: #495057; }
 .badge-respondida { background: #D1E7DD; color: #0F5132; }
 .badge-expirada { background: #F8D7DA; color: #842029; }
 
-/* BOTÓN DESPLEGABLE VER MÁS / VER MENOS DE COMENTARIOS */
 .btn-toggle-comentario {
   background: transparent;
   border: none;
@@ -222,13 +222,6 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  transition: color 0.2s ease;
-  font-family: 'Inter', sans-serif;
-}
-
-.btn-toggle-comentario:hover {
-  color: #9A7B3E;
-  text-decoration: underline;
 }
 
 .btn-actions {
@@ -238,33 +231,164 @@
 }
 
 .btn-sm {
-  padding: 5px 10px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 5px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ver { background: #C5A059; color: white; }
+.btn-ver:hover { background: #9A7B3E; }
+
+.btn-copiar { background: #F8F9FA; border: 1px solid #CED4DA; color: #495057; }
+.btn-copiar:hover { background: #E9ECEF; }
+
+.btn-eliminar { background: #F8D7DA; border: 1px solid #F5C2C7; color: #842029; }
+.btn-eliminar:hover { background: #DC3545; color: white; }
+
+/* ========== ESTILOS COMPLETOS DEL MODAL DETALLES Y PLANTILLA ========== */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  z-index: 99999;
+  backdrop-filter: blur(3px);
+}
+
+.modal-card {
+  background: #FFFFFF !important;
+  border-radius: 12px !important;
+  padding: 24px !important;
+  width: 92% !important;
+  max-width: 700px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+  border-top: 5px solid #C5A059 !important;
+  border-left: 1px solid #E9ECEF !important;
+  border-right: 1px solid #E9ECEF !important;
+  border-bottom: 1px solid #E9ECEF !important;
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #E9ECEF;
+}
+
+.modal-head h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1F1F1F;
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #6C757D;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: #F8D7DA;
+  color: #DC3545;
+}
+
+.detail-row {
+  font-size: 0.88rem;
+  color: #333333;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.detail-row b {
+  color: #1F1F1F;
+  font-weight: 600;
+}
+
+.btn-copy-modal {
+  background: #C5A059;
+  color: #FFFFFF;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-copy-modal:hover {
+  background: #9A7B3E;
+}
+
+.btn-copy-plantilla {
+  background: #D1E7DD;
+  color: #0F5132;
+  border: 1px solid #BADBCC;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.btn-ver { background: #C5A059; color: white; }
-.btn-copiar { background: transparent; border: 1px solid #CED4DA; color: #495057; }
-.btn-eliminar { background: #F8D7DA; border: 1px solid #F5C2C7; color: #842029; }
-.btn-eliminar:hover { background: #DC3545; color: white; }
-
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 9999;
+.btn-copy-plantilla:hover {
+  background: #198754;
+  color: #FFFFFF;
 }
 
-.modal-card {
-  background: #FFFFFF;
-  border-radius: 10px;
-  padding: 24px;
-  width: 92%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  border-top: 4px solid #C5A059;
+.btn-copy {
+  background: #F8F9FA;
+  color: #495057;
+  border: 1px solid #CED4DA;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-copy:hover {
+  background: #E9ECEF;
+  color: #212529;
+}
+
+.plantilla-box {
+  background: #F8F9FA;
+  border-radius: 8px;
+  padding: 14px;
+  border: 1px solid #E9ECEF;
+}
+
+.plantilla-textarea {
+  width: 100%;
+  border: 1px solid #CED4DA !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  background: #FFFFFF !important;
+  font-size: 0.85rem !important;
+  line-height: 1.6 !important;
+  color: #212529 !important;
+  font-family: 'Inter', sans-serif !important;
+  box-sizing: border-box !important;
+}
+
+.plantilla-textarea:focus {
+  outline: none !important;
+  border-color: #C5A059 !important;
+  box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15) !important;
 }

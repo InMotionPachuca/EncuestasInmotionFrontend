@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { EncuestaService } from '../../services/encuesta.service';
 import { Encuesta } from '../../models/encuesta.model';
@@ -8,7 +8,8 @@ import * as XLSX from 'xlsx';
 @Component({
   selector: 'app-listar-encuestas',
   templateUrl: './listar-encuestas.component.html',
-  styleUrls: ['./listar-encuestas.component.css']
+  styleUrls: ['./listar-encuestas.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class ListarEncuestasComponent implements OnInit {
   pestanaActiva: 'tradicionales' | 'qr' = 'tradicionales';
@@ -144,7 +145,7 @@ export class ListarEncuestasComponent implements OnInit {
     this.encuestasQrFiltradas = [...this.encuestasQr];
   }
 
-  // --- CONTROL DE COMENTARIO DESPLEGABLE EN TABLA (ACEPTA UNDEFINED) ---
+  // --- CONTROL DE COMENTARIO DESPLEGABLE EN TABLA ---
   toggleComentario(encuestaId?: number): void {
     if (encuestaId === undefined || encuestaId === null) return;
     this.comentariosExpandidos[encuestaId] = !this.comentariosExpandidos[encuestaId];
