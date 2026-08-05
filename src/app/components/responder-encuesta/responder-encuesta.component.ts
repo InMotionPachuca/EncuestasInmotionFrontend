@@ -40,6 +40,12 @@ export class ResponderEncuestaComponent implements OnInit {
       this.loading = false;
     }
   }
+  onLogoError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img && !img.src.includes('assets/inmo1.png')) {
+      img.src = 'assets/inmo1.png'; // Carga el logo secundario si falla la carpeta logos
+    }
+  }
 
   get respuestasFormArray(): FormArray {
     return this.encuestaForm.get('respuestas') as FormArray;
@@ -130,11 +136,11 @@ export class ResponderEncuestaComponent implements OnInit {
   enviarRespuesta() {
     let invalid = false;
     const respuestasArray = this.encuestaForm.get('respuestas') as FormArray;
-    
+
     for (let i = 0; i < respuestasArray.length; i++) {
       const control = respuestasArray.at(i);
       const preguntaId = control.get('preguntaId')?.value;
-      
+
       if (preguntaId === 2 || preguntaId === 3) {
         const valor = control.get('valorNumerico')?.value;
         if (!valor || valor < 1 || valor > 5) {

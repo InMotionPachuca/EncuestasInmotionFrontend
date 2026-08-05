@@ -2,19 +2,17 @@
   <div class="encuesta-header header-dorado-oscuro">
     <!-- LOGO TEAM INMOTION - DORADO OSCURO -->
     <div class="logo-principal-container">
-      <img 
-        src="assets/inmo1.webp" 
-        alt="Team InMotion" 
-        class="logo-team-inmotion-principal logo-dorado-oscuro"
-      >
+      <!-- RUTA PÚBLICA SIN 'src/' PARA RENDER -->
+      <img src="assets/logos/inmotion.png" alt="Team InMotion" class="logo-team-inmotion-principal logo-dorado-oscuro"
+        (error)="onLogoError($event)">
     </div>
-    
+
     <h1>Encuesta de Satisfacción en Servicio</h1>
-    
+
     <div class="marca-logo-container">
       <span class="marca-nombre-text">{{ encuesta?.marcaNombre }}</span>
     </div>
-    
+
     <p>Agradecemos su reciente visita, nos gustaría que nos compartiera su experiencia.</p>
     <p class="highlight">¡Tu opinión es importante!</p>
   </div>
@@ -62,9 +60,8 @@
             <span>Excelente</span>
           </div>
           <div class="stars">
-            <span *ngFor="let star of [1,2,3,4,5]" 
-                  (click)="setCalificacion(0, star)"
-                  [class.active]="getCalificacion(0) >= star">
+            <span *ngFor="let star of [1,2,3,4,5]" (click)="setCalificacion(0, star)"
+              [class.active]="getCalificacion(0) >= star">
               ★
             </span>
           </div>
@@ -80,9 +77,8 @@
             <span>Excelente</span>
           </div>
           <div class="stars">
-            <span *ngFor="let star of [1,2,3,4,5]" 
-                  (click)="setCalificacion(1, star)"
-                  [class.active]="getCalificacion(1) >= star">
+            <span *ngFor="let star of [1,2,3,4,5]" (click)="setCalificacion(1, star)"
+              [class.active]="getCalificacion(1) >= star">
               ★
             </span>
           </div>
@@ -93,14 +89,10 @@
       <div class="pregunta">
         <label>5. ¿Recomendaría nuestro servicio? <span class="required">*</span></label>
         <div class="si-no">
-          <button type="button" 
-                  [class.selected]="getOpcionSeleccionada(2) === 1"
-                  (click)="setOpcion(2, 1)">
+          <button type="button" [class.selected]="getOpcionSeleccionada(2) === 1" (click)="setOpcion(2, 1)">
             SI
           </button>
-          <button type="button"
-                  [class.selected]="getOpcionSeleccionada(2) === 2"
-                  (click)="setOpcion(2, 2)">
+          <button type="button" [class.selected]="getOpcionSeleccionada(2) === 2" (click)="setOpcion(2, 2)">
             NO
           </button>
         </div>
@@ -109,9 +101,8 @@
 
       <div class="pregunta">
         <label>6. ¿Qué podríamos mejorar durante su estancia?</label>
-        <textarea [formControl]="getRespuestaControl(3, 'valorTexto')" 
-                  placeholder="Escriba su respuesta..." 
-                  rows="3"></textarea>
+        <textarea [formControl]="getRespuestaControl(3, 'valorTexto')" placeholder="Escriba su respuesta..."
+          rows="3"></textarea>
       </div>
 
       <button type="submit" class="btn-enviar" [disabled]="enviando || encuestaForm.invalid">

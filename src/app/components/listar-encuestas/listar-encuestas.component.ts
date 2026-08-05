@@ -214,7 +214,7 @@ export class ListarEncuestasComponent implements OnInit {
 
     if (encuesta.tipo === 'VENTA') {
       plantilla += 'Buen día, Sr./Srita. *' + nombreCliente + '*.\n';
-      plantilla += 'Mi nombre es *' + nombreAsesor + '* y formo parte del area de Satisfacción a Clientes de *' + nombreMarca + '* ' + this.emojis.manosArriba + '.\n';
+      plantilla += 'Mi nombre es *Cecilia Juárez* y formo parte del area de Satisfacción a Clientes de *' + nombreMarca + '* ' + this.emojis.manosArriba + '.\n';
       plantilla += 'Agradecemos sinceramente el tiempo que nos brindó al visitarnos. Fue un placer atenderle y acompañarle durante la adquisición de su *' + modeloAuto + '*.\n';
       plantilla += 'Nos gustaría conocer su opinión sobre la atención recibida tanto por parte de nuestra agencia como de su asesor *' + nombreAsesor + '*. Por ello, le invitamos a responder nuestra encuesta de satisfacción, la cual le tomara solo unos minutos.\n';
       plantilla += 'Para participar, por favor haga click en el siguiente enlace:\n';
@@ -223,7 +223,7 @@ export class ListarEncuestasComponent implements OnInit {
       plantilla += '¡Le damos la mas cordial bienvenida a la familia *' + nombreMarca + '*! ' + this.emojis.bienvenida + ' ' + this.emojis.auto;
     } else {
       plantilla += 'Buen día, Sr./Srita. *' + nombreCliente + '*.\n';
-      plantilla += 'Mi nombre es *' + nombreAsesor + '* de Satisfacción a Clientes de *' + nombreMarca + '* ' + this.emojis.manosArriba + '.\n';
+      plantilla += 'Mi nombre es *Cecilia Juárez* de Satisfacción a Clientes de *' + nombreMarca + '* ' + this.emojis.manosArriba + '.\n';
       plantilla += 'Agradecemos sinceramente el tiempo que nos brindó al visitarnos en nuestra agencia, fue un gusto atenderle y acompanarle durante su estancia.\n';
       plantilla += 'Nos gustaría conocer su opinión respecto al servicio realizado a su *' + modeloAuto + '* el día *' + fechaVisita + '* ' + this.emojis.auto + this.emojis.herramienta + '.\n';
       plantilla += 'Lo invitamos a responder nuestra encuesta de satisfaccion; le tomara solo unos minutos.\n\n';
