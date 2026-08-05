@@ -15,7 +15,7 @@ export class AppComponent {
   // Todos los ítems de navegación marcando cuáles requieren ser Admin
   private todosLosMenuItems = [
     { route: '/dashboard', label: 'CXI', icon: 'fas fa-chart-pie', badge: null, badgeClass: '', adminOnly: false },
-    { route: '/dashboard-qr', label: 'CXI QR', icon: 'fas fa-qrcode', badge: 'Nuevo', badgeClass: 'bg-warning text-dark', adminOnly: false },
+    { route: '/dashboard-qr', label: 'CXI QR', icon: 'fas fa-qrcode', badge: null, badgeClass: 'bg-warning text-dark', adminOnly: false },
     { route: '/usuarios', label: 'Usuarios', icon: 'fas fa-users-cog', badge: null, badgeClass: '', adminOnly: true },
     { route: '/asesores', label: 'Asesores', icon: 'fas fa-user-tie', badge: null, badgeClass: '', adminOnly: false },
     { route: '/crear', label: 'Crear Encuesta', icon: 'fas fa-plus-circle', badge: null, badgeClass: 'bg-danger', adminOnly: false },
