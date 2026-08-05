@@ -118,4 +118,11 @@ export class EncuestaEstaticaComponent implements OnInit {
       }
     });
   }
+
+  onLogoError(event: Event): void {
+  const imgElement = event.target as HTMLImageElement;
+  if (imgElement) {
+    imgElement.src = 'assets/inmo1.png';
+  }
+}
 }

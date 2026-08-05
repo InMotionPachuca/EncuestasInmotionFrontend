@@ -1,20 +1,17 @@
 <div class="responder-container">
   <div class="encuesta-header header-dorado-oscuro">
-    <!-- LOGO TEAM INMOTION - DORADO OSCURO -->
+    <!-- LOGO TEAM INMOTION CORRECTO -->
     <div class="logo-principal-container">
-      <img 
-        src="/src/assets/logos/inmotion.png" 
-        alt="Team InMotion" 
-        class="logo-team-inmotion-principal logo-dorado-oscuro"
-      >
+      <img src="assets/logos/inmotion.png" alt="Team InMotion" class="logo-team-inmotion-principal logo-dorado-oscuro"
+        (error)="onLogoError($event)">
     </div>
-    
+
     <h1>Encuesta de Satisfacción</h1>
-    
+
     <div class="marca-logo-container">
       <span class="marca-nombre-text">{{ obtenerNombreMarca() }}</span>
     </div>
-    
+
     <p>Agradecemos su visita, nos gustaría que nos compartiera su opinión.</p>
     <p class="highlight">¡Tu opinión es importante!</p>
   </div>
@@ -28,7 +25,7 @@
   <!-- CONTENIDO DE LA ENCUESTA -->
   <div *ngIf="!exito" class="encuesta-content">
     <form [formGroup]="encuestaForm" (ngSubmit)="enviarRespuesta()">
-      
+
       <!-- SELECCIÓN DE SUCURSAL / AGENCIA -->
       <div class="pregunta">
         <label>Seleccione la Agencia / Sucursal <span class="required">*</span></label>
@@ -42,7 +39,8 @@
       <!-- NOMBRE COMPLETO DEL CLIENTE -->
       <div class="pregunta">
         <label>Nombre Completo <span class="required">*</span></label>
-        <input type="text" class="input-custom" formControlName="nombreCliente" placeholder="Ingrese su nombre completo">
+        <input type="text" class="input-custom" formControlName="nombreCliente"
+          placeholder="Ingrese su nombre completo">
       </div>
 
       <!-- TELÉFONO DE CONTACTO (OPCIONAL) -->
@@ -60,9 +58,8 @@
             <span>Excelente</span>
           </div>
           <div class="stars">
-            <span *ngFor="let star of [1,2,3,4,5]" 
-                  (click)="setCalificacion('experiencia', star)"
-                  [class.active]="getCalificacion('experiencia') >= star">
+            <span *ngFor="let star of [1,2,3,4,5]" (click)="setCalificacion('experiencia', star)"
+              [class.active]="getCalificacion('experiencia') >= star">
               ★
             </span>
           </div>
@@ -78,9 +75,8 @@
             <span>Excelente</span>
           </div>
           <div class="stars">
-            <span *ngFor="let star of [1,2,3,4,5]" 
-                  (click)="setCalificacion('atencion', star)"
-                  [class.active]="getCalificacion('atencion') >= star">
+            <span *ngFor="let star of [1,2,3,4,5]" (click)="setCalificacion('atencion', star)"
+              [class.active]="getCalificacion('atencion') >= star">
               ★
             </span>
           </div>
@@ -91,15 +87,11 @@
       <div class="pregunta">
         <label>3. ¿El tiempo de atención fue adecuado? <span class="required">*</span></label>
         <div class="si-no">
-          <button type="button" 
-                  [class.selected]="getTiempoAdecuado() === 'SI'"
-                  (click)="setTiempoAdecuado('SI')">
+          <button type="button" [class.selected]="getTiempoAdecuado() === 'SI'" (click)="setTiempoAdecuado('SI')">
             SI
           </button>
-          
-          <button type="button"
-                  [class.selected]="getTiempoAdecuado() === 'NO'"
-                  (click)="setTiempoAdecuado('NO')">
+
+          <button type="button" [class.selected]="getTiempoAdecuado() === 'NO'" (click)="setTiempoAdecuado('NO')">
             NO
           </button>
         </div>
@@ -109,14 +101,10 @@
       <div class="pregunta">
         <label>4. ¿Recomendaría nuestro servicio a familiares y amigos? <span class="required">*</span></label>
         <div class="si-no">
-          <button type="button" 
-                  [class.selected]="getOpcionRecomienda() === 'SI'"
-                  (click)="setOpcionRecomienda('SI')">
+          <button type="button" [class.selected]="getOpcionRecomienda() === 'SI'" (click)="setOpcionRecomienda('SI')">
             SI
           </button>
-          <button type="button"
-                  [class.selected]="getOpcionRecomienda() === 'NO'"
-                  (click)="setOpcionRecomienda('NO')">
+          <button type="button" [class.selected]="getOpcionRecomienda() === 'NO'" (click)="setOpcionRecomienda('NO')">
             NO
           </button>
         </div>
@@ -125,9 +113,7 @@
       <!-- 5. COMENTARIOS DE MEJORA -->
       <div class="pregunta">
         <label>5. ¿Qué podríamos mejorar durante su estancia?</label>
-        <textarea formControlName="comentarios" 
-                  placeholder="Escriba sus observaciones..." 
-                  rows="3"></textarea>
+        <textarea formControlName="comentarios" placeholder="Escriba sus observaciones..." rows="3"></textarea>
       </div>
 
       <button type="submit" class="btn-enviar" [disabled]="enviando || encuestaForm.invalid">
