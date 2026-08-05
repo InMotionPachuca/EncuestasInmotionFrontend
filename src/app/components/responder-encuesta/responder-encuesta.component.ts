@@ -44,7 +44,6 @@ export class ResponderEncuestaComponent implements OnInit {
 
   cargarEncuesta(): void {
     this.loading = true;
-    // Nombre exacto definido en EncuestaService
     this.encuestaService.obtenerEncuestaPorToken(this.token).subscribe({
       next: (data: Encuesta) => {
         this.encuesta = data;
@@ -105,7 +104,9 @@ export class ResponderEncuestaComponent implements OnInit {
     this.enviando = true;
     const formValue = this.encuestaForm.value;
 
+    // INCLUIMOS PREGUNTA 1 QUE REQUIERE EL BACKEND PARA EVITAR EL 400 BAD REQUEST
     const respuestasData = [
+      { preguntaId: 1, valorTexto: this.encuesta.clienteNombre, valorNumerico: null, opcionId: null },
       { preguntaId: 2, valorTexto: '', valorNumerico: formValue.experiencia, opcionId: null },
       { preguntaId: 3, valorTexto: '', valorNumerico: formValue.atencion, opcionId: null },
       { preguntaId: 4, valorTexto: '', valorNumerico: null, opcionId: formValue.tiempoAdecuado === 'SI' ? 1 : 2 },
@@ -113,7 +114,6 @@ export class ResponderEncuestaComponent implements OnInit {
       { preguntaId: 6, valorTexto: formValue.comentarios, valorNumerico: null, opcionId: null }
     ];
 
-    // responderEncuesta espera (token: string, data: any)
     this.encuestaService.responderEncuesta(this.token, respuestasData).subscribe({
       next: () => {
         this.enviando = false;
