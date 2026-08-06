@@ -1,39 +1,40 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Encuesta, EstadisticasGenerales, Pregunta } from '../models/encuesta.model';
+import { Encuesta, Pregunta } from '../models/encuesta.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EncuestaService {
-  // Configuración dinámica usando el entorno (Render en prod, localhost en dev)
   private apiUrl = `${environment.apiUrl}/encuestas`;
 
-  // Toma la URL base actual donde esté corriendo la App (Render o Localhost)
   private get frontendUrl(): string {
     return window.location.origin;
   }
 
   logos: { [key: number]: string } = {
     1: 'Toyota.png',
-    2: 'carsline.png',
+    2: 'Toyota.png',
     3: 'carsline.png',
-    4: 'gwm.png',
-    5: 'subaru.webp',
-    6: 'comprocars.png',
-    7: 'comprocars.png'
+    4: 'carsline.png',
+    5: 'gwm.png',
+    6: 'subaru.webp',
+    7: 'comprocars.png',
+    8: 'comprocars.png'
   };
 
+  // CATÁLOGO OFICIAL ACTUALIZADO DE AGENCIAS Y MARCAS
   marcas = [
     { id: 1, nombre: 'Toyota Pachuca' },
-    { id: 2, nombre: 'Carsline Pachuca' },
-    { id: 3, nombre: 'Carsline Querétaro' },
-    { id: 4, nombre: 'GWM' },
-    { id: 5, nombre: 'Subaru' },
-    { id: 6, nombre: 'ComproCars Querétaro' },
-    { id: 7, nombre: 'ComproCars Pachuca' }
+    { id: 2, nombre: 'Toyota Tulancingo' },
+    { id: 3, nombre: 'Carsline Pachuca' },
+    { id: 4, nombre: 'Carsline Querétaro' },
+    { id: 5, nombre: 'GWM Celaya' },
+    { id: 6, nombre: 'Subaru' },
+    { id: 7, nombre: 'ComproCars Querétaro' },
+    { id: 8, nombre: 'ComproCars Pachuca' }
   ];
 
   preguntas: Pregunta[] = [

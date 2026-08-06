@@ -19,7 +19,7 @@ export class ListarEncuestasComponent implements OnInit {
   encuestasTradicionales: Encuesta[] = [];
   encuestasFiltradas: Encuesta[] = [];
   encuestasPaginadas: Encuesta[] = [];
-  
+
   filtroTexto: string = '';
   filtroMarca: string = '';
   filtroEstado: string = '';
@@ -48,17 +48,15 @@ export class ListarEncuestasComponent implements OnInit {
   plantillaActual: string = '';
   imagenUrl: string = '';
 
-  // DICCIONARIO DE IMÁGENES INCLUYENDO GWM CELAYA
+  // DICCIONARIO DE IMÁGENES ACTUALIZADO
   imagenesMarca: { [key: string]: string } = {
-    'Subaru': 'assets/whatsapp/subaruPachuca.png',
-    'Toyota Pachuca': 'assets/whatsapp/toyotaPachuca.jpeg',
-    'Toyota Tulancingo': 'assets/whatsapp/toyotaTulancingo.jpeg',
-    'Carsline Pachuca': 'assets/whatsapp/carsline.png',
-    'Carsline Queretaro': 'assets/whatsapp/carsline.png',
-    'GWM': 'assets/whatsapp/gwm.png',
-    'GWM Celaya': 'assets/whatsapp/gwm.png',
-    'ComproCars Queretaro': 'assets/whatsapp/comproCars.png',
-    'Compro Pachuca': 'assets/whatsapp/comproCars.png'
+    'subaru': 'assets/whatsapp/subaruPachuca.png',
+    'toyota pachuca': 'assets/whatsapp/toyotaPachuca.jpeg',
+    'toyota tulancingo': 'assets/whatsapp/toyotaTulancingo.jpeg',
+    'carsline': 'assets/whatsapp/carsline.png',
+    'gwm': 'assets/whatsapp/gwm.png',
+    'gwm celaya': 'assets/whatsapp/gwm.png',
+    'comprocars': 'assets/whatsapp/comproCars.png'
   };
 
   emojis = {
@@ -114,21 +112,20 @@ export class ListarEncuestasComponent implements OnInit {
     });
   }
 
-  // COMPARACIÓN FLEXIBLE DE MARCAS (IGUALA "GWM CELAYA" CON "GWM" SI APLICA)
-  coincideMarca(marcaEncuesta: string, marcaBuscada: string): boolean {
-    if (!marcaBuscada) return true;
-    if (!marcaEncuesta) return false;
+  // COMPARACIÓN INTELIGENTE SIN ACENTOS
+  coincideMarca(marcaEncuesta: string, marcaFiltro: string): boolean {
+    if (!marcaFiltro || marcaFiltro.trim() === '') return true;
+    if (!marcaEncuesta || marcaEncuesta.trim() === '') return false;
 
     const m1 = this.normalizarTexto(marcaEncuesta);
-    const m2 = this.normalizarTexto(marcaBuscada);
+    const m2 = this.normalizarTexto(marcaFiltro);
 
     return m1 === m2 || m1.includes(m2) || m2.includes(m1);
   }
 
-  // AL SELECCIONAR UNA PILL, SE LIMPIA EL FILTRO DE MES PARA VER TODAS LAS DE ESA MARCA
   seleccionarMarcaRapida(nombreMarca: string) {
     this.filtroMarca = nombreMarca;
-    this.filtroMes = ''; // Limpia el mes para no tapar encuestas de meses pasados
+    this.filtroMes = ''; // Limpiar mes para ver todo el histórico de esa agencia
     this.filtrarEncuestas();
   }
 
@@ -136,18 +133,17 @@ export class ListarEncuestasComponent implements OnInit {
     return this.encuestasTradicionales.filter(e => this.coincideMarca(e.marcaNombre, nombreMarca)).length;
   }
 
-  // --- FILTRADO FLEXIBLE ---
   filtrarEncuestas() {
     this.encuestasFiltradas = this.encuestasTradicionales.filter(encuesta => {
-      const textoSearch = this.filtroTexto.toLowerCase();
+      const textoSearch = this.normalizarTexto(this.filtroTexto);
       const telefonoCliente = encuesta.clienteTelefono || encuesta.telefono || '';
 
       const textoMatch = !this.filtroTexto ||
-        (encuesta.clienteNombre && encuesta.clienteNombre.toLowerCase().includes(textoSearch)) ||
-        (encuesta.clienteEmail && encuesta.clienteEmail.toLowerCase().includes(textoSearch)) ||
-        (telefonoCliente && telefonoCliente.includes(this.filtroTexto));
+        this.normalizarTexto(encuesta.clienteNombre).includes(textoSearch) ||
+        this.normalizarTexto(encuesta.clienteEmail).includes(textoSearch) ||
+        telefonoCliente.includes(this.filtroTexto);
 
-      // USAMOS COMPARACIÓN FLEXIBLE DE MARCAS
+      // COINCIDENCIA DE MARCA
       const marcaMatch = this.coincideMarca(encuesta.marcaNombre, this.filtroMarca);
       const estadoMatch = !this.filtroEstado || encuesta.estado === this.filtroEstado;
 
@@ -192,8 +188,8 @@ export class ListarEncuestasComponent implements OnInit {
     this.encuestasQrFiltradas = this.encuestasQr.filter(enc => {
       const telefono = this.obtenerTelefono(enc);
       const textoMatch = !this.filtroTextoQr ||
-        (enc.clienteNombre && enc.clienteNombre.toLowerCase().includes(this.filtroTextoQr.toLowerCase())) ||
-        (telefono && telefono.includes(this.filtroTextoQr));
+        this.normalizarTexto(enc.clienteNombre).includes(this.normalizarTexto(this.filtroTextoQr)) ||
+        telefono.includes(this.filtroTextoQr);
 
       const marcaMatch = this.coincideMarca(enc.marcaNombre, this.filtroMarcaQr);
 
@@ -243,8 +239,7 @@ export class ListarEncuestasComponent implements OnInit {
     const nombreLimpio = this.normalizarTexto(nombreMarca);
     
     for (const key of Object.keys(this.imagenesMarca)) {
-      const keyLimpia = this.normalizarTexto(key);
-      if (nombreLimpio === keyLimpia || nombreLimpio.includes(keyLimpia) || keyLimpia.includes(nombreLimpio)) {
+      if (nombreLimpio.includes(key)) {
         return this.imagenesMarca[key];
       }
     }
