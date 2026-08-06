@@ -15,6 +15,7 @@ import { EncuestaEstaticaComponent } from './components/encuesta-estatica/encues
 import { GenerarQrComponent } from './components/generar-qr/generar-qr.component';
 import { DashboardQrComponent } from './components/dashboard-qr/dashboard-qr.component'; 
 import { ListarEncuestasQrComponent } from './components/listar-encuestas-qr/listar-encuestas-qr.component';
+import { AgradecimientoComponent } from './paginas/agradecimiento.component';
 
 // Guards funcionales
 import { authGuard, adminGuard } from './guards/admin.guard';
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'evaluar', component: EncuestaEstaticaComponent },
   { path: 'responder/:token', component: ResponderEncuestaComponent },
+  { path: 'gracias', component: AgradecimientoComponent },
 
   // --- RUTAS PROTEGIDAS (Cualquier usuario logueado) ---
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },

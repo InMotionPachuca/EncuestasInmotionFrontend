@@ -104,7 +104,6 @@ export class ResponderEncuestaComponent implements OnInit {
     this.enviando = true;
     const formValue = this.encuestaForm.value;
 
-    // RESPUESTAS SEGÚN LA INTERFAZ EncuestaRespuestaDTO
     const respuestasData: EncuestaRespuestaDTO[] = [
       { preguntaId: 2, valorTexto: '', valorNumerico: Number(formValue.experiencia) },
       { preguntaId: 3, valorTexto: '', valorNumerico: Number(formValue.atencion) },
@@ -113,13 +112,11 @@ export class ResponderEncuestaComponent implements OnInit {
       { preguntaId: 6, valorTexto: formValue.comentarios || '' }
     ];
 
-    // SEPARAR NOMBRE Y APELLIDO DEL CLIENTE
     const nombreCompleto = this.encuesta.clienteNombre || 'Cliente General';
     const partesNombre = nombreCompleto.trim().split(' ');
     const primerNombre = partesNombre[0] || 'Cliente';
     const apellidos = partesNombre.slice(1).join(' ') || 'General';
 
-    // PAYLOAD CUMPLIENDO CON EncuestaRequestDTO
     const payloadDTO: EncuestaRequestDTO = {
       nombre: primerNombre,
       apellido: apellidos,
