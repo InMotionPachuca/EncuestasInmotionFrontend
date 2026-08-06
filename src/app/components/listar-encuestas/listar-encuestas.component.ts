@@ -300,14 +300,15 @@ export class ListarEncuestasComponent implements OnInit {
   }
 
   // LECTURA DINÁMICA DE LA UNIDAD DESDE LA BASE DE DATOS
-  generarPlantilla(encuesta: any): string {
+ generarPlantilla(encuesta: any): string {
     const nombreCliente = encuesta.clienteNombre || 'Cliente';
     const nombreAsesor = encuesta.asesor || 'Asesor de Servicio';
     const nombreMarca = this.obtenerNombreMarcaMostrar(encuesta.marcaNombre);
 
-    // Si la unidad existe en el backend la utiliza; de lo contrario usa "vehículo" como fallback limpio
-    const unidadRaw = (encuesta.unidad && encuesta.unidad.toString().trim() !== '') ? encuesta.unidad.toString().trim() : '';
-    const modeloAuto = unidadRaw !== '' ? unidadRaw : 'vehículo';
+    // LEE LA UNIDAD DE LA BD (EJ. POER COMERCIAL 2026), SI VIENE VACÍA USA 'vehículo'
+    const unidadReal = (encuesta.unidad && encuesta.unidad.toString().trim() !== '') 
+      ? encuesta.unidad.toString().trim() 
+      : 'vehículo';
 
     const fechaVisita = encuesta.fechaEnvio ? this.formatearFecha(encuesta.fechaEnvio) : 'fecha de visita';
     const link = this.generarLink(encuesta.token);
@@ -317,7 +318,7 @@ export class ListarEncuestasComponent implements OnInit {
     if (encuesta.tipo === 'VENTA') {
       plantilla += 'Buen día, Sr./Srita. *' + nombreCliente + '*.\n';
       plantilla += 'Mi nombre es *Cecilia Juárez* y formo parte del área de Satisfacción a Clientes de *' + nombreMarca + '* ' + this.emojis.manosArriba + '.\n';
-      plantilla += 'Agradecemos sinceramente el tiempo que nos brindó al visitarnos. Fue un placer atenderle y acompañarle durante la adquisición de su *' + modeloAuto + '*.\n';
+      plantilla += 'Agradecemos sinceramente el tiempo que nos brindó al visitarnos. Fue un placer atenderle y acompañarle durante la adquisición de su *' + unidadReal + '*.\n';
       plantilla += 'Nos gustaría conocer su opinión sobre la atención recibida tanto por parte de nuestra agencia como de su asesor *' + nombreAsesor + '*. Por ello, le invitamos a responder nuestra encuesta de satisfacción, la cual le tomará solo unos minutos.\n';
       plantilla += 'Para participar, por favor haga clic en el siguiente enlace:\n';
       plantilla += this.emojis.punto + ' ' + link + '\n';
@@ -327,7 +328,7 @@ export class ListarEncuestasComponent implements OnInit {
       plantilla += 'Buen día, Sr./Srita. *' + nombreCliente + '*.\n';
       plantilla += 'Mi nombre es *Cecilia Juárez* de Satisfacción a Clientes de *' + nombreMarca + '* ' + this.emojis.manosArriba + '.\n';
       plantilla += 'Agradecemos sinceramente el tiempo que nos brindó al visitarnos en nuestra agencia, fue un gusto atenderle y acompañarle durante su estancia.\n';
-      plantilla += 'Nos gustaría conocer su opinión respecto al servicio realizado a su *' + modeloAuto + '* el día *' + fechaVisita + '* ' + this.emojis.auto + this.emojis.herramienta + '.\n';
+      plantilla += 'Nos gustaría conocer su opinión respecto al servicio realizado a su *' + unidadReal + '* el día *' + fechaVisita + '* ' + this.emojis.auto + this.emojis.herramienta + '.\n';
       plantilla += 'Lo invitamos a responder nuestra encuesta de satisfacción; le tomará solo unos minutos.\n\n';
       plantilla += 'Por favor, haz clic en el siguiente enlace para participar:\n';
       plantilla += this.emojis.punto + ' ' + link + '\n';
@@ -336,7 +337,6 @@ export class ListarEncuestasComponent implements OnInit {
 
     return plantilla;
   }
-
   verDetallesYPlantilla(encuesta: Encuesta) {
     this.encuestaSeleccionada = encuesta;
     this.plantillaActual = this.generarPlantilla(encuesta);
