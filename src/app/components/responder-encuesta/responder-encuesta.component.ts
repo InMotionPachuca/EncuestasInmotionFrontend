@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EncuestaService } from '../../services/encuesta.service';
-import { Encuesta } from '../../models/encuesta.model';
+import { Encuesta, EncuestaRequestDTO, EncuestaRespuestaDTO } from '../../models/encuesta.model';
 
 @Component({
   selector: 'app-responder-encuesta',
@@ -77,7 +77,6 @@ export class ResponderEncuestaComponent implements OnInit {
     return this.encuestaForm.get(controlName)?.value || 0;
   }
 
-  // METODOS REQUERIDOS POR LA PLANTILLA HTML
   setTiempoAdecuado(valor: string): void {
     this.encuestaForm.get('tiempoAdecuado')?.setValue(valor);
     this.encuestaForm.get('tiempoAdecuado')?.markAsTouched();
@@ -105,15 +104,34 @@ export class ResponderEncuestaComponent implements OnInit {
     this.enviando = true;
     const formValue = this.encuestaForm.value;
 
-    const respuestasData = [
-      { preguntaId: 2, valorTexto: '', valorNumerico: formValue.experiencia, opcionId: null },
-      { preguntaId: 3, valorTexto: '', valorNumerico: formValue.atencion, opcionId: null },
-      { preguntaId: 4, valorTexto: '', valorNumerico: null, opcionId: formValue.tiempoAdecuado === 'SI' ? 1 : 2 },
-      { preguntaId: 5, valorTexto: '', valorNumerico: null, opcionId: formValue.recomienda === 'SI' ? 1 : 2 },
-      { preguntaId: 6, valorTexto: formValue.comentarios || '', valorNumerico: null, opcionId: null }
+    // RESPUESTAS SEGÚN LA INTERFAZ EncuestaRespuestaDTO
+    const respuestasData: EncuestaRespuestaDTO[] = [
+      { preguntaId: 2, valorTexto: '', valorNumerico: Number(formValue.experiencia) },
+      { preguntaId: 3, valorTexto: '', valorNumerico: Number(formValue.atencion) },
+      { preguntaId: 4, valorTexto: '', opcionId: formValue.tiempoAdecuado === 'SI' ? 1 : 2 },
+      { preguntaId: 5, valorTexto: '', opcionId: formValue.recomienda === 'SI' ? 1 : 2 },
+      { preguntaId: 6, valorTexto: formValue.comentarios || '' }
     ];
 
-    this.encuestaService.responderEncuesta(this.token, respuestasData).subscribe({
+    // SEPARAR NOMBRE Y APELLIDO DEL CLIENTE
+    const nombreCompleto = this.encuesta.clienteNombre || 'Cliente General';
+    const partesNombre = nombreCompleto.trim().split(' ');
+    const primerNombre = partesNombre[0] || 'Cliente';
+    const apellidos = partesNombre.slice(1).join(' ') || 'General';
+
+    // PAYLOAD CUMPLIENDO CON EncuestaRequestDTO
+    const payloadDTO: EncuestaRequestDTO = {
+      nombre: primerNombre,
+      apellido: apellidos,
+      email: this.encuesta.clienteEmail || 'cliente@inmotion.com',
+      telefono: this.encuesta.telefono || '0000000000',
+      asesor: this.encuesta.asesor || 'Atención a Clientes',
+      marcaId: this.encuesta.marcaId || 1,
+      tipo: this.encuesta.tipo || 'SERVICIO',
+      respuestas: respuestasData
+    };
+
+    this.encuestaService.responderEncuesta(this.token, payloadDTO).subscribe({
       next: () => {
         this.enviando = false;
         this.router.navigate(['/gracias']);
