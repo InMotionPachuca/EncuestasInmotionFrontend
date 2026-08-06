@@ -33,35 +33,59 @@
       </div>
     </div>
 
-    <!-- FILTROS -->
+    <!-- ACCESOS RÁPIDOS POR AGENCIA / MARCA -->
+    <div class="agencias-pills-container mb-3 d-flex flex-wrap gap-2">
+      <button 
+        type="button" 
+        class="badge-pill-agencia" 
+        [class.active]="filtroMarca === ''" 
+        (click)="seleccionarMarcaRapida('')">
+        Todas las Agencias ({{ encuestasTradicionales.length }})
+      </button>
+      <button 
+        type="button" 
+        class="badge-pill-agencia" 
+        *ngFor="let marca of marcas"
+        [class.active]="filtroMarca === marca.nombre" 
+        (click)="seleccionarMarcaRapida(marca.nombre)">
+        {{ marca.nombre }} ({{ obtenerConteoPorMarca(marca.nombre) }})
+      </button>
+    </div>
+
+    <!-- FILTROS PRINCIPALES -->
     <div class="filtros-container">
       <div class="filtros-box">
         <input 
           type="text" 
           class="filtro-input"
-          placeholder="Buscar por cliente, email o teléfono..." 
+          placeholder="Buscar cliente, email o teléfono..." 
           [(ngModel)]="filtroTexto"
           (input)="filtrarEncuestas()"
         >
-        <select class="filtro-select" [(ngModel)]="filtroMarca" (change)="filtrarEncuestas()">
-          <option value="">Todas las marcas</option>
-          <option *ngFor="let marca of marcas" [value]="marca.nombre">
-            {{ marca.nombre }}
-          </option>
-        </select>
+        
+        <!-- FILTRO DE FECHA (MES ACTUAL POR DEFECTO) -->
+        <input 
+          type="month" 
+          class="filtro-select"
+          [(ngModel)]="filtroMes"
+          (change)="filtrarEncuestas()"
+          title="Filtrar por mes y año"
+        >
+
         <select class="filtro-select" [(ngModel)]="filtroEstado" (change)="filtrarEncuestas()">
           <option value="">Todos los estados</option>
           <option value="ENVIADA">Enviada</option>
           <option value="RESPONDIDA">Respondida</option>
           <option value="EXPIRADA">Expirada</option>
         </select>
+
         <button class="btn-clear" (click)="limpiarFiltros()">
-          <i class="fas fa-eraser me-1"></i> Limpiar
+          <i class="fas fa-eraser me-1"></i> Limpiar Filtros
         </button>
       </div>
     </div>
 
-    <!-- TABLA TRADICIONAL CON LECTURA DE TELÉFONO DESDE CLIENTETELEFONO -->
+    <!-- TABLA TRADICIONAL PAGINADA -->
     <div *ngIf="!loading && !error" class="tabla-container">
       <div class="table-responsive">
         <table class="table">
@@ -76,7 +100,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let encuesta of encuestasFiltradas">
+            <tr *ngFor="let encuesta of encuestasPaginadas">
               <td>
                 <div class="cliente-info" style="display: flex; flex-direction: column;">
                   <strong style="display: block; color: #212529;">{{ encuesta.clienteNombre }}</strong>
@@ -111,14 +135,30 @@
             </tr>
             <tr *ngIf="encuestasFiltradas.length === 0">
               <td colspan="6" class="sin-resultados">
-                <p>No hay encuestas tradicionales disponibles</p>
+                <p>No se encontraron encuestas con los filtros aplicados.</p>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div class="tabla-footer" *ngIf="encuestasFiltradas.length > 0">
-        <span>Total: {{ encuestasFiltradas.length }} encuestas</span>
+
+      <!-- CONTROLES DE PAGINACIÓN -->
+      <div class="tabla-footer d-flex justify-content-between align-items-center mt-3 pt-2 border-top" *ngIf="encuestasFiltradas.length > 0">
+        <span class="text-muted small">
+          Mostrando {{ (paginaActual - 1) * elementosPorPagina + 1 }} - 
+          {{ Math.min(paginaActual * elementosPorPagina, encuestasFiltradas.length) }} 
+          de {{ encuestasFiltradas.length }} encuestas
+        </span>
+
+        <div class="paginacion-controls d-flex gap-1 align-items-center">
+          <button class="btn-pag" [disabled]="paginaActual === 1" (click)="cambiarPagina(paginaActual - 1)">
+            <i class="fas fa-chevron-left"></i> Anterior
+          </button>
+          <span class="px-2 small fw-bold">Página {{ paginaActual }} de {{ totalPaginas }}</span>
+          <button class="btn-pag" [disabled]="paginaActual === totalPaginas" (click)="cambiarPagina(paginaActual + 1)">
+            Siguiente <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -203,7 +243,6 @@
                 </span>
               </td>
 
-              <!-- CELDA DESPLEGABLE -->
               <td style="max-width: 250px;">
                 <div *ngIf="obtenerComentario(enc) as comentario; else sinComentarios">
                   <span *ngIf="comentario.length <= 35" style="font-style: italic; color: #495057;">

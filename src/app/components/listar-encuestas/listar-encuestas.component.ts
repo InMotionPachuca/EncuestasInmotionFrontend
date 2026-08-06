@@ -13,13 +13,22 @@ import * as XLSX from 'xlsx';
 })
 export class ListarEncuestasComponent implements OnInit {
   pestanaActiva: 'tradicionales' | 'qr' = 'tradicionales';
+  Math = Math; // Para usar Math.min en la plantilla HTML
 
   // --- ARREGLOS ENCUESTAS TRADICIONALES ---
   encuestasTradicionales: Encuesta[] = [];
   encuestasFiltradas: Encuesta[] = [];
+  encuestasPaginadas: Encuesta[] = [];
+  
   filtroTexto: string = '';
   filtroMarca: string = '';
   filtroEstado: string = '';
+  filtroMes: string = ''; // Formato YYYY-MM (e.g. 2026-08)
+
+  // --- PAGINACIÓN ---
+  paginaActual: number = 1;
+  elementosPorPagina: number = 15;
+  totalPaginas: number = 1;
 
   // --- ARREGLOS ENCUESTAS QR ---
   encuestasQr: Encuesta[] = [];
@@ -27,7 +36,6 @@ export class ListarEncuestasComponent implements OnInit {
   filtroTextoQr: string = '';
   filtroMarcaQr: string = '';
 
-  // Control de estado expandido/contraído para comentarios largos en QR
   comentariosExpandidos: { [key: number]: boolean } = {};
 
   marcas: any[] = [];
@@ -66,6 +74,10 @@ export class ListarEncuestasComponent implements OnInit {
     private notificationService: NotificationService
   ) {
     this.marcas = this.encuestaService.obtenerMarcas();
+    // Establecer mes actual por defecto YYYY-MM
+    const hoy = new Date();
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    this.filtroMes = `${hoy.getFullYear()}-${mes}`;
   }
 
   ngOnInit() {
@@ -88,12 +100,12 @@ export class ListarEncuestasComponent implements OnInit {
         
         // 1. Filtrar Tradicionales
         this.encuestasTradicionales = listado.filter(e => e.tipo !== 'QR' && e.serie !== 'QR-GENERAL');
-        this.encuestasFiltradas = [...this.encuestasTradicionales];
-
+        
         // 2. Filtrar QR
         this.encuestasQr = listado.filter(e => e.tipo === 'QR' || e.serie === 'QR-GENERAL');
         this.encuestasQrFiltradas = [...this.encuestasQr];
 
+        this.filtrarEncuestas();
         this.loading = false;
       },
       error: (error: any) => {
@@ -104,7 +116,17 @@ export class ListarEncuestasComponent implements OnInit {
     });
   }
 
-  // --- MÉTODOS FILTRO TRADICIONALES (INCLUYE BÚSQUEDA POR TELÉFONO) ---
+  // --- SELECCIÓN RÁPIDA DE MARCA DESDE PILLS ---
+  seleccionarMarcaRapida(nombreMarca: string) {
+    this.filtroMarca = nombreMarca;
+    this.filtrarEncuestas();
+  }
+
+  obtenerConteoPorMarca(nombreMarca: string): number {
+    return this.encuestasTradicionales.filter(e => e.marcaNombre === nombreMarca).length;
+  }
+
+  // --- MÉTODOS DE FILTRADO Y PAGINACIÓN ---
   filtrarEncuestas() {
     this.encuestasFiltradas = this.encuestasTradicionales.filter(encuesta => {
       const textoSearch = this.filtroTexto.toLowerCase();
@@ -118,15 +140,41 @@ export class ListarEncuestasComponent implements OnInit {
       const marcaMatch = !this.filtroMarca || encuesta.marcaNombre === this.filtroMarca;
       const estadoMatch = !this.filtroEstado || encuesta.estado === this.filtroEstado;
 
-      return textoMatch && marcaMatch && estadoMatch;
+      // Filtro por Mes (YYYY-MM)
+      let mesMatch = true;
+      if (this.filtroMes && encuesta.fechaEnvio) {
+        const fecha = new Date(encuesta.fechaEnvio);
+        const mesEncuesta = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+        mesMatch = mesEncuesta === this.filtroMes;
+      }
+
+      return textoMatch && marcaMatch && estadoMatch && mesMatch;
     });
+
+    this.paginaActual = 1;
+    this.actualizarPaginacion();
+  }
+
+  actualizarPaginacion() {
+    this.totalPaginas = Math.ceil(this.encuestasFiltradas.length / this.elementosPorPagina) || 1;
+    const inicio = (this.paginaActual - 1) * this.elementosPorPagina;
+    const fin = inicio + this.elementosPorPagina;
+    this.encuestasPaginadas = this.encuestasFiltradas.slice(inicio, fin);
+  }
+
+  cambiarPagina(nuevaPagina: number) {
+    if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
+      this.paginaActual = nuevaPagina;
+      this.actualizarPaginacion();
+    }
   }
 
   limpiarFiltros() {
     this.filtroTexto = '';
     this.filtroMarca = '';
     this.filtroEstado = '';
-    this.encuestasFiltradas = [...this.encuestasTradicionales];
+    this.filtroMes = '';
+    this.filtrarEncuestas();
   }
 
   // --- MÉTODOS FILTRO QR ---
@@ -149,7 +197,6 @@ export class ListarEncuestasComponent implements OnInit {
     this.encuestasQrFiltradas = [...this.encuestasQr];
   }
 
-  // --- CONTROL DE COMENTARIO DESPLEGABLE EN TABLA ---
   toggleComentario(encuestaId?: number): void {
     if (encuestaId === undefined || encuestaId === null) return;
     this.comentariosExpandidos[encuestaId] = !this.comentariosExpandidos[encuestaId];
@@ -160,7 +207,6 @@ export class ListarEncuestasComponent implements OnInit {
     return !!this.comentariosExpandidos[encuestaId];
   }
 
-  // --- HELPERS RESPUESTAS QR ---
   obtenerTelefono(e: Encuesta): string {
     return e.clienteTelefono || e.telefono || 'Sin teléfono';
   }
@@ -182,7 +228,6 @@ export class ListarEncuestasComponent implements OnInit {
     return resp.valorTexto;
   }
 
-  // --- PLANTILLA Y MODAL DE TRADICIONALES ---
   obtenerImagenMarca(nombreMarca: string): string {
     if (!nombreMarca) return 'assets/whatsapp/subaruPachuca.png';
     const nombreLimpio = this.normalizarTexto(nombreMarca);
@@ -283,7 +328,6 @@ export class ListarEncuestasComponent implements OnInit {
     }
   }
 
-  // --- ELIMINAR ENCUESTA TRADICIONAL ---
   eliminarEncuesta(encuesta: Encuesta) {
     if (!encuesta.id) return;
     if (confirm('¿Estas seguro de eliminar la encuesta de ' + encuesta.clienteNombre + '?')) {
@@ -297,7 +341,6 @@ export class ListarEncuestasComponent implements OnInit {
     }
   }
 
-  // --- ELIMINAR ENCUESTA QR ---
   eliminarEncuestaQr(encuesta: Encuesta) {
     if (!encuesta.id) return;
     const nombreCliente = this.obtenerRespuestaTexto(encuesta, 1);
@@ -316,7 +359,6 @@ export class ListarEncuestasComponent implements OnInit {
     }
   }
 
-  // --- EXPORTAR EXCEL DE CADA SECCIÓN ---
   exportarExcel() {
     if (this.encuestasFiltradas.length === 0) {
       this.notificationService.show('No hay encuestas para exportar', 'warning');

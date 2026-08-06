@@ -392,3 +392,53 @@
   border-color: #C5A059 !important;
   box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15) !important;
 }
+
+/* PILLS DE SELECCIÓN RÁPIDA DE AGENCIA */
+.badge-pill-agencia {
+  background: #FFFFFF;
+  border: 1px solid #CED4DA;
+  color: #495057;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.badge-pill-agencia:hover {
+  border-color: #C5A059;
+  color: #C5A059;
+  background: #FDF8ED;
+}
+
+.badge-pill-agencia.active {
+  background: #C5A059;
+  color: #FFFFFF;
+  border-color: #C5A059;
+  box-shadow: 0 2px 6px rgba(197, 160, 89, 0.3);
+}
+
+/* PAGINACIÓN */
+.btn-pag {
+  background: #FFFFFF;
+  border: 1px solid #CED4DA;
+  color: #495057;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-pag:hover:not(:disabled) {
+  background: #F8F9FA;
+  border-color: #C5A059;
+  color: #C5A059;
+}
+
+.btn-pag:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
