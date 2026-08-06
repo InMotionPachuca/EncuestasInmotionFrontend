@@ -104,8 +104,7 @@ export class ResponderEncuestaComponent implements OnInit {
     this.enviando = true;
     const formValue = this.encuestaForm.value;
 
-    // PAYLOAD ALINEADO STRICTAMENTE CON RespuestaRequestDTO.java
-    const respuestasData = [
+    const listaRespuestas = [
       { 
         preguntaId: 1, 
         valorTexto: this.encuesta.clienteNombre || 'Cliente', 
@@ -144,7 +143,12 @@ export class ResponderEncuestaComponent implements OnInit {
       }
     ];
 
-    this.encuestaService.responderEncuesta(this.token, respuestasData).subscribe({
+    // PAYLOAD ENVOLVIENDO EL ARREGLO EN UN OBJETO
+    const payload = {
+      respuestas: listaRespuestas
+    };
+
+    this.encuestaService.responderEncuesta(this.token, payload).subscribe({
       next: () => {
         this.enviando = false;
         this.router.navigate(['/gracias']);
