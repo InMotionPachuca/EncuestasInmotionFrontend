@@ -104,13 +104,13 @@ export class ResponderEncuestaComponent implements OnInit {
     this.enviando = true;
     const formValue = this.encuestaForm.value;
 
-    // MAPEO DE RESPUESTAS ADAPTADO A SPRING BOOT
+    // ESTRUCTURA ORIGINAL DE PAYLOAD
     const respuestasData = [
-      { preguntaId: 1, valorTexto: formValue.experiencia.toString(), valorNumerico: formValue.experiencia, opcionId: null },
-      { preguntaId: 2, valorTexto: formValue.atencion.toString(), valorNumerico: formValue.atencion, opcionId: null },
-      { preguntaId: 3, valorTexto: formValue.tiempoAdecuado, valorNumerico: null, opcionId: formValue.tiempoAdecuado === 'SI' ? 1 : 2 },
-      { preguntaId: 4, valorTexto: formValue.recomienda, valorNumerico: null, opcionId: formValue.recomienda === 'SI' ? 1 : 2 },
-      { preguntaId: 5, valorTexto: formValue.comentarios || '', valorNumerico: null, opcionId: null }
+      { preguntaId: 2, valorTexto: '', valorNumerico: formValue.experiencia, opcionId: null },
+      { preguntaId: 3, valorTexto: '', valorNumerico: formValue.atencion, opcionId: null },
+      { preguntaId: 4, valorTexto: '', valorNumerico: null, opcionId: formValue.tiempoAdecuado === 'SI' ? 1 : 2 },
+      { preguntaId: 5, valorTexto: '', valorNumerico: null, opcionId: formValue.recomienda === 'SI' ? 1 : 2 },
+      { preguntaId: 6, valorTexto: formValue.comentarios || '', valorNumerico: null, opcionId: null }
     ];
 
     this.encuestaService.responderEncuesta(this.token, respuestasData).subscribe({
