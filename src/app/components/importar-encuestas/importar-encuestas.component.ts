@@ -27,19 +27,12 @@ export class ImportarEncuestasComponent {
   marcasMap: { [key: string]: number } = {
     'toyota pachuca': 1,
     'toyota tulancingo': 2,
-    'toyota': 1,
     'carsline pachuca': 3,
     'carsline queretaro': 4,
-    'carsline': 3,
     'gwm celaya': 5,
-    'gwm queretaro': 5,
-    'gwm': 5,
     'subaru': 6,
-    'subaru pachuca': 6,
     'comprocars queretaro': 7,
     'compro pachuca': 8,
-    'comprocars pachuca': 8,
-    'comprocars': 8
   };
 
   imagenesMarca: { [key: string]: string } = {
@@ -94,7 +87,7 @@ export class ImportarEncuestasComponent {
     if (limpio.includes('toyota')) return 'Toyota Pachuca';
     if (limpio.includes('carsline') && limpio.includes('queretaro')) return 'Carsline Querétaro';
     if (limpio.includes('carsline')) return 'Carsline Pachuca';
-    if (limpio.includes('gwm')) return 'GWM Celaya'; // SIEMPRE ASIGNA GWM CELAYA
+    if (limpio.includes('gwm')) return 'GWM Celaya'; 
     if (limpio.includes('subaru')) return 'Subaru';
     if (limpio.includes('compro') && limpio.includes('queretaro')) return 'ComproCars Querétaro';
     if (limpio.includes('compro')) return 'ComproCars Pachuca';

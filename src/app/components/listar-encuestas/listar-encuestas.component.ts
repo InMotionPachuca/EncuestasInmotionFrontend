@@ -292,7 +292,7 @@ export class ListarEncuestasComponent implements OnInit {
   generarPlantilla(encuesta: Encuesta): string {
     const nombreCliente = encuesta.clienteNombre || 'Cliente';
     const nombreAsesor = encuesta.asesor || 'Asesor de Servicio';
-    const nombreMarca = encuesta.marcaNombre || 'Subaru';
+    const nombreMarca = encuesta.marcaNombre || 'InMotion';
     const modeloAuto = 'su vehiculo';
     const fechaVisita = encuesta.fechaEnvio ? this.formatearFecha(encuesta.fechaEnvio) : 'fecha de visita';
     const link = this.generarLink(encuesta.token);
