@@ -33,13 +33,12 @@
 
 /* LOGO AMPLIADO Y TRANSFORMADO A BLANCO PURO CON SOMBRA DORADA */
 .logo-team-inmotion-principal {
-  height: 110px !important; /* TAMAÑO AMPLIADO */
+  height: 110px !important;
   width: auto !important;
   max-width: 90% !important;
   display: block;
   object-fit: contain;
-  filter: brightness(0) invert(1) drop-shadow(0px 4px 14px rgba(197, 160, 89, 0.45)) !important;
-  transition: transform 0.3s ease, filter 0.3s ease;
+  filter: brightness(0) invert(1) drop-shadow(0px 4px 12px rgba(197, 160, 89, 0.4)) !important;
 }
 
 .logo-team-inmotion-principal:hover {
