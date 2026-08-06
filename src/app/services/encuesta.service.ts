@@ -14,28 +14,28 @@ export class EncuestaService {
     return window.location.origin;
   }
 
-  // MAPEO DE LOGOS ALINEADO EXACTAMENTE A CADA ID
+  // LOGOS ALINEADOS EXACTAMENTE A LOS IDS DE LA BASE DE DATOS DE PRODUCCIÓN
   logos: { [key: number]: string } = {
     1: 'Toyota.png',       // Toyota Pachuca
-    2: 'Toyota.png',       // Toyota Tulancingo
-    3: 'carsline.png',     // Carsline Pachuca
-    4: 'carsline.png',     // Carsline Querétaro
-    5: 'gwm.png',          // GWM Celaya
-    6: 'subaru.webp',      // Subaru
-    7: 'comprocars.png',   // ComproCars Querétaro
-    8: 'comprocars.png'    // ComproCars Pachuca
+    2: 'carsline.png',     // Carsline Pachuca
+    3: 'carsline.png',     // Carsline Queretaro
+    4: 'gwm.png',          // GWM Celaya (ID 4)
+    5: 'subaru.webp',      // Subaru (ID 5)
+    6: 'comprocars.png',   // ComproCars Queretaro (ID 6)
+    7: 'comprocars.png',   // Compro Pachuca (ID 7)
+    8: 'Toyota.png'        // Toyota Tulancingo (ID 8)
   };
 
-  // CATÁLOGO OFICIAL Y DEFINITIVO DE AGENCIAS CON SUS IDS REALES
+  // CATÁLOGO OFICIAL COINCIDENTE CON LA BD DE PRODUCCIÓN
   marcas = [
     { id: 1, nombre: 'Toyota Pachuca' },
-    { id: 2, nombre: 'Toyota Tulancingo' },
-    { id: 3, nombre: 'Carsline Pachuca' },
-    { id: 4, nombre: 'Carsline Querétaro' },
-    { id: 5, nombre: 'GWM Celaya' },
-    { id: 6, nombre: 'Subaru' },
-    { id: 7, nombre: 'ComproCars Querétaro' },
-    { id: 8, nombre: 'ComproCars Pachuca' }
+    { id: 2, nombre: 'Carsline Pachuca' },
+    { id: 3, nombre: 'Carsline Querétaro' },
+    { id: 4, nombre: 'GWM Celaya' },
+    { id: 5, nombre: 'Subaru' },
+    { id: 6, nombre: 'ComproCars Querétaro' },
+    { id: 7, nombre: 'ComproCars Pachuca' },
+    { id: 8, nombre: 'Toyota Tulancingo' }
   ];
 
   preguntas: Pregunta[] = [
