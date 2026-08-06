@@ -63,9 +63,9 @@ export class ImportarEncuestasComponent {
     return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
   }
 
-  // IDS CORREGIDOS SEGÚN LA TABLA 'MARCAS' DE PRODUCCIÓN:
-  // 1: Toyota Pachuca | 2: Carsline Pachuca | 3: Carsline Queretaro
-  // 4: GWM Celaya | 5: Subaru | 6: ComproCars Queretaro | 7: Compro Pachuca | 8: Toyota Tulancingo
+  // ALINEACIÓN ESTRICTA CON LA BD:
+  // 1: Toyota Pachuca | 2: Carsline Pachuca | 3: Carsline Querétaro
+  // 4: GWM Celaya | 5: Subaru | 6: ComproCars Querétaro | 7: Compro Pachuca | 8: Toyota Tulancingo
   obtenerMarcaId(nombreMarca: string): number {
     if (!nombreMarca) return 2;
     const limpio = this.normalizarTexto(nombreMarca);
@@ -74,8 +74,8 @@ export class ImportarEncuestasComponent {
     if (limpio.includes('toyota')) return 1;
     if (limpio.includes('carsline') && limpio.includes('queretaro')) return 3;
     if (limpio.includes('carsline')) return 2;
-    if (limpio.includes('gwm')) return 4;               // ID 4 CORRESPONDE A GWM CELAYA
-    if (limpio.includes('subaru')) return 5;            // ID 5 CORRESPONDE A SUBARU
+    if (limpio.includes('gwm')) return 4;
+    if (limpio.includes('subaru')) return 5;
     if (limpio.includes('compro') && limpio.includes('queretaro')) return 6;
     if (limpio.includes('compro')) return 7;
 
@@ -126,17 +126,29 @@ export class ImportarEncuestasComponent {
             }
           }
 
-          const noFactura = row['# ORDEN'] || row['NO FACTURA'] || row['B'] || '';
-          const tipo = row['TIPO'] || row['ALTA/BAJA'] || row['C'] || '';
+          if (!fecha) {
+            const values = Object.values(row);
+            if (values.length > 0 && values[0]) {
+              fecha = String(values[0]);
+            }
+          }
+
+          const noFactura = row['No. FACTURA'] || row['# ORDEN'] || row['NO FACTURA'] || row['B'] || '';
+          const tipo = row['ALTA/BAJA'] || row['TIPO'] || row['C'] || '';
           const serie = row['SERIE'] || row['D'] || '';
-          const unidad = row['UNIDAD'] || row['E'] || '';
-          const anio = row['AÑO'] || row['F'] || '';
-          const asesorRaw = row['ASESOR'] || row['Asesor'] || row['asesor'] || row['ADV'] || row['G'] || '';
-          const asesor = asesorRaw ? asesorRaw.toString().trim() : 'Asesor de Servicio';
           const marcaNombreRaw = row['MARCA'] || row['Marca'] || row['marca'] || row['SUCURSAL'] || row['sucursal'] || '';
           const marcaNombreOficial = this.normalizarNombreMarcaOficial(marcaNombreRaw ? marcaNombreRaw.toString().trim() : '');
-          const nombreCliente = row['NOMBRE CLIENTE'] || row['H'] || '';
-          const telefono = row['TELEFONO 1'] || row['TELEFONO'] || row['I'] || '';
+          
+          // LECTURA DE UNIDAD Y AÑO
+          const unidad = row['UNIDAD'] || row['Unidad'] || row['unidad'] || row['E'] || '';
+          const anio = row['AÑO'] || row['Año'] || row['anio'] || row['F'] || '';
+
+          const asesorRaw = row['ASESOR'] || row['Asesor'] || row['asesor'] || row['ADV'] || row['G'] || '';
+          const asesor = asesorRaw ? asesorRaw.toString().trim() : 'Asesor de Servicio';
+
+          const nombreCliente = row['NOMBRE CLIENTE'] || row['Cliente'] || row['H'] || '';
+          const telefono = row['TELEFONO'] || row['TELEFONO 1'] || row['Telefono'] || row['I'] || '';
+          const email = row['CORREO ELECTRONICO'] || row['CORREO'] || row['EMAIL'] || row['Email'] || '';
 
           if (nombreCliente && nombreCliente.toString().trim()) {
             const marcaId = this.obtenerMarcaId(marcaNombreOficial);
@@ -154,6 +166,7 @@ export class ImportarEncuestasComponent {
               marcaId: marcaId,
               nombreCliente: nombreCliente.toString().trim(),
               telefono: telefono ? telefono.toString().trim() : '',
+              email: email ? email.toString().trim() : 'sin_correo@inmotion.com',
               procesado: false,
               exito: false,
               error: ''
@@ -200,17 +213,50 @@ export class ImportarEncuestasComponent {
     return !isNaN(fecha.getTime()) ? fecha.toISOString().split('T')[0] : '';
   }
 
+  formatearFecha(fechaStr: string): string {
+    if (!fechaStr) return 'fecha de visita';
+    const fecha = new Date(fechaStr);
+    if (!isNaN(fecha.getTime())) {
+      return fecha.toLocaleDateString('es-MX', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+    return fechaStr || 'fecha de visita';
+  }
+
   generarPlantilla(cliente: any, link: string): string {
     const nombreCliente = cliente.nombreCliente || 'Cliente';
     const nombreAsesor = cliente.asesor || 'Asesor de Servicio';
     const nombreMarca = cliente.marcaNombre || 'Agencia';
-    const modeloAuto = cliente.unidad || 'su vehiculo';
+    const modeloAuto = cliente.unidad ? cliente.unidad : 'su vehiculo';
+    const anioAuto = cliente.anio ? ` ${cliente.anio}` : '';
+    const vehiculoCompleto = `${modeloAuto}${anioAuto}`.trim();
+    const fechaVisita = cliente.fecha ? this.formatearFecha(cliente.fecha) : 'fecha de visita';
+
+    let plantilla = '';
 
     if (this.tipoPlantilla === 'VENTA') {
-      return `Buen día, Sr./Srita. *${nombreCliente}*.\nMi nombre es *Cecilia Juárez* y formo parte del área de Satisfacción a Clientes de *${nombreMarca}*. ${this.emojis.manosArriba}\nAgradecemos sinceramente el tiempo que nos brindó al visitarnos. Fue un placer atenderle y acompañarle durante la adquisición de su ${modeloAuto}.\nNos gustaría conocer su opinión sobre la atención recibida tanto por parte de nuestra agencia como de su asesor *${nombreAsesor}*. Por ello, le invitamos a responder nuestra encuesta de satisfacción:\n👉 ${link}\n¡Muchas gracias por su tiempo y confianza!`;
+      plantilla += `Buen día, Sr./Srita. *${nombreCliente}*.\n`;
+      plantilla += `Mi nombre es *Cecilia Juárez* y formo parte del área de Satisfacción a Clientes de *${nombreMarca}*. ${this.emojis.manosArriba}\n`;
+      plantilla += `Agradecemos sinceramente el tiempo que nos brindó al visitarnos. Fue un placer atenderle y acompañarle durante la adquisición de su *${vehiculoCompleto}*.\n`;
+      plantilla += `Nos gustaría conocer su opinión sobre la atención recibida tanto por parte de nuestra agencia como de su asesor *${nombreAsesor}*. Por ello, le invitamos a responder nuestra encuesta de satisfacción, la cual le tomará solo unos minutos.\n`;
+      plantilla += `Para participar, por favor haga click en el siguiente enlace:\n`;
+      plantilla += `${this.emojis.punto} ${link}\n`;
+      plantilla += `Muchas gracias por su tiempo y confianza.\n`;
+      plantilla += `¡Le damos la más cordial bienvenida a la familia *${nombreMarca}*! ${this.emojis.gracias}${this.emojis.auto}`;
     } else {
-      return `Buen día, Sr./Srita. *${nombreCliente}*. Mi nombre es *Cecilia Juárez* de Satisfacción a Clientes de *${nombreMarca}* ${this.emojis.manosArriba}\nNos gustaría conocer su opinión respecto al servicio realizado a su vehículo.\nPor favor, haz clic en el siguiente enlace para participar:\n👉 ${link}\n¡Muchas gracias por su tiempo!`;
+      plantilla += `Buen día, Sr./Srita. *${nombreCliente}* Mi nombre es *Cecilia Juárez* de Satisfacción a Clientes de *${nombreMarca}* ${this.emojis.manosArriba}\n`;
+      plantilla += `Agradecemos sinceramente el tiempo que nos brindó al visitarnos en nuestra agencia, fue un gusto atenderle y acompañarle durante su estancia.\n`;
+      plantilla += `Nos gustaría conocer su opinión respecto al servicio realizado a su *${vehiculoCompleto}* el día *${fechaVisita}*.${this.emojis.auto}${this.emojis.herramienta}\n`;
+      plantilla += `Lo invitamos a responder nuestra encuesta de satisfacción; le tomará solo unos minutos.\n`;
+      plantilla += `Por favor, haz clic en el siguiente enlace para participar:\n`;
+      plantilla += `${this.emojis.punto} ${link}\n`;
+      plantilla += `  ¡Muchas gracias por su tiempo! ${this.emojis.gracias}${this.emojis.auto}`;
     }
+
+    return plantilla;
   }
 
   generarEncuestas() {
@@ -250,6 +296,8 @@ export class ImportarEncuestasComponent {
             this.encuestasGeneradas.push({
               cliente: cliente.nombreCliente,
               marca: cliente.marcaNombre,
+              unidad: cliente.unidad,
+              anio: cliente.anio,
               token: response.token,
               link: link,
               plantilla: this.generarPlantilla(cliente, link),
@@ -325,7 +373,13 @@ export class ImportarEncuestasComponent {
 
   descargarReporte() {
     if (this.encuestasGeneradas.length === 0) return;
-    const ws = XLSX.utils.json_to_sheet(this.encuestasGeneradas.map(e => ({ 'Cliente': e.cliente, 'Marca': e.marca, 'Link': e.link })));
+    const ws = XLSX.utils.json_to_sheet(this.encuestasGeneradas.map(e => ({
+      'Cliente': e.cliente,
+      'Marca': e.marca,
+      'Unidad': e.unidad,
+      'Año': e.anio,
+      'Link': e.link
+    })));
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
     XLSX.writeFile(wb, `reporte_encuestas_${new Date().toISOString().split('T')[0]}.xlsx`);
