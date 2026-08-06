@@ -282,6 +282,7 @@ export class ImportarEncuestasComponent {
           telefono: cliente.telefono ? cliente.telefono.toString().replace(/\D/g, '') : '7710000000',
           serie: cliente.serie || 'SN',
           asesor: cliente.asesor || 'Atención a Clientes',
+          unidad: cliente.unidad || '',
           marcaId: cliente.marcaId,
           tipo: this.tipoPlantilla,
           respuestas: []

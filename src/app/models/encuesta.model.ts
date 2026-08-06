@@ -12,6 +12,7 @@ export interface Encuesta {
   clienteTelefono?: string; // <--- AÑADIDO PARA LEER EL DTO DE SPRING BOOT
   telefono?: string;
   asesor?: string;
+  unidad?: string;
   marcaNombre: string;
   marcaId?: number;
   respuestas: RespuestaDTO[];
