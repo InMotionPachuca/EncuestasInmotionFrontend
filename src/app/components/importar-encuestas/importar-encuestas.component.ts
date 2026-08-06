@@ -63,9 +63,6 @@ export class ImportarEncuestasComponent {
     return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
   }
 
-  // ALINEACIÓN ESTRICTA CON LA BD:
-  // 1: Toyota Pachuca | 2: Carsline Pachuca | 3: Carsline Querétaro
-  // 4: GWM Celaya | 5: Subaru | 6: ComproCars Querétaro | 7: Compro Pachuca | 8: Toyota Tulancingo
   obtenerMarcaId(nombreMarca: string): number {
     if (!nombreMarca) return 2;
     const limpio = this.normalizarTexto(nombreMarca);
@@ -139,7 +136,6 @@ export class ImportarEncuestasComponent {
           const marcaNombreRaw = row['MARCA'] || row['Marca'] || row['marca'] || row['SUCURSAL'] || row['sucursal'] || '';
           const marcaNombreOficial = this.normalizarNombreMarcaOficial(marcaNombreRaw ? marcaNombreRaw.toString().trim() : '');
           
-          // LECTURA DE UNIDAD Y AÑO
           const unidad = row['UNIDAD'] || row['Unidad'] || row['unidad'] || row['E'] || '';
           const anio = row['AÑO'] || row['Año'] || row['anio'] || row['F'] || '';
 
@@ -230,9 +226,10 @@ export class ImportarEncuestasComponent {
     const nombreCliente = cliente.nombreCliente || 'Cliente';
     const nombreAsesor = cliente.asesor || 'Asesor de Servicio';
     const nombreMarca = cliente.marcaNombre || 'Agencia';
-    const modeloAuto = cliente.unidad ? cliente.unidad : 'su vehiculo';
-    const anioAuto = cliente.anio ? ` ${cliente.anio}` : '';
-    const vehiculoCompleto = `${modeloAuto}${anioAuto}`.trim();
+    
+    const modelo = (cliente.unidad && cliente.unidad.toString().trim() !== '') ? cliente.unidad.toString().trim() : 'vehículo';
+    const anio = cliente.anio ? ` ${cliente.anio}` : '';
+    const vehiculoCompleto = (modelo === 'vehículo') ? 'vehículo' : `${modelo}${anio}`.trim();
     const fechaVisita = cliente.fecha ? this.formatearFecha(cliente.fecha) : 'fecha de visita';
 
     let plantilla = '';
@@ -275,6 +272,11 @@ export class ImportarEncuestasComponent {
         const nombre = partes[0] || 'Cliente';
         const apellido = partes.slice(1).join(' ') || 'General';
 
+        // CONCATENA UNIDAD Y AÑO PARA GUARDAR EL NOMBRE COMPLETO EN LA BD (ej. POER COMERCIAL 2026)
+        const modelo = (cliente.unidad && cliente.unidad.toString().trim() !== '') ? cliente.unidad.toString().trim() : '';
+        const anio = cliente.anio ? ` ${cliente.anio}`.trim() : '';
+        const unidadCompleta = `${modelo} ${anio}`.trim();
+
         const data = {
           nombre: nombre,
           apellido: apellido,
@@ -282,7 +284,7 @@ export class ImportarEncuestasComponent {
           telefono: cliente.telefono ? cliente.telefono.toString().replace(/\D/g, '') : '7710000000',
           serie: cliente.serie || 'SN',
           asesor: cliente.asesor || 'Atención a Clientes',
-          unidad: cliente.unidad || '',
+          unidad: unidadCompleta,
           marcaId: cliente.marcaId,
           tipo: this.tipoPlantilla,
           respuestas: []
