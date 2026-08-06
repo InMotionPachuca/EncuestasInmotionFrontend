@@ -9,6 +9,7 @@ export interface Encuesta {
   fechaRespuesta?: Date;
   clienteNombre: string;
   clienteEmail: string;
+  clienteTelefono?: string; // <--- AÑADIDO PARA LEER EL DTO DE SPRING BOOT
   telefono?: string;
   asesor?: string;
   marcaNombre: string;

@@ -108,10 +108,12 @@ export class ListarEncuestasComponent implements OnInit {
   filtrarEncuestas() {
     this.encuestasFiltradas = this.encuestasTradicionales.filter(encuesta => {
       const textoSearch = this.filtroTexto.toLowerCase();
+      const telefonoCliente = encuesta.clienteTelefono || encuesta.telefono || '';
+
       const textoMatch = !this.filtroTexto ||
         (encuesta.clienteNombre && encuesta.clienteNombre.toLowerCase().includes(textoSearch)) ||
         (encuesta.clienteEmail && encuesta.clienteEmail.toLowerCase().includes(textoSearch)) ||
-        (encuesta.telefono && encuesta.telefono.includes(this.filtroTexto));
+        (telefonoCliente && telefonoCliente.includes(this.filtroTexto));
 
       const marcaMatch = !this.filtroMarca || encuesta.marcaNombre === this.filtroMarca;
       const estadoMatch = !this.filtroEstado || encuesta.estado === this.filtroEstado;
@@ -160,8 +162,7 @@ export class ListarEncuestasComponent implements OnInit {
 
   // --- HELPERS RESPUESTAS QR ---
   obtenerTelefono(e: Encuesta): string {
-    const enc = e as any;
-    return enc.clienteTelefono || enc.telefono || 'Sin teléfono';
+    return e.clienteTelefono || e.telefono || 'Sin teléfono';
   }
 
   obtenerRespuestaTexto(encuesta: Encuesta, preguntaId: number): string {
@@ -325,7 +326,7 @@ export class ListarEncuestasComponent implements OnInit {
     const data = this.encuestasFiltradas.map(e => ({
       'Cliente': e.clienteNombre,
       'Email': e.clienteEmail,
-      'Telefono': e.telefono,
+      'Telefono': e.clienteTelefono || e.telefono || 'Sin teléfono',
       'Asesor': e.asesor || '',
       'Marca': e.marcaNombre,
       'Estado': this.getEstadoTexto(e.estado),
