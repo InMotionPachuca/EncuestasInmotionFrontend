@@ -214,3 +214,36 @@
 .btn-eye:hover {
   color: #c5a059;
 }
+
+/* Botón de toggle en la navbar */
+.btn-toggle-sidebar {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.btn-toggle-sidebar:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Transición suave para la barra lateral */
+.sidebar {
+  width: 240px;
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+/* Mantiene visible los iconos cuando colapsa */
+.sidebar.sidebar-collapsed {
+  width: 60px;
+}
+
+.main-content {
+  flex: 1;
+  transition: all 0.3s ease-in-out;
+}

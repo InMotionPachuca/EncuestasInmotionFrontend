@@ -12,7 +12,9 @@ import { AuthService } from './services/auth.service';
 export class AppComponent {
   title = 'encuestas-app';
 
-  // Todos los ítems de navegación marcando cuáles requieren ser Admin
+  // CONTROL DEL ESTADO DE LA BARRA LATERAL
+  sidebarOculta = false;
+
   private todosLosMenuItems = [
     { route: '/dashboard', label: 'CXI', icon: 'fas fa-chart-pie', badge: null, badgeClass: '', adminOnly: false },
     { route: '/dashboard-qr', label: 'CXI QR', icon: 'fas fa-qrcode', badge: null, badgeClass: 'bg-warning text-dark', adminOnly: false },
@@ -47,7 +49,11 @@ export class AppComponent {
     });
   }
 
-  // Getter que filtra las opciones según quien haya iniciado sesión
+  // MÉTODO PARA ALTERNAR EL ESTADO DE LA BARRA LATERAL
+  toggleSidebar(): void {
+    this.sidebarOculta = !this.sidebarOculta;
+  }
+
   get menuItems() {
     if (this.authService.isAdmin()) {
       return this.todosLosMenuItems;
@@ -55,7 +61,6 @@ export class AppComponent {
     return this.todosLosMenuItems.filter(item => !item.adminOnly);
   }
 
-  // RUTAS PÚBLICAS SIN NAVBAR NI SIDEBAR (AÑADIDO /gracias)
   isPublicRoute(): boolean {
     const url = this.router.url;
     return url.includes('/login') || 
