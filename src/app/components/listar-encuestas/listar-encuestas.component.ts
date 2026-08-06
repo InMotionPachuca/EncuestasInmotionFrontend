@@ -21,7 +21,7 @@ export class ListarEncuestasComponent implements OnInit {
   encuestasPaginadas: Encuesta[] = [];
 
   // FILTROS
-  filtroTipo: 'SERVICIO' | 'VENTA' | '' = ''; // Segmentación Postventa vs Venta
+  filtroTipo: 'SERVICIO' | 'VENTA' | '' = '';
   filtroTexto: string = '';
   filtroMarca: string = '';
   filtroEstado: string = '';
@@ -89,7 +89,6 @@ export class ListarEncuestasComponent implements OnInit {
     return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
   }
 
-  // GETTERS DE CONTEO RÁPIDO PARA ÁREAS DE OPERACIÓN
   get conteoServicio(): number {
     return this.encuestasTradicionales.filter(e => e.tipo !== 'VENTA').length;
   }
@@ -130,6 +129,7 @@ export class ListarEncuestasComponent implements OnInit {
     });
   }
 
+  // VINCULACIÓN FLEXIBLE DE MARCA: MAPEA GWM QUERETARO A GWM CELAYA
   coincideMarca(marcaEncuesta: string, marcaFiltro: string): boolean {
     if (!marcaFiltro || marcaFiltro.trim() === '') return true;
     if (!marcaEncuesta || marcaEncuesta.trim() === '') return false;
@@ -137,7 +137,13 @@ export class ListarEncuestasComponent implements OnInit {
     const m1 = this.normalizarTexto(marcaEncuesta);
     const m2 = this.normalizarTexto(marcaFiltro);
 
-    return m1 === m2 || m1.includes(m2) || m2.includes(m1);
+    if (m1 === m2 || m1.includes(m2) || m2.includes(m1)) return true;
+
+    // REGLA ESPECIAL DE VINCULACIÓN
+    if (m2.includes('gwm') && m1.includes('gwm')) return true;
+    if (m2.includes('toyota') && m2.includes('tulancingo') && m1.includes('tulancingo')) return true;
+
+    return false;
   }
 
   cambiarFiltroTipo(tipo: 'SERVICIO' | 'VENTA' | '') {
@@ -157,7 +163,6 @@ export class ListarEncuestasComponent implements OnInit {
 
   filtrarEncuestas() {
     this.encuestasFiltradas = this.encuestasTradicionales.filter(encuesta => {
-      // 1. FILTRO POR TIPO (POSTVENTA/SERVICIO VS VENTA)
       let tipoMatch = true;
       if (this.filtroTipo === 'VENTA') {
         tipoMatch = encuesta.tipo === 'VENTA';
@@ -165,7 +170,6 @@ export class ListarEncuestasComponent implements OnInit {
         tipoMatch = encuesta.tipo !== 'VENTA';
       }
 
-      // 2. FILTRO POR TEXTO
       const textoSearch = this.normalizarTexto(this.filtroTexto);
       const telefonoCliente = encuesta.clienteTelefono || encuesta.telefono || '';
       const textoMatch = !this.filtroTexto ||
@@ -173,11 +177,9 @@ export class ListarEncuestasComponent implements OnInit {
         this.normalizarTexto(encuesta.clienteEmail).includes(textoSearch) ||
         telefonoCliente.includes(this.filtroTexto);
 
-      // 3. FILTRO POR MARCA Y ESTADO
       const marcaMatch = this.coincideMarca(encuesta.marcaNombre, this.filtroMarca);
       const estadoMatch = !this.filtroEstado || encuesta.estado === this.filtroEstado;
 
-      // 4. FILTRO POR MES
       let mesMatch = true;
       if (this.filtroMes && encuesta.fechaEnvio) {
         const fecha = new Date(encuesta.fechaEnvio);

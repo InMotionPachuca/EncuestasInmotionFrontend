@@ -23,36 +23,34 @@ export class ImportarEncuestasComponent {
   tipoPlantilla: 'POSTVENTA' | 'VENTA' = 'POSTVENTA';
   mostrarSelectorPlantilla = false;
 
-  // MAPEO DE MARCAS E IDS
+  // MAPEO CORREGIDO Y HOMOLOGADO A NOMBRES OFICIALES
   marcasMap: { [key: string]: number } = {
     'toyota pachuca': 1,
-    'toyota tulancingo': 1,
+    'toyota tulancingo': 2,
     'toyota': 1,
-    'carsline pachuca': 2,
-    'carsline queretaro': 3,
-    'carsline': 2,
-    'gwm': 4,
-    'subaru pachuca': 5,
-    'subaru': 5,
-    'comprocars queretaro': 6,
-    'compro pachuca': 7,
-    'comprocars pachuca': 7,
-    'comprocars': 7
+    'carsline pachuca': 3,
+    'carsline queretaro': 4,
+    'carsline': 3,
+    'gwm celaya': 5,
+    'gwm queretaro': 5,
+    'gwm': 5,
+    'subaru': 6,
+    'subaru pachuca': 6,
+    'comprocars queretaro': 7,
+    'compro pachuca': 8,
+    'comprocars pachuca': 8,
+    'comprocars': 8
   };
 
-  // IMÁGENES ASIGNADAS PARA WHATSAPP
   imagenesMarca: { [key: string]: string } = {
     'Toyota Pachuca': 'assets/whatsapp/toyotaPachuca.jpeg',
     'Toyota Tulancingo': 'assets/whatsapp/toyotaTulancingo.jpeg',
-    'Toyota': 'assets/whatsapp/toyotaPachuca.jpeg',
     'Carsline Pachuca': 'assets/whatsapp/carsline.png',
-    'Carsline Queretaro': 'assets/whatsapp/carsline.png',
-    'Carsline': 'assets/whatsapp/carsline.png',
-    'GWM': 'assets/whatsapp/gwm.png',
+    'Carsline Querétaro': 'assets/whatsapp/carsline.png',
+    'GWM Celaya': 'assets/whatsapp/gwm.png',
     'Subaru': 'assets/whatsapp/subaruPachuca.png',
-    'ComproCars Queretaro': 'assets/whatsapp/comproCars.png',
-    'Compro Pachuca': 'assets/whatsapp/comproCars.png',
-    'ComproCars': 'assets/whatsapp/comproCars.png'
+    'ComproCars Querétaro': 'assets/whatsapp/comproCars.png',
+    'ComproCars Pachuca': 'assets/whatsapp/comproCars.png'
   };
 
   emojis = {
@@ -85,6 +83,23 @@ export class ImportarEncuestasComponent {
 
   normalizarTexto(texto: string): string {
     return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
+  }
+
+  // NORMALIZA EL NOMBRE DE MARCA QUE SE GUARDARÁ EN BASE DE DATOS
+  normalizarNombreMarcaOficial(nombreMarcaRaw: string): string {
+    if (!nombreMarcaRaw) return 'Carsline Pachuca';
+    const limpio = this.normalizarTexto(nombreMarcaRaw);
+
+    if (limpio.includes('toyota') && limpio.includes('tulancingo')) return 'Toyota Tulancingo';
+    if (limpio.includes('toyota')) return 'Toyota Pachuca';
+    if (limpio.includes('carsline') && limpio.includes('queretaro')) return 'Carsline Querétaro';
+    if (limpio.includes('carsline')) return 'Carsline Pachuca';
+    if (limpio.includes('gwm')) return 'GWM Celaya'; // SIEMPRE ASIGNA GWM CELAYA
+    if (limpio.includes('subaru')) return 'Subaru';
+    if (limpio.includes('compro') && limpio.includes('queretaro')) return 'ComproCars Querétaro';
+    if (limpio.includes('compro')) return 'ComproCars Pachuca';
+
+    return 'Carsline Pachuca';
   }
 
   procesarArchivo() {
@@ -129,19 +144,19 @@ export class ImportarEncuestasComponent {
           const unidad = row['UNIDAD'] || row['E'] || '';
           const anio = row['AÑO'] || row['F'] || '';
           
-          // LECTURA DE ASESOR: Prioriza la columna 'ASESOR' sobre 'ADV'
           const asesorRaw = row['ASESOR'] || row['Asesor'] || row['asesor'] || row['ADV'] || row['G'] || '';
           const asesor = asesorRaw ? asesorRaw.toString().trim() : 'Asesor de Servicio';
           
-          // LECTURA DE MARCA
           const marcaNombreRaw = row['MARCA'] || row['Marca'] || row['marca'] || row['SUCURSAL'] || row['sucursal'] || '';
-          const marcaNombre = marcaNombreRaw ? marcaNombreRaw.toString().trim() : 'Carsline Pachuca';
+          
+          // HOMOLOGAR NOMBRE A LA MARCA OFICIAL (e.g. GWM Celaya)
+          const marcaNombreOficial = this.normalizarNombreMarcaOficial(marcaNombreRaw ? marcaNombreRaw.toString().trim() : '');
 
           const nombreCliente = row['NOMBRE CLIENTE'] || row['H'] || '';
           const telefono = row['TELEFONO 1'] || row['TELEFONO'] || row['I'] || '';
 
           if (nombreCliente && nombreCliente.toString().trim()) {
-            const marcaId = this.obtenerMarcaId(marcaNombre);
+            const marcaId = this.obtenerMarcaId(marcaNombreOficial);
             const fechaConvertida = this.convertirFecha(fecha);
 
             this.datosExcel.push({
@@ -153,7 +168,7 @@ export class ImportarEncuestasComponent {
               unidad: unidad ? unidad.toString().trim() : '',
               anio: anio ? anio.toString().trim() : '',
               asesor: asesor,
-              marcaNombre: marcaNombre,
+              marcaNombre: marcaNombreOficial,
               marcaId: marcaId,
               nombreCliente: nombreCliente.toString().trim(),
               telefono: telefono ? telefono.toString().trim() : '',
@@ -187,19 +202,19 @@ export class ImportarEncuestasComponent {
   }
 
   obtenerMarcaId(nombreMarca: string): number {
-    if (!nombreMarca) return 2;
+    if (!nombreMarca) return 3;
     const nombreLimpio = this.normalizarTexto(nombreMarca);
 
-    if (nombreLimpio.includes('toyota') && nombreLimpio.includes('tulancingo')) return 1;
+    if (nombreLimpio.includes('toyota') && nombreLimpio.includes('tulancingo')) return 2;
     if (nombreLimpio.includes('toyota')) return 1;
-    if (nombreLimpio.includes('carsline') && nombreLimpio.includes('queretaro')) return 3;
-    if (nombreLimpio.includes('carsline')) return 2;
-    if (nombreLimpio.includes('gwm')) return 4;
-    if (nombreLimpio.includes('subaru')) return 5;
-    if (nombreLimpio.includes('compro') && nombreLimpio.includes('queretaro')) return 6;
-    if (nombreLimpio.includes('compro')) return 7;
+    if (nombreLimpio.includes('carsline') && nombreLimpio.includes('queretaro')) return 4;
+    if (nombreLimpio.includes('carsline')) return 3;
+    if (nombreLimpio.includes('gwm')) return 5; // ID de GWM Celaya
+    if (nombreLimpio.includes('subaru')) return 6;
+    if (nombreLimpio.includes('compro') && nombreLimpio.includes('queretaro')) return 7;
+    if (nombreLimpio.includes('compro')) return 8;
 
-    return 2; // Default a Carsline Pachuca
+    return 3;
   }
 
   obtenerImagenMarca(nombreMarca: string): string {
@@ -325,7 +340,7 @@ export class ImportarEncuestasComponent {
         const partes = nombreCompleto.split(' ');
         const nombre = partes[0] || 'Cliente';
         const apellido = partes.slice(1).join(' ') || 'General';
-        const marcaId = cliente.marcaId || 2;
+        const marcaId = cliente.marcaId || 3;
 
         const data = {
           nombre: nombre,
@@ -418,8 +433,7 @@ export class ImportarEncuestasComponent {
           if (ctx) {
             ctx.drawImage(img, 0, 0);
             canvas.toBlob((blob) => {
-              if (blob) resolve(blob);
-              else reject('Error al procesar la imagen');
+              if (blob) resolve(blob) ; reject('Error al procesar la imagen');
             }, 'image/png');
           } else {
             reject('Contexto de canvas no disponible');
