@@ -89,7 +89,6 @@ export class ListarEncuestasComponent implements OnInit {
     return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
   }
 
-  // RETORNA EL NOMBRE MOSTRADO DE FORMA HOMOLOGADA
   obtenerNombreMarcaMostrar(nombreOriginal: string): string {
     if (!nombreOriginal) return 'InMotion';
     const limpio = this.normalizarTexto(nombreOriginal);
@@ -119,7 +118,6 @@ export class ListarEncuestasComponent implements OnInit {
       next: (data: Encuesta[]) => {
         const listado = data || [];
         
-        // HOMOLOGACIÓN DE NOMBRES EN MEMORIA PARA REGISTROS ANTERIORES
         const listadoNormalizado = listado.map(e => {
           if (e.marcaNombre && this.normalizarTexto(e.marcaNombre).includes('gwm')) {
             e.marcaNombre = 'GWM Celaya';
@@ -153,7 +151,6 @@ export class ListarEncuestasComponent implements OnInit {
     const m2 = this.normalizarTexto(marcaFiltro);
 
     if (m1 === m2 || m1.includes(m2) || m2.includes(m1)) return true;
-
     if (m2.includes('gwm') && m1.includes('gwm')) return true;
     if (m2.includes('toyota') && m2.includes('tulancingo') && m1.includes('tulancingo')) return true;
 
@@ -302,11 +299,15 @@ export class ListarEncuestasComponent implements OnInit {
     return String(fechaStr) || 'fecha de visita';
   }
 
-  generarPlantilla(encuesta: Encuesta): string {
+  // --- CORRECCIÓN CRÍTICA: LEE encuesta.unidad EN LUGAR DE DEJAR HARDCODED 'su vehiculo' ---
+  generarPlantilla(encuesta: any): string {
     const nombreCliente = encuesta.clienteNombre || 'Cliente';
     const nombreAsesor = encuesta.asesor || 'Asesor de Servicio';
     const nombreMarca = this.obtenerNombreMarcaMostrar(encuesta.marcaNombre);
-    const modeloAuto = 'su vehiculo';
+
+    // Lee la unidad enviada por el backend/objeto (ej. POER COMERCIAL 2026)
+    const modeloAuto = (encuesta.unidad && encuesta.unidad.trim() !== '') ? encuesta.unidad : 'su vehiculo';
+
     const fechaVisita = encuesta.fechaEnvio ? this.formatearFecha(encuesta.fechaEnvio) : 'fecha de visita';
     const link = this.generarLink(encuesta.token);
 
