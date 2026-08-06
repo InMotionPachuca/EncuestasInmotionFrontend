@@ -20,6 +20,8 @@ export class ListarEncuestasComponent implements OnInit {
   encuestasFiltradas: Encuesta[] = [];
   encuestasPaginadas: Encuesta[] = [];
 
+  // FILTROS
+  filtroTipo: 'SERVICIO' | 'VENTA' | '' = ''; // Segmentación Postventa vs Venta
   filtroTexto: string = '';
   filtroMarca: string = '';
   filtroEstado: string = '';
@@ -48,7 +50,6 @@ export class ListarEncuestasComponent implements OnInit {
   plantillaActual: string = '';
   imagenUrl: string = '';
 
-  // DICCIONARIO DE IMÁGENES ACTUALIZADO
   imagenesMarca: { [key: string]: string } = {
     'subaru': 'assets/whatsapp/subaruPachuca.png',
     'toyota pachuca': 'assets/whatsapp/toyotaPachuca.jpeg',
@@ -88,6 +89,23 @@ export class ListarEncuestasComponent implements OnInit {
     return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
   }
 
+  // GETTERS DE CONTEO RÁPIDO PARA ÁREAS DE OPERACIÓN
+  get conteoServicio(): number {
+    return this.encuestasTradicionales.filter(e => e.tipo !== 'VENTA').length;
+  }
+
+  get conteoVenta(): number {
+    return this.encuestasTradicionales.filter(e => e.tipo === 'VENTA').length;
+  }
+
+  get encuestasSegunTipo(): Encuesta[] {
+    if (!this.filtroTipo) return this.encuestasTradicionales;
+    if (this.filtroTipo === 'VENTA') {
+      return this.encuestasTradicionales.filter(e => e.tipo === 'VENTA');
+    }
+    return this.encuestasTradicionales.filter(e => e.tipo !== 'VENTA');
+  }
+
   cargarEncuestas() {
     this.loading = true;
     this.encuestaService.listarEncuestas().subscribe({
@@ -112,7 +130,6 @@ export class ListarEncuestasComponent implements OnInit {
     });
   }
 
-  // COMPARACIÓN INTELIGENTE SIN ACENTOS
   coincideMarca(marcaEncuesta: string, marcaFiltro: string): boolean {
     if (!marcaFiltro || marcaFiltro.trim() === '') return true;
     if (!marcaEncuesta || marcaEncuesta.trim() === '') return false;
@@ -123,30 +140,44 @@ export class ListarEncuestasComponent implements OnInit {
     return m1 === m2 || m1.includes(m2) || m2.includes(m1);
   }
 
+  cambiarFiltroTipo(tipo: 'SERVICIO' | 'VENTA' | '') {
+    this.filtroTipo = tipo;
+    this.filtrarEncuestas();
+  }
+
   seleccionarMarcaRapida(nombreMarca: string) {
     this.filtroMarca = nombreMarca;
-    this.filtroMes = ''; // Limpiar mes para ver todo el histórico de esa agencia
+    this.filtroMes = '';
     this.filtrarEncuestas();
   }
 
   obtenerConteoPorMarca(nombreMarca: string): number {
-    return this.encuestasTradicionales.filter(e => this.coincideMarca(e.marcaNombre, nombreMarca)).length;
+    return this.encuestasSegunTipo.filter(e => this.coincideMarca(e.marcaNombre, nombreMarca)).length;
   }
 
   filtrarEncuestas() {
     this.encuestasFiltradas = this.encuestasTradicionales.filter(encuesta => {
+      // 1. FILTRO POR TIPO (POSTVENTA/SERVICIO VS VENTA)
+      let tipoMatch = true;
+      if (this.filtroTipo === 'VENTA') {
+        tipoMatch = encuesta.tipo === 'VENTA';
+      } else if (this.filtroTipo === 'SERVICIO') {
+        tipoMatch = encuesta.tipo !== 'VENTA';
+      }
+
+      // 2. FILTRO POR TEXTO
       const textoSearch = this.normalizarTexto(this.filtroTexto);
       const telefonoCliente = encuesta.clienteTelefono || encuesta.telefono || '';
-
       const textoMatch = !this.filtroTexto ||
         this.normalizarTexto(encuesta.clienteNombre).includes(textoSearch) ||
         this.normalizarTexto(encuesta.clienteEmail).includes(textoSearch) ||
         telefonoCliente.includes(this.filtroTexto);
 
-      // COINCIDENCIA DE MARCA
+      // 3. FILTRO POR MARCA Y ESTADO
       const marcaMatch = this.coincideMarca(encuesta.marcaNombre, this.filtroMarca);
       const estadoMatch = !this.filtroEstado || encuesta.estado === this.filtroEstado;
 
+      // 4. FILTRO POR MES
       let mesMatch = true;
       if (this.filtroMes && encuesta.fechaEnvio) {
         const fecha = new Date(encuesta.fechaEnvio);
@@ -154,7 +185,7 @@ export class ListarEncuestasComponent implements OnInit {
         mesMatch = mesEncuesta === this.filtroMes;
       }
 
-      return textoMatch && marcaMatch && estadoMatch && mesMatch;
+      return tipoMatch && textoMatch && marcaMatch && estadoMatch && mesMatch;
     });
 
     this.paginaActual = 1;
@@ -176,6 +207,7 @@ export class ListarEncuestasComponent implements OnInit {
   }
 
   limpiarFiltros() {
+    this.filtroTipo = '';
     this.filtroTexto = '';
     this.filtroMarca = '';
     this.filtroEstado = '';
@@ -372,6 +404,7 @@ export class ListarEncuestasComponent implements OnInit {
 
     const data = this.encuestasFiltradas.map(e => ({
       'Cliente': e.clienteNombre,
+      'Área': e.tipo === 'VENTA' ? 'Ventas' : 'Postventa',
       'Email': e.clienteEmail,
       'Telefono': e.clienteTelefono || e.telefono || 'Sin teléfono',
       'Asesor': e.asesor || '',
@@ -384,8 +417,8 @@ export class ListarEncuestasComponent implements OnInit {
 
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Encuestas_Servicio');
-    XLSX.writeFile(wb, 'encuestas_servicio_' + new Date().toISOString().split('T')[0] + '.xlsx');
+    XLSX.utils.book_append_sheet(wb, ws, 'Encuestas_Servicio_Venta');
+    XLSX.writeFile(wb, 'encuestas_' + (this.filtroTipo || 'general') + '_' + new Date().toISOString().split('T')[0] + '.xlsx');
     this.notificationService.show('Encuestas exportadas correctamente', 'success');
   }
 

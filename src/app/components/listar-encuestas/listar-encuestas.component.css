@@ -442,3 +442,56 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* BOTONES DE SEGMENTACIÓN OPERATIVA (SERVICIO / VENTA) */
+.btn-segmento {
+  background: #FFFFFF;
+  border: 1px solid #CED4DA;
+  color: #495057;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: 'Montserrat', sans-serif;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-segmento:hover {
+  background: #F8F9FA;
+  border-color: #1F1F1F;
+  color: #1F1F1F;
+}
+
+.btn-segmento.active {
+  background: #1F1F1F;
+  border-color: #C5A059;
+  color: #C5A059;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* BADGES DE TIPO EN TABLA (VENTA VS SERVICIO) */
+.badge-tipo {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.badge-venta {
+  background: #FFF3CD;
+  color: #856404;
+  border: 1px solid #FFEEBA;
+}
+
+.badge-servicio {
+  background: #E2E3E5;
+  color: #383D41;
+  border: 1px solid #D6D8DB;
+}

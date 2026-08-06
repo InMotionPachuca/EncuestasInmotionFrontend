@@ -1,6 +1,6 @@
 <div class="listar-encuestas-container">
   
-  <!-- TABS DE NAVEGACIÓN -->
+  <!-- TABS DE NAVEGACIÓN PRINCIPALES -->
   <div class="tabs-navigation mb-4">
     <button 
       class="tab-btn" 
@@ -21,7 +21,7 @@
     <div class="listar-header">
       <div>
         <h1>Encuestas de Servicio / Venta</h1>
-        <p class="header-subtitle mt-1 mb-0">Visualice las encuestas generadas a partir de la data exportada</p>
+        <p class="header-subtitle mt-1 mb-0">Gestión y control de encuestas enviadas por WhatsApp / Email</p>
       </div>
       <div class="header-actions">
         <button class="btn-refresh" (click)="cargarEncuestas()">
@@ -33,6 +33,35 @@
       </div>
     </div>
 
+    <!-- SEGMENTACIÓN OPERATIVA: POSTVENTA (SERVICIO) VS VENTA -->
+    <div class="segmento-tipo-container mb-3 d-flex align-items-center gap-2">
+      <span class="segmento-label fw-bold text-muted small me-2"><i class="fas fa-filter me-1"></i> Área:</span>
+      
+      <button 
+        type="button" 
+        class="btn-segmento" 
+        [class.active]="filtroTipo === ''"
+        (click)="cambiarFiltroTipo('')">
+        <i class="fas fa-layer-group me-1"></i> Todos ({{ encuestasTradicionales.length }})
+      </button>
+
+      <button 
+        type="button" 
+        class="btn-segmento" 
+        [class.active]="filtroTipo === 'SERVICIO'"
+        (click)="cambiarFiltroTipo('SERVICIO')">
+        <i class="fas fa-tools me-1"></i> Postventa / Servicio ({{ conteoServicio }})
+      </button>
+
+      <button 
+        type="button" 
+        class="btn-segmento" 
+        [class.active]="filtroTipo === 'VENTA'"
+        (click)="cambiarFiltroTipo('VENTA')">
+        <i class="fas fa-car me-1"></i> Ventas / Nuevos ({{ conteoVenta }})
+      </button>
+    </div>
+
     <!-- ACCESOS RÁPIDOS POR AGENCIA / MARCA -->
     <div class="agencias-pills-container mb-3 d-flex flex-wrap gap-2">
       <button 
@@ -40,7 +69,7 @@
         class="badge-pill-agencia" 
         [class.active]="filtroMarca === ''" 
         (click)="seleccionarMarcaRapida('')">
-        Todas las Agencias ({{ encuestasTradicionales.length }})
+        Todas las Agencias ({{ encuestasSegunTipo.length }})
       </button>
       <button 
         type="button" 
@@ -58,12 +87,11 @@
         <input 
           type="text" 
           class="filtro-input"
-          placeholder="Buscar cliente, email o teléfono..." 
+          placeholder="Buscar por cliente, email o teléfono..." 
           [(ngModel)]="filtroTexto"
           (input)="filtrarEncuestas()"
         >
         
-        <!-- FILTRO DE FECHA (MES ACTUAL POR DEFECTO) -->
         <input 
           type="month" 
           class="filtro-select"
@@ -80,18 +108,19 @@
         </select>
 
         <button class="btn-clear" (click)="limpiarFiltros()">
-          <i class="fas fa-eraser me-1"></i> Limpiar Filtros
+          <i class="fas fa-eraser me-1"></i> Limpiar
         </button>
       </div>
     </div>
 
-    <!-- TABLA TRADICIONAL PAGINADA -->
+    <!-- TABLA TRADICIONAL CON INDICADOR DE TIPO (SERVICIO / VENTA) -->
     <div *ngIf="!loading && !error" class="tabla-container">
       <div class="table-responsive">
         <table class="table">
           <thead>
             <tr>
               <th>Cliente</th>
+              <th>Área</th>
               <th>Teléfono</th>
               <th>Marca</th>
               <th>Estado</th>
@@ -106,6 +135,12 @@
                   <strong style="display: block; color: #212529;">{{ encuesta.clienteNombre }}</strong>
                   <span style="display: block; color: #6C757D; font-size: 0.78rem;">{{ encuesta.clienteEmail || 'Sin correo' }}</span>
                 </div>
+              </td>
+              <td>
+                <span class="badge-tipo" [class.badge-venta]="encuesta.tipo === 'VENTA'" [class.badge-servicio]="encuesta.tipo !== 'VENTA'">
+                  <i class="fas" [class.fa-car]="encuesta.tipo === 'VENTA'" [class.fa-tools]="encuesta.tipo !== 'VENTA'"></i>
+                  {{ encuesta.tipo === 'VENTA' ? 'VENTA' : 'SERVICIO' }}
+                </span>
               </td>
               <td>
                 <span style="color: #495057; font-weight: 500;">
@@ -134,8 +169,8 @@
               </td>
             </tr>
             <tr *ngIf="encuestasFiltradas.length === 0">
-              <td colspan="6" class="sin-resultados">
-                <p>No se encontraron encuestas con los filtros aplicados.</p>
+              <td colspan="7" class="sin-resultados">
+                <p>No se encontraron encuestas con los filtros seleccionados.</p>
               </td>
             </tr>
           </tbody>
@@ -309,6 +344,12 @@
     <div class="modal-body" *ngIf="encuestaSeleccionada">
       <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 20px;">
         <div class="detail-row"><b>Cliente:</b> {{ encuestaSeleccionada.clienteNombre }}</div>
+        <div class="detail-row">
+          <b>Área / Tipo:</b> 
+          <span class="badge-tipo" [class.badge-venta]="encuestaSeleccionada.tipo === 'VENTA'" [class.badge-servicio]="encuestaSeleccionada.tipo !== 'VENTA'">
+            {{ encuestaSeleccionada.tipo === 'VENTA' ? 'VENTA DE VEHÍCULO' : 'POSTVENTA / SERVICIO' }}
+          </span>
+        </div>
         <div class="detail-row"><b>Email:</b> {{ encuestaSeleccionada.clienteEmail || 'Sin correo' }}</div>
         <div class="detail-row"><b>Teléfono:</b> {{ encuestaSeleccionada.clienteTelefono || encuestaSeleccionada.telefono || 'Sin teléfono' }}</div>
         <div class="detail-row"><b>Asesor:</b> {{ encuestaSeleccionada.asesor || 'Asesor de Servicio' }}</div>
