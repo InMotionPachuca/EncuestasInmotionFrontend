@@ -323,6 +323,7 @@ export class ListarEncuestasComponent implements OnInit {
     const data = this.encuestasFiltradas.map(e => ({
       'Cliente': e.clienteNombre,
       'Email': e.clienteEmail,
+      'Telefono': e.telefono,
       'Asesor': e.asesor || '',
       'Marca': e.marcaNombre,
       'Estado': this.getEstadoTexto(e.estado),
