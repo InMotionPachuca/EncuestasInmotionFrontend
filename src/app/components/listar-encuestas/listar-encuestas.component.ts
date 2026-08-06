@@ -89,6 +89,14 @@ export class ListarEncuestasComponent implements OnInit {
     return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
   }
 
+  // RETORNA EL NOMBRE MOSTRADO EN MODALES Y TABLAS DE FORMA HOMOLOGADA
+  obtenerNombreMarcaMostrar(nombreOriginal: string): string {
+    if (!nombreOriginal) return 'InMotion';
+    const limpio = this.normalizarTexto(nombreOriginal);
+    if (limpio.includes('gwm')) return 'GWM Celaya';
+    return nombreOriginal;
+  }
+
   get conteoServicio(): number {
     return this.encuestasTradicionales.filter(e => e.tipo !== 'VENTA').length;
   }
@@ -129,7 +137,6 @@ export class ListarEncuestasComponent implements OnInit {
     });
   }
 
-  // VINCULACIÓN FLEXIBLE DE MARCA: MAPEA GWM QUERETARO A GWM CELAYA
   coincideMarca(marcaEncuesta: string, marcaFiltro: string): boolean {
     if (!marcaFiltro || marcaFiltro.trim() === '') return true;
     if (!marcaEncuesta || marcaEncuesta.trim() === '') return false;
@@ -139,7 +146,6 @@ export class ListarEncuestasComponent implements OnInit {
 
     if (m1 === m2 || m1.includes(m2) || m2.includes(m1)) return true;
 
-    // REGLA ESPECIAL DE VINCULACIÓN
     if (m2.includes('gwm') && m1.includes('gwm')) return true;
     if (m2.includes('toyota') && m2.includes('tulancingo') && m1.includes('tulancingo')) return true;
 
@@ -292,7 +298,7 @@ export class ListarEncuestasComponent implements OnInit {
   generarPlantilla(encuesta: Encuesta): string {
     const nombreCliente = encuesta.clienteNombre || 'Cliente';
     const nombreAsesor = encuesta.asesor || 'Asesor de Servicio';
-    const nombreMarca = encuesta.marcaNombre || 'InMotion';
+    const nombreMarca = this.obtenerNombreMarcaMostrar(encuesta.marcaNombre);
     const modeloAuto = 'su vehiculo';
     const fechaVisita = encuesta.fechaEnvio ? this.formatearFecha(encuesta.fechaEnvio) : 'fecha de visita';
     const link = this.generarLink(encuesta.token);
@@ -410,7 +416,7 @@ export class ListarEncuestasComponent implements OnInit {
       'Email': e.clienteEmail,
       'Telefono': e.clienteTelefono || e.telefono || 'Sin teléfono',
       'Asesor': e.asesor || '',
-      'Marca': e.marcaNombre,
+      'Marca': this.obtenerNombreMarcaMostrar(e.marcaNombre),
       'Estado': this.getEstadoTexto(e.estado),
       'Fecha Envio': e.fechaEnvio ? new Date(e.fechaEnvio).toLocaleString('es-MX') : '',
       'Token': e.token,
