@@ -14,18 +14,19 @@ export class EncuestaService {
     return window.location.origin;
   }
 
+  // MAPEO DE LOGOS ALINEADO EXACTAMENTE A CADA ID
   logos: { [key: number]: string } = {
-    1: 'Toyota.png',
-    2: 'Toyota.png',
-    3: 'carsline.png',
-    4: 'carsline.png',
-    5: 'gwm.png',
-    6: 'subaru.webp',
-    7: 'comprocars.png',
-    8: 'comprocars.png'
+    1: 'Toyota.png',       // Toyota Pachuca
+    2: 'Toyota.png',       // Toyota Tulancingo
+    3: 'carsline.png',     // Carsline Pachuca
+    4: 'carsline.png',     // Carsline Querétaro
+    5: 'gwm.png',          // GWM Celaya
+    6: 'subaru.webp',      // Subaru
+    7: 'comprocars.png',   // ComproCars Querétaro
+    8: 'comprocars.png'    // ComproCars Pachuca
   };
 
-  // CATÁLOGO OFICIAL ACTUALIZADO DE AGENCIAS Y MARCAS
+  // CATÁLOGO OFICIAL Y DEFINITIVO DE AGENCIAS CON SUS IDS REALES
   marcas = [
     { id: 1, nombre: 'Toyota Pachuca' },
     { id: 2, nombre: 'Toyota Tulancingo' },
