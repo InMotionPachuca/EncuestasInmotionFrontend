@@ -13,7 +13,7 @@ import * as XLSX from 'xlsx';
 })
 export class ListarEncuestasComponent implements OnInit {
   pestanaActiva: 'tradicionales' | 'qr' = 'tradicionales';
-  Math = Math; // Para usar Math.min en la plantilla HTML
+  Math = Math;
 
   // --- ARREGLOS ENCUESTAS TRADICIONALES ---
   encuestasTradicionales: Encuesta[] = [];
@@ -23,7 +23,7 @@ export class ListarEncuestasComponent implements OnInit {
   filtroTexto: string = '';
   filtroMarca: string = '';
   filtroEstado: string = '';
-  filtroMes: string = ''; // Formato YYYY-MM (e.g. 2026-08)
+  filtroMes: string = '';
 
   // --- PAGINACIÓN ---
   paginaActual: number = 1;
@@ -48,6 +48,7 @@ export class ListarEncuestasComponent implements OnInit {
   plantillaActual: string = '';
   imagenUrl: string = '';
 
+  // DICCIONARIO DE IMÁGENES INCLUYENDO GWM CELAYA
   imagenesMarca: { [key: string]: string } = {
     'Subaru': 'assets/whatsapp/subaruPachuca.png',
     'Toyota Pachuca': 'assets/whatsapp/toyotaPachuca.jpeg',
@@ -55,6 +56,7 @@ export class ListarEncuestasComponent implements OnInit {
     'Carsline Pachuca': 'assets/whatsapp/carsline.png',
     'Carsline Queretaro': 'assets/whatsapp/carsline.png',
     'GWM': 'assets/whatsapp/gwm.png',
+    'GWM Celaya': 'assets/whatsapp/gwm.png',
     'ComproCars Queretaro': 'assets/whatsapp/comproCars.png',
     'Compro Pachuca': 'assets/whatsapp/comproCars.png'
   };
@@ -74,10 +76,6 @@ export class ListarEncuestasComponent implements OnInit {
     private notificationService: NotificationService
   ) {
     this.marcas = this.encuestaService.obtenerMarcas();
-    // Establecer mes actual por defecto YYYY-MM
-    const hoy = new Date();
-    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-    this.filtroMes = `${hoy.getFullYear()}-${mes}`;
   }
 
   ngOnInit() {
@@ -98,10 +96,10 @@ export class ListarEncuestasComponent implements OnInit {
       next: (data: Encuesta[]) => {
         const listado = data || [];
         
-        // 1. Filtrar Tradicionales
+        // 1. Tradicionales
         this.encuestasTradicionales = listado.filter(e => e.tipo !== 'QR' && e.serie !== 'QR-GENERAL');
         
-        // 2. Filtrar QR
+        // 2. QR
         this.encuestasQr = listado.filter(e => e.tipo === 'QR' || e.serie === 'QR-GENERAL');
         this.encuestasQrFiltradas = [...this.encuestasQr];
 
@@ -116,17 +114,29 @@ export class ListarEncuestasComponent implements OnInit {
     });
   }
 
-  // --- SELECCIÓN RÁPIDA DE MARCA DESDE PILLS ---
+  // COMPARACIÓN FLEXIBLE DE MARCAS (IGUALA "GWM CELAYA" CON "GWM" SI APLICA)
+  coincideMarca(marcaEncuesta: string, marcaBuscada: string): boolean {
+    if (!marcaBuscada) return true;
+    if (!marcaEncuesta) return false;
+
+    const m1 = this.normalizarTexto(marcaEncuesta);
+    const m2 = this.normalizarTexto(marcaBuscada);
+
+    return m1 === m2 || m1.includes(m2) || m2.includes(m1);
+  }
+
+  // AL SELECCIONAR UNA PILL, SE LIMPIA EL FILTRO DE MES PARA VER TODAS LAS DE ESA MARCA
   seleccionarMarcaRapida(nombreMarca: string) {
     this.filtroMarca = nombreMarca;
+    this.filtroMes = ''; // Limpia el mes para no tapar encuestas de meses pasados
     this.filtrarEncuestas();
   }
 
   obtenerConteoPorMarca(nombreMarca: string): number {
-    return this.encuestasTradicionales.filter(e => e.marcaNombre === nombreMarca).length;
+    return this.encuestasTradicionales.filter(e => this.coincideMarca(e.marcaNombre, nombreMarca)).length;
   }
 
-  // --- MÉTODOS DE FILTRADO Y PAGINACIÓN ---
+  // --- FILTRADO FLEXIBLE ---
   filtrarEncuestas() {
     this.encuestasFiltradas = this.encuestasTradicionales.filter(encuesta => {
       const textoSearch = this.filtroTexto.toLowerCase();
@@ -137,10 +147,10 @@ export class ListarEncuestasComponent implements OnInit {
         (encuesta.clienteEmail && encuesta.clienteEmail.toLowerCase().includes(textoSearch)) ||
         (telefonoCliente && telefonoCliente.includes(this.filtroTexto));
 
-      const marcaMatch = !this.filtroMarca || encuesta.marcaNombre === this.filtroMarca;
+      // USAMOS COMPARACIÓN FLEXIBLE DE MARCAS
+      const marcaMatch = this.coincideMarca(encuesta.marcaNombre, this.filtroMarca);
       const estadoMatch = !this.filtroEstado || encuesta.estado === this.filtroEstado;
 
-      // Filtro por Mes (YYYY-MM)
       let mesMatch = true;
       if (this.filtroMes && encuesta.fechaEnvio) {
         const fecha = new Date(encuesta.fechaEnvio);
@@ -177,7 +187,7 @@ export class ListarEncuestasComponent implements OnInit {
     this.filtrarEncuestas();
   }
 
-  // --- MÉTODOS FILTRO QR ---
+  // --- FILTROS QR ---
   filtrarEncuestasQr() {
     this.encuestasQrFiltradas = this.encuestasQr.filter(enc => {
       const telefono = this.obtenerTelefono(enc);
@@ -185,7 +195,7 @@ export class ListarEncuestasComponent implements OnInit {
         (enc.clienteNombre && enc.clienteNombre.toLowerCase().includes(this.filtroTextoQr.toLowerCase())) ||
         (telefono && telefono.includes(this.filtroTextoQr));
 
-      const marcaMatch = !this.filtroMarcaQr || enc.marcaNombre === this.filtroMarcaQr;
+      const marcaMatch = this.coincideMarca(enc.marcaNombre, this.filtroMarcaQr);
 
       return textoMatch && marcaMatch;
     });
