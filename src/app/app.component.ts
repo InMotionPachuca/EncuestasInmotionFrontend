@@ -55,10 +55,13 @@ export class AppComponent {
     return this.todosLosMenuItems.filter(item => !item.adminOnly);
   }
 
-  // RUTAS PÚBLICAS SIN NAVBAR NI SIDEBAR
+  // RUTAS PÚBLICAS SIN NAVBAR NI SIDEBAR (AÑADIDO /gracias)
   isPublicRoute(): boolean {
     const url = this.router.url;
-    return url.includes('/login') || url.includes('/responder') || url.includes('/evaluar');
+    return url.includes('/login') || 
+           url.includes('/responder') || 
+           url.includes('/evaluar') || 
+           url.includes('/gracias');
   }
 
   toggleUserMenu() {
