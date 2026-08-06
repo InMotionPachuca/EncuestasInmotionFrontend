@@ -39,7 +39,7 @@
         <input 
           type="text" 
           class="filtro-input"
-          placeholder="Buscar por cliente o email..." 
+          placeholder="Buscar por cliente, email o teléfono..." 
           [(ngModel)]="filtroTexto"
           (input)="filtrarEncuestas()"
         >
@@ -61,7 +61,7 @@
       </div>
     </div>
 
-    <!-- TABLA TRADICIONAL CON EMAIL TOTALMENTE SEPARADO -->
+    <!-- TABLA TRADICIONAL CON COLUMNA DE TELÉFONO -->
     <div *ngIf="!loading && !error" class="tabla-container">
       <div class="table-responsive">
         <table class="table">
@@ -82,6 +82,9 @@
                   <strong style="display: block; color: #212529;">{{ encuesta.clienteNombre }}</strong>
                   <span style="display: block; color: #6C757D; font-size: 0.78rem;">{{ encuesta.clienteEmail || 'Sin correo' }}</span>
                 </div>
+              </td>
+              <td>
+                <span style="color: #495057; font-weight: 500;">{{ encuesta.telefono || 'Sin teléfono' }}</span>
               </td>
               <td>{{ encuesta.marcaNombre }}</td>
               <td>
@@ -105,7 +108,7 @@
               </td>
             </tr>
             <tr *ngIf="encuestasFiltradas.length === 0">
-              <td colspan="5" class="sin-resultados">
+              <td colspan="6" class="sin-resultados">
                 <p>No hay encuestas tradicionales disponibles</p>
               </td>
             </tr>
@@ -266,6 +269,7 @@
       <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 20px;">
         <div class="detail-row"><b>Cliente:</b> {{ encuestaSeleccionada.clienteNombre }}</div>
         <div class="detail-row"><b>Email:</b> {{ encuestaSeleccionada.clienteEmail || 'Sin correo' }}</div>
+        <div class="detail-row"><b>Teléfono:</b> {{ encuestaSeleccionada.telefono || 'Sin teléfono' }}</div>
         <div class="detail-row"><b>Asesor:</b> {{ encuestaSeleccionada.asesor || 'Asesor de Servicio' }}</div>
         <div class="detail-row"><b>Marca:</b> {{ encuestaSeleccionada.marcaNombre }}</div>
         <div class="detail-row"><b>Estado:</b> {{ getEstadoTexto(encuestaSeleccionada.estado) }}</div>

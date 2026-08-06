@@ -104,12 +104,14 @@ export class ListarEncuestasComponent implements OnInit {
     });
   }
 
-  // --- MÉTODOS FILTRO TRADICIONALES ---
+  // --- MÉTODOS FILTRO TRADICIONALES (INCLUYE BÚSQUEDA POR TELÉFONO) ---
   filtrarEncuestas() {
     this.encuestasFiltradas = this.encuestasTradicionales.filter(encuesta => {
+      const textoSearch = this.filtroTexto.toLowerCase();
       const textoMatch = !this.filtroTexto ||
-        encuesta.clienteNombre.toLowerCase().includes(this.filtroTexto.toLowerCase()) ||
-        encuesta.clienteEmail.toLowerCase().includes(this.filtroTexto.toLowerCase());
+        (encuesta.clienteNombre && encuesta.clienteNombre.toLowerCase().includes(textoSearch)) ||
+        (encuesta.clienteEmail && encuesta.clienteEmail.toLowerCase().includes(textoSearch)) ||
+        (encuesta.telefono && encuesta.telefono.includes(this.filtroTexto));
 
       const marcaMatch = !this.filtroMarca || encuesta.marcaNombre === this.filtroMarca;
       const estadoMatch = !this.filtroEstado || encuesta.estado === this.filtroEstado;
