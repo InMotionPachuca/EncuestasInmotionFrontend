@@ -89,7 +89,7 @@ export class ListarEncuestasComponent implements OnInit {
     return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
   }
 
-  // RETORNA EL NOMBRE MOSTRADO EN MODALES Y TABLAS DE FORMA HOMOLOGADA
+  // RETORNA EL NOMBRE MOSTRADO DE FORMA HOMOLOGADA
   obtenerNombreMarcaMostrar(nombreOriginal: string): string {
     if (!nombreOriginal) return 'InMotion';
     const limpio = this.normalizarTexto(nombreOriginal);
@@ -119,11 +119,19 @@ export class ListarEncuestasComponent implements OnInit {
       next: (data: Encuesta[]) => {
         const listado = data || [];
         
+        // HOMOLOGACIÓN DE NOMBRES EN MEMORIA PARA REGISTROS ANTERIORES
+        const listadoNormalizado = listado.map(e => {
+          if (e.marcaNombre && this.normalizarTexto(e.marcaNombre).includes('gwm')) {
+            e.marcaNombre = 'GWM Celaya';
+          }
+          return e;
+        });
+
         // 1. Tradicionales
-        this.encuestasTradicionales = listado.filter(e => e.tipo !== 'QR' && e.serie !== 'QR-GENERAL');
+        this.encuestasTradicionales = listadoNormalizado.filter(e => e.tipo !== 'QR' && e.serie !== 'QR-GENERAL');
         
         // 2. QR
-        this.encuestasQr = listado.filter(e => e.tipo === 'QR' || e.serie === 'QR-GENERAL');
+        this.encuestasQr = listadoNormalizado.filter(e => e.tipo === 'QR' || e.serie === 'QR-GENERAL');
         this.encuestasQrFiltradas = [...this.encuestasQr];
 
         this.filtrarEncuestas();
@@ -223,7 +231,6 @@ export class ListarEncuestasComponent implements OnInit {
     this.filtrarEncuestas();
   }
 
-  // --- FILTROS QR ---
   filtrarEncuestasQr() {
     this.encuestasQrFiltradas = this.encuestasQr.filter(enc => {
       const telefono = this.obtenerTelefono(enc);
