@@ -23,13 +23,14 @@ export class ImportarEncuestasComponent {
   tipoPlantilla: 'POSTVENTA' | 'VENTA' = 'POSTVENTA';
   mostrarSelectorPlantilla = false;
 
+  // IMÁGENES ASIGNADAS PARA WHATSAPP
   imagenesMarca: { [key: string]: string } = {
     'Toyota Pachuca': 'assets/whatsapp/toyotaPachuca.jpeg',
     'Toyota Tulancingo': 'assets/whatsapp/toyotaTulancingo.jpeg',
     'Carsline Pachuca': 'assets/whatsapp/carsline.png',
     'Carsline Querétaro': 'assets/whatsapp/carsline.png',
-    'GWM Celaya': 'assets/whatsapp/gwm.png',
     'Subaru': 'assets/whatsapp/subaruPachuca.png',
+    'GWM Celaya': 'assets/whatsapp/gwm.png',
     'ComproCars Querétaro': 'assets/whatsapp/comproCars.png',
     'ComproCars Pachuca': 'assets/whatsapp/comproCars.png'
   };
@@ -66,17 +67,19 @@ export class ImportarEncuestasComponent {
     return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
   }
 
-  // ACIERTO EXACTO DE MARCA ID
+  // ALINEACIÓN STRICTA CON LA BASE DE DATOS DEL BACKEND:
+  // 1: Toyota Pachuca | 2: Toyota Tulancingo | 3: Carsline Pachuca | 4: Carsline Querétaro
+  // 5: Subaru | 6: GWM Celaya | 7: ComproCars Querétaro | 8: ComproCars Pachuca
   obtenerMarcaId(nombreMarca: string): number {
     if (!nombreMarca) return 3;
     const limpio = this.normalizarTexto(nombreMarca);
 
-    if (limpio.includes('gwm')) return 5; // ID EXACTO PARA GWM CELAYA
     if (limpio.includes('toyota') && limpio.includes('tulancingo')) return 2;
     if (limpio.includes('toyota')) return 1;
     if (limpio.includes('carsline') && limpio.includes('queretaro')) return 4;
     if (limpio.includes('carsline')) return 3;
-    if (limpio.includes('subaru')) return 6;
+    if (limpio.includes('subaru')) return 5;             // <--- SUBARU ES ID 5 EN LA BD
+    if (limpio.includes('gwm')) return 6;                // <--- GWM CELAYA ES ID 6 EN LA BD
     if (limpio.includes('compro') && limpio.includes('queretaro')) return 7;
     if (limpio.includes('compro')) return 8;
 
@@ -87,12 +90,12 @@ export class ImportarEncuestasComponent {
     if (!nombreMarcaRaw) return 'Carsline Pachuca';
     const limpio = this.normalizarTexto(nombreMarcaRaw);
 
-    if (limpio.includes('gwm')) return 'GWM Celaya'; // SIEMPRE GWM CELAYA
     if (limpio.includes('toyota') && limpio.includes('tulancingo')) return 'Toyota Tulancingo';
     if (limpio.includes('toyota')) return 'Toyota Pachuca';
     if (limpio.includes('carsline') && limpio.includes('queretaro')) return 'Carsline Querétaro';
     if (limpio.includes('carsline')) return 'Carsline Pachuca';
     if (limpio.includes('subaru')) return 'Subaru';
+    if (limpio.includes('gwm')) return 'GWM Celaya';
     if (limpio.includes('compro') && limpio.includes('queretaro')) return 'ComproCars Querétaro';
     if (limpio.includes('compro')) return 'ComproCars Pachuca';
 
@@ -203,8 +206,8 @@ export class ImportarEncuestasComponent {
     if (nombreLimpio.includes('toyota') && nombreLimpio.includes('tulancingo')) return 'assets/whatsapp/toyotaTulancingo.jpeg';
     if (nombreLimpio.includes('toyota')) return 'assets/whatsapp/toyotaPachuca.jpeg';
     if (nombreLimpio.includes('carsline')) return 'assets/whatsapp/carsline.png';
-    if (nombreLimpio.includes('gwm')) return 'assets/whatsapp/gwm.png';
     if (nombreLimpio.includes('subaru')) return 'assets/whatsapp/subaruPachuca.png';
+    if (nombreLimpio.includes('gwm')) return 'assets/whatsapp/gwm.png';
     if (nombreLimpio.includes('compro')) return 'assets/whatsapp/comproCars.png';
 
     return 'assets/whatsapp/carsline.png';
@@ -319,7 +322,7 @@ export class ImportarEncuestasComponent {
         const partes = nombreCompleto.split(' ');
         const nombre = partes[0] || 'Cliente';
         const apellido = partes.slice(1).join(' ') || 'General';
-        const marcaId = cliente.marcaId || 5;
+        const marcaId = cliente.marcaId; // ENVÍA EL MARCAID CORRECTO
 
         const data = {
           nombre: nombre,
@@ -344,12 +347,12 @@ export class ImportarEncuestasComponent {
             this.exitosos++;
             this.encuestasGeneradas.push({
               cliente: cliente.nombreCliente,
-              marca: cliente.marcaNombre || 'GWM Celaya',
+              marca: cliente.marcaNombre || 'Carsline Pachuca',
               token: response.token,
               link: link,
               plantilla: plantillaCompleta,
               mostrarPlantilla: false,
-              imagenUrl: this.obtenerUrlImagen(cliente.marcaNombre || 'GWM Celaya')
+              imagenUrl: this.obtenerUrlImagen(cliente.marcaNombre || 'Carsline Pachuca')
             });
             completados++;
             if (completados === pendientes.length) {
