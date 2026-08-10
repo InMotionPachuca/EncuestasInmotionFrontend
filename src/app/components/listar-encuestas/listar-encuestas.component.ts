@@ -44,11 +44,14 @@ export class ListarEncuestasComponent implements OnInit {
   loading: boolean = true;
   error: string = '';
 
-  // Modal
+  // Modal Plantilla / Detalles
   mostrarDetalles: boolean = false;
   encuestaSeleccionada: Encuesta | null = null;
   plantillaActual: string = '';
   imagenUrl: string = '';
+
+  // Modal Respuestas del Cliente
+  mostrarModalRespuestas: boolean = false;
 
   imagenesMarca: { [key: string]: string } = {
     'subaru': 'assets/whatsapp/subaruPachuca.png',
@@ -299,13 +302,11 @@ export class ListarEncuestasComponent implements OnInit {
     return String(fechaStr) || 'fecha de visita';
   }
 
-  // LECTURA DINÁMICA DE LA UNIDAD DESDE LA BASE DE DATOS
- generarPlantilla(encuesta: any): string {
+  generarPlantilla(encuesta: any): string {
     const nombreCliente = encuesta.clienteNombre || 'Cliente';
     const nombreAsesor = encuesta.asesor || 'Asesor de Servicio';
     const nombreMarca = this.obtenerNombreMarcaMostrar(encuesta.marcaNombre);
 
-    // LEE LA UNIDAD DE LA BD (EJ. POER COMERCIAL 2026), SI VIENE VACÍA USA 'vehículo'
     const unidadReal = (encuesta.unidad && encuesta.unidad.toString().trim() !== '') 
       ? encuesta.unidad.toString().trim() 
       : 'vehículo';
@@ -337,6 +338,7 @@ export class ListarEncuestasComponent implements OnInit {
 
     return plantilla;
   }
+
   verDetallesYPlantilla(encuesta: Encuesta) {
     this.encuestaSeleccionada = encuesta;
     this.plantillaActual = this.generarPlantilla(encuesta);
@@ -348,6 +350,17 @@ export class ListarEncuestasComponent implements OnInit {
     this.mostrarDetalles = false;
     this.encuestaSeleccionada = null;
     this.plantillaActual = '';
+  }
+
+  // --- MÉTODOS PARA EL NUEVO MODAL DE RESPUESTAS DEL CLIENTE ---
+  verRespuestasCliente(encuesta: Encuesta) {
+    this.encuestaSeleccionada = encuesta;
+    this.mostrarModalRespuestas = true;
+  }
+
+  cerrarModalRespuestas() {
+    this.mostrarModalRespuestas = false;
+    this.encuestaSeleccionada = null;
   }
 
   copiarPlantilla(plantilla: string) {

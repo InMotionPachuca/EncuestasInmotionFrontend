@@ -101,8 +101,7 @@
               <td>
                 <div class="cliente-info" style="display: flex; flex-direction: column;">
                   <strong style="display: block; color: #212529;">{{ encuesta.clienteNombre }}</strong>
-                  <span style="display: block; color: #6C757D; font-size: 0.78rem;">{{ encuesta.clienteEmail || 'Sin
-                    correo' }}</span>
+                  <span style="display: block; color: #6C757D; font-size: 0.78rem;">{{ encuesta.clienteEmail || 'Sin correo' }}</span>
                 </div>
               </td>
               <td>
@@ -130,6 +129,16 @@
                   <button class="btn-sm btn-ver" (click)="verDetallesYPlantilla(encuesta)">
                     <i class="fas fa-eye me-1"></i> Ver / Plantilla
                   </button>
+
+                  <!-- NUEVO BOTÓN: RESPUESTAS DEL CLIENTE (SOLO SI FUE RESPONDIDA) -->
+                  <button 
+                    *ngIf="encuesta.estado === 'RESPONDIDA'" 
+                    class="btn-sm btn-respuestas" 
+                    (click)="verRespuestasCliente(encuesta)"
+                    title="Ver las respuestas enviadas por el cliente">
+                    <i class="fas fa-poll me-1"></i> Respuestas
+                  </button>
+
                   <button class="btn-sm btn-copiar" (click)="copiarLink(encuesta.token, encuesta.clienteNombre)">
                     <i class="fas fa-copy me-1"></i> Link
                   </button>
@@ -294,7 +303,7 @@
   </div>
 </div>
 
-<!-- MODAL UNIFICADO -->
+<!-- MODAL DETALLES Y PLANTILLA -->
 <div class="modal-overlay" *ngIf="mostrarDetalles" (click)="cerrarDetalles()">
   <div class="modal-card" style="max-width: 700px; max-height: 90vh; overflow-y: auto;"
     (click)="$event.stopPropagation()">
@@ -373,6 +382,66 @@
             style="width: 100%; resize: vertical;">{{ plantillaActual }}</textarea>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- NUEVO MODAL: RESPUESTAS DEL CLIENTE -->
+<div class="modal-overlay" *ngIf="mostrarModalRespuestas" (click)="cerrarModalRespuestas()">
+  <div class="modal-card" style="max-width: 650px; max-height: 90vh; overflow-y: auto;" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3><i class="fas fa-poll-h me-2 text-gold"></i>Respuestas del Cliente</h3>
+      <button class="modal-close" (click)="cerrarModalRespuestas()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" *ngIf="encuestaSeleccionada">
+      <!-- CABECERA DEL CLIENTE -->
+      <div style="background: #FDF8ED; border-left: 4px solid #C5A059; padding: 12px 16px; border-radius: 6px; margin-bottom: 18px;">
+        <div class="detail-row"><b>Cliente:</b> {{ encuestaSeleccionada.clienteNombre }}</div>
+        <div class="detail-row"><b>Agencia:</b> {{ obtenerNombreMarcaMostrar(encuestaSeleccionada.marcaNombre) }}</div>
+        <div class="detail-row"><b>Unidad:</b> {{ encuestaSeleccionada.unidad || 'Vehículo' }}</div>
+        <div class="detail-row" *ngIf="encuestaSeleccionada.fechaRespuesta">
+          <b>Fecha de Respuesta:</b> {{ formatFecha(encuestaSeleccionada.fechaRespuesta) }}
+        </div>
+      </div>
+
+      <!-- LISTA DE PREGUNTAS Y RESPUESTAS -->
+      <div class="respuestas-list" *ngIf="encuestaSeleccionada.respuestas && encuestaSeleccionada.respuestas.length > 0; else sinRespuestas">
+        <div 
+          *ngFor="let r of encuestaSeleccionada.respuestas" 
+          style="background: #FFFFFF; border: 1px solid #E9ECEF; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+          
+          <div style="font-size: 0.8rem; font-weight: 700; color: #6C757D; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;">
+            {{ r.preguntaTexto || ('Pregunta ' + r.preguntaId) }}
+          </div>
+
+          <!-- EVALUACIÓN EN ESCALA / ESTRELLAS -->
+          <div *ngIf="r.valorNumerico" style="font-size: 1.15rem; font-weight: 700; color: #C5A059;">
+            {{ r.valorNumerico }} ★
+          </div>
+
+          <!-- RESPUESTA SÍ / NO -->
+          <div *ngIf="r.opcionTexto || r.opcionId" style="font-weight: 600;">
+            <span class="badge" [class.badge-respondida]="r.opcionId === 1 || r.opcionTexto === 'SI'" [class.badge-expirada]="r.opcionId === 2 || r.opcionTexto === 'NO'">
+              {{ r.opcionTexto || (r.opcionId === 1 ? 'SÍ' : 'NO') }}
+            </span>
+          </div>
+
+          <!-- RESPUESTA DE TEXTO / COMENTARIO -->
+          <div *ngIf="r.valorTexto" style="font-size: 0.88rem; color: #212529; font-style: italic; background: #F8F9FA; padding: 8px 12px; border-radius: 6px; margin-top: 4px; border-left: 3px solid #C5A059;">
+            "{{ r.valorTexto }}"
+          </div>
+        </div>
+      </div>
+
+      <ng-template #sinRespuestas>
+        <div class="text-center text-muted py-4">
+          <i class="fas fa-info-circle mb-2" style="font-size: 1.8rem; color: #C5A059;"></i>
+          <p class="m-0 fw-semibold">Esta encuesta aún no contiene detalle de respuestas guardadas.</p>
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>

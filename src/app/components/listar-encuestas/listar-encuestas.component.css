@@ -243,13 +243,25 @@
 .btn-ver { background: #C5A059; color: white; }
 .btn-ver:hover { background: #9A7B3E; }
 
+/* NUEVO BOTÓN: RESPUESTAS */
+.btn-respuestas {
+  background: #D1E7DD;
+  border: 1px solid #BADBCC;
+  color: #0F5132;
+}
+
+.btn-respuestas:hover {
+  background: #198754;
+  color: #FFFFFF;
+}
+
 .btn-copiar { background: #F8F9FA; border: 1px solid #CED4DA; color: #495057; }
 .btn-copiar:hover { background: #E9ECEF; }
 
 .btn-eliminar { background: #F8D7DA; border: 1px solid #F5C2C7; color: #842029; }
 .btn-eliminar:hover { background: #DC3545; color: white; }
 
-/* ========== ESTILOS COMPLETOS DEL MODAL DETALLES Y PLANTILLA ========== */
+/* MODALES FLOTANTES */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -443,7 +455,7 @@
   cursor: not-allowed;
 }
 
-/* BOTONES DE SEGMENTACIÓN OPERATIVA (SERVICIO / VENTA) */
+/* SEGMENTACIÓN OPERATIVA */
 .btn-segmento {
   background: #FFFFFF;
   border: 1px solid #CED4DA;
@@ -472,7 +484,6 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
-/* BADGES DE TIPO EN TABLA (VENTA VS SERVICIO) */
 .badge-tipo {
   padding: 4px 10px;
   border-radius: 6px;
