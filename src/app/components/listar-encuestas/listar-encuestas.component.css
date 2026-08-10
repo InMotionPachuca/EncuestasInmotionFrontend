@@ -226,21 +226,28 @@
 
 .btn-actions {
   display: flex;
+  align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
-
 .btn-sm {
-  padding: 6px 12px;
-  border: none;
+  height: 32px; /* Misma altura exacta para todos */
+  padding: 0 12px;
   border-radius: 6px;
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   transition: all 0.2s ease;
+  line-height: 1;
+  box-sizing: border-box;
 }
 
-.btn-ver { background: #C5A059; color: white; }
+.btn-ver { background: #C5A059; color: white; border: none; }
 .btn-ver:hover { background: #9A7B3E; }
 
 /* NUEVO BOTÓN: RESPUESTAS */
