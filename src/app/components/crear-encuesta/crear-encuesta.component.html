@@ -44,12 +44,20 @@
           </div>
         </div>
 
-        <!-- FILA CON ASESOR Y SUCURSAL -->
+        <!-- FILA CON ASESOR Y UNIDAD -->
         <div class="form-row">
           <div class="form-group">
-            <label>Asesor de Servicio <span class="opcional-text">(opcional)</span></label>
+            <label>Asesor <span class="opcional-text">(opcional)</span></label>
             <input type="text" formControlName="asesor" placeholder="Nombre del asesor">
           </div>
+          <div class="form-group">
+            <label>Unidad / Modelo <span class="opcional-text">(opcional)</span></label>
+            <input type="text" formControlName="unidad" placeholder="Ej. POER COMERCIAL 2026">
+          </div>
+        </div>
+
+        <!-- FILA CON SUCURSAL Y TIPO DE ÁREA -->
+        <div class="form-row">
           <div class="form-group">
             <label>Sucursal <span class="required">*</span></label>
             <select formControlName="marcaId">
@@ -62,9 +70,18 @@
               <i class="fas fa-exclamation-circle me-1"></i>Seleccione una sucursal
             </small>
           </div>
+
+          <div class="form-group">
+            <label>Tipo de Encuesta / Área <span class="required">*</span></label>
+            <select formControlName="tipo">
+              <option value="VENTA">Venta</option>
+              <option value="POSTVENTA">Postventa</option>
+              <option value="SERVICIO">Servicio</option>
+            </select>
+          </div>
         </div>
 
-        <!-- NUEVA FILA CON FECHA DE VISITA Y TIPO DE ENCUESTA -->
+        <!-- FILA CON FECHA DE VISITA -->
         <div class="form-row">
           <div class="form-group">
             <label>Fecha de Visita <span class="required">*</span></label>
@@ -72,13 +89,6 @@
             <small *ngIf="encuestaForm.get('fechaVisita')?.invalid && encuestaForm.get('fechaVisita')?.touched" class="error-text">
               <i class="fas fa-exclamation-circle me-1"></i>La fecha es requerida
             </small>
-          </div>
-          <div class="form-group">
-            <label>Tipo de Encuesta</label>
-            <select formControlName="tipo">
-              <option value="VENTA">Venta</option>
-              <option value="POSTVENTA">Postventa</option>
-            </select>
           </div>
         </div>
       </div>
@@ -105,9 +115,17 @@
         <span>Cliente:</span>
         <strong>{{ encuestaCreada?.clienteNombre }}</strong>
       </div>
+      <div class="info-row">
+        <span>Área / Tipo:</span>
+        <strong>{{ encuestaCreada?.tipo }}</strong>
+      </div>
       <div class="info-row" *ngIf="encuestaCreada?.asesor">
         <span>Asesor:</span>
         <strong>{{ encuestaCreada?.asesor }}</strong>
+      </div>
+      <div class="info-row" *ngIf="encuestaCreada?.unidad">
+        <span>Unidad:</span>
+        <strong>{{ encuestaCreada?.unidad }}</strong>
       </div>
       <div class="info-row">
         <span>Fecha de Visita:</span>
@@ -137,8 +155,8 @@
       <button class="btn-primary" (click)="resetForm()">
         <i class="fas fa-plus me-1"></i> Nueva Encuesta
       </button>
-      <button class="btn-secondary" routerLink="/dashboard">
-        <i class="fas fa-chart-pie me-1"></i> Ver Dashboard
+      <button class="btn-secondary" routerLink="/listar">
+        <i class="fas fa-list me-1"></i> Ver Encuestas
       </button>
     </div>
   </div>

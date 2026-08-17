@@ -22,13 +22,13 @@
         >
       </div>
       
-      <h1>Encuesta de Satisfacción en Servicio</h1>
+      <h1>{{ getTituloEncuesta() }}</h1>
       
       <div class="marca-logo-container">
         <span class="marca-nombre-text">{{ encuesta?.marcaNombre || 'Carsline Pachuca' }}</span>
       </div>
       
-      <p>Agradecemos su reciente visita, nos gustaría que nos compartiera su experiencia.</p>
+      <p>{{ getSubtituloEncuesta() }}</p>
       <p class="highlight">¡Tu opinión es importante!</p>
     </div>
 
@@ -44,29 +44,36 @@
       <p>El enlace de acceso ya no se encuentra disponible.</p>
     </div>
 
-    <!-- TARJETA DEL CLIENTE RESTAURADA CON ASESOR -->
+    <!-- TARJETA DEL CLIENTE -->
     <div *ngIf="encuesta && encuesta.estado === 'ENVIADA'" class="encuesta-content">
       <div class="cliente-card mb-4 p-3 rounded" style="background: #F8F9FA; border: 1px solid #E9ECEF;">
         <div class="row g-2">
-          <div class="col-md-4">
+          <div class="col-md-3">
             <small class="text-muted d-block">Cliente:</small>
             <strong class="text-dark">{{ encuesta.clienteNombre }}</strong>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
+            <small class="text-muted d-block">Área:</small>
+            <strong class="text-dark">{{ encuesta.tipo || 'POSTVENTA' }}</strong>
+          </div>
+          <div class="col-md-3">
             <small class="text-muted d-block">Asesor:</small>
             <strong class="text-dark">{{ encuesta.asesor || 'Atención a Clientes' }}</strong>
           </div>
-          <div class="col-md-4">
-            <small class="text-muted d-block">Email:</small>
-            <span class="text-muted">{{ encuesta.clienteEmail || 'Sin correo' }}</span>
+          <div class="col-md-3">
+            <small class="text-muted d-block">Unidad:</small>
+            <strong class="text-dark">{{ encuesta.unidad || 'Vehículo' }}</strong>
           </div>
         </div>
       </div>
 
       <form [formGroup]="encuestaForm" (ngSubmit)="enviarRespuesta()">
         
+        <!-- PREGUNTA 1 DINÁMICA -->
         <div class="pregunta">
-          <label>1. ¿Cómo evaluaría su experiencia general con el servicio realizado a su vehículo? <span class="required">*</span></label>
+          <label>
+            1. {{ getPregunta1Texto() }} <span class="required">*</span>
+          </label>
           <div class="rango">
             <div class="rango-labels">
               <span>Deficiente</span>
@@ -82,8 +89,11 @@
           </div>
         </div>
 
+        <!-- PREGUNTA 2 DINÁMICA -->
         <div class="pregunta">
-          <label>2. ¿Cómo califica la atención y amabilidad brindada por su Asesor de Servicio? <span class="required">*</span></label>
+          <label>
+            2. {{ getPregunta2Texto() }} <span class="required">*</span>
+          </label>
           <div class="rango">
             <div class="rango-labels">
               <span>Deficiente</span>
@@ -99,8 +109,11 @@
           </div>
         </div>
 
+        <!-- PREGUNTA 3 DINÁMICA -->
         <div class="pregunta">
-          <label>3. ¿El vehículo le fue entregado en el tiempo prometido? <span class="required">*</span></label>
+          <label>
+            3. {{ getPregunta3Texto() }} <span class="required">*</span>
+          </label>
           <div class="si-no">
             <button type="button" 
                     [class.selected]="getTiempoAdecuado() === 'SI'"
@@ -115,8 +128,11 @@
           </div>
         </div>
 
+        <!-- PREGUNTA 4 DINÁMICA -->
         <div class="pregunta">
-          <label>4. ¿Recomendaría nuestro taller de servicio a sus familiares y amigos? <span class="required">*</span></label>
+          <label>
+            4. {{ getPregunta4Texto() }} <span class="required">*</span>
+          </label>
           <div class="si-no">
             <button type="button" 
                     [class.selected]="getOpcionRecomienda() === 'SI'"
@@ -131,8 +147,9 @@
           </div>
         </div>
 
+        <!-- PREGUNTA 5: COMENTARIOS -->
         <div class="pregunta">
-          <label>5. ¿Tiene algún comentario adicional o sugerencia para mejorar nuestro servicio?</label>
+          <label>5. ¿Tiene algún comentario adicional o sugerencia de mejora?</label>
           <textarea formControlName="comentarios" 
                     placeholder="Escriba sus comentarios aquí..." 
                     rows="4"></textarea>

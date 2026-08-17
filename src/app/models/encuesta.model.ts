@@ -9,7 +9,7 @@ export interface Encuesta {
   fechaRespuesta?: Date;
   clienteNombre: string;
   clienteEmail: string;
-  clienteTelefono?: string; // <--- AÑADIDO PARA LEER EL DTO DE SPRING BOOT
+  clienteTelefono?: string;
   telefono?: string;
   asesor?: string;
   unidad?: string;
@@ -33,6 +33,8 @@ export interface EncuestaRequestDTO {
   email: string;
   telefono?: string;
   asesor?: string;
+  unidad?: string;
+  fechaVisita?: string;
   marcaId: number;
   tipo?: string;
   respuestas: EncuestaRespuestaDTO[];

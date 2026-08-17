@@ -22,8 +22,6 @@ export class CrearEncuestaComponent {
     private encuestaService: EncuestaService
   ) {
     this.marcas = this.encuestaService.obtenerMarcas();
-    
-    // Obtener la fecha de hoy en formato YYYY-MM-DD para el input
     const hoy = new Date().toISOString().split('T')[0];
 
     this.encuestaForm = this.fb.group({
@@ -32,9 +30,10 @@ export class CrearEncuestaComponent {
       email: [''], 
       telefono: ['', [Validators.required, Validators.minLength(8)]], 
       asesor: [''], 
-      fechaVisita: [hoy, Validators.required], // CAMPO AGREGADO
+      unidad: [''],
+      fechaVisita: [hoy, Validators.required],
       marcaId: ['', Validators.required],
-      tipo: ['SERVICIO']
+      tipo: ['POSTVENTA', Validators.required]
     });
   }
 
@@ -50,12 +49,13 @@ export class CrearEncuestaComponent {
     const data = {
       nombre: formValue.nombre,
       apellido: formValue.apellido,
-      email: formValue.email || '', 
-      telefono: formValue.telefono || '',
-      asesor: formValue.asesor || '', 
-      fechaVisita: formValue.fechaVisita, // ENVIADO AL BACKEND
+      email: formValue.email || 'sin_correo@inmotion.com', 
+      telefono: formValue.telefono ? formValue.telefono.toString().replace(/\D/g, '') : '',
+      asesor: formValue.asesor || 'Atención a Clientes', 
+      unidad: formValue.unidad || '',
+      fechaVisita: formValue.fechaVisita,
       marcaId: Number(formValue.marcaId),
-      tipo: formValue.tipo || 'SERVICIO',
+      tipo: formValue.tipo,
       respuestas: []
     };
 
@@ -84,7 +84,7 @@ export class CrearEncuestaComponent {
   resetForm() {
     const hoy = new Date().toISOString().split('T')[0];
     this.encuestaForm.reset({ 
-      tipo: 'SERVICIO',
+      tipo: 'POSTVENTA',
       fechaVisita: hoy 
     });
     this.exito = false;

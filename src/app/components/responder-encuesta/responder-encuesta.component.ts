@@ -57,6 +57,51 @@ export class ResponderEncuestaComponent implements OnInit {
     });
   }
 
+  get esVenta(): boolean {
+    return this.encuesta?.tipo === 'VENTA';
+  }
+
+  getTituloEncuesta(): string {
+    if (this.esVenta) return 'Encuesta de Satisfacción en Ventas';
+    if (this.encuesta?.tipo === 'POSTVENTA') return 'Encuesta de Satisfacción en Postventa';
+    return 'Encuesta de Satisfacción en Servicio';
+  }
+
+  getSubtituloEncuesta(): string {
+    if (this.esVenta) {
+      return 'Agradecemos su preferencia en la compra de su unidad, nos gustaría conocer su experiencia.';
+    }
+    return 'Agradecemos su reciente visita, nos gustaría que nos compartiera su experiencia.';
+  }
+
+  getPregunta1Texto(): string {
+    if (this.esVenta) {
+      return '¿Cómo evaluaría su experiencia general durante el proceso de compra de su vehículo?';
+    }
+    return '¿Cómo evaluaría su experiencia general con el servicio realizado a su vehículo?';
+  }
+
+  getPregunta2Texto(): string {
+    if (this.esVenta) {
+      return '¿Cómo califica la atención y asesoría brindada por su Asesor de Ventas?';
+    }
+    return '¿Cómo califica la atención y amabilidad brindada por su Asesor de Servicio?';
+  }
+
+  getPregunta3Texto(): string {
+    if (this.esVenta) {
+      return '¿La entrega de su vehículo se realizó en el tiempo y condiciones acordadas?';
+    }
+    return '¿El vehículo le fue entregado en el tiempo prometido?';
+  }
+
+  getPregunta4Texto(): string {
+    if (this.esVenta) {
+      return '¿Recomendaría nuestra agencia de ventas a sus familiares y amigos?';
+    }
+    return '¿Recomendaría nuestro taller de servicio a sus familiares y amigos?';
+  }
+
   onLogoError(event: Event): void {
     const img = event.target as HTMLImageElement;
     if (img && !img.src.includes('assets/inmo1.png')) {
@@ -121,10 +166,11 @@ export class ResponderEncuestaComponent implements OnInit {
       nombre: primerNombre,
       apellido: apellidos,
       email: this.encuesta.clienteEmail || 'cliente@inmotion.com',
-      telefono: this.encuesta.telefono || '0000000000',
+      telefono: this.encuesta.clienteTelefono || this.encuesta.telefono || '0000000000',
       asesor: this.encuesta.asesor || 'Atención a Clientes',
+      unidad: this.encuesta.unidad || '',
       marcaId: this.encuesta.marcaId || 1,
-      tipo: this.encuesta.tipo || 'SERVICIO',
+      tipo: this.encuesta.tipo || 'POSTVENTA',
       respuestas: respuestasData
     };
 
