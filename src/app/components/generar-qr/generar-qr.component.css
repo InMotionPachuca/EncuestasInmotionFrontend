@@ -1,19 +1,18 @@
-/* ========== CONTENEDOR PRINCIPAL ========== */
 .qr-container {
-  max-width: 800px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 20px;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   color: #212529;
 }
 
-/* ========== HEADER NEGRO Y DORADO ========== */
+/* HEADER NEGRO CON ACENTO DORADO */
 .qr-header {
   background: #1F1F1F !important;
   padding: 18px 24px !important;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   border-left: 5px solid #C5A059 !important;
   border-top: 1px solid #333333;
   border-right: 1px solid #333333;
@@ -26,7 +25,6 @@
   margin: 0 !important;
   font-weight: 700;
   font-family: 'Montserrat', sans-serif;
-  letter-spacing: -0.01em;
 }
 
 .header-subtitle {
@@ -35,27 +33,116 @@
   font-size: 0.82rem !important;
 }
 
-/* ========== TARJETA DE CONTENIDO ========== */
+/* GRID DE CARDS POR AGENCIA */
+.marcas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.marca-card {
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.marca-card:hover {
+  transform: translateY(-2px);
+  border-color: #C5A059;
+  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.18);
+}
+
+.marca-card.active {
+  background: #FDF8ED;
+  border-color: #C5A059;
+  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.25);
+  border-left: 4px solid #C5A059;
+}
+
+.marca-card-icon {
+  font-size: 1.3rem;
+  color: #6C757D;
+  width: 38px;
+  height: 38px;
+  background: #F8F9FA;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marca-card.active .marca-card-icon {
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+}
+
+.text-gold {
+  color: #C5A059 !important;
+}
+
+.marca-card-info h3 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin: 0 0 2px 0;
+  color: #212529;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.marca-badge {
+  font-size: 0.72rem;
+  color: #6C757D;
+  font-weight: 600;
+}
+
+.marca-check {
+  position: absolute;
+  right: 12px;
+  color: #C5A059;
+  font-size: 1.1rem;
+}
+
+/* TARJETA DEL QR GENERADO */
 .qr-card {
   background: #FFFFFF;
-  border-radius: 10px;
-  padding: 28px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  border-top: 3px solid #C5A059;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  border-top: 4px solid #C5A059;
   border-left: 1px solid #E9ECEF;
   border-right: 1px solid #E9ECEF;
   border-bottom: 1px solid #E9ECEF;
   text-align: center;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.agencia-pill {
+  background: #1F1F1F;
+  color: #C5A059;
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  display: inline-flex;
+  align-items: center;
 }
 
 .qr-instructions {
   color: #6C757D;
   font-size: 0.88rem;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   line-height: 1.5;
 }
 
-/* ========== MARCO DEL CÓDIGO QR ========== */
 .qrcode-wrapper {
   display: flex;
   justify-content: center;
@@ -64,29 +151,30 @@
 
 .qrcode-box {
   background: #FFFFFF;
-  padding: 20px;
+  padding: 16px;
   border-radius: 12px;
   border: 1px solid #E9ECEF;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
   display: inline-block;
-  transition: transform 0.2s;
+  transition: transform 0.2s ease;
 }
 
 .qrcode-box:hover {
   transform: scale(1.02);
 }
 
-/* ========== MOSTRADOR DE ENLACE ========== */
 .link-preview {
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .link-preview small {
   color: #6C757D;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 4px;
 }
 
 .link-code {
@@ -97,12 +185,10 @@
   border-radius: 6px;
   border: 1px solid #E9ECEF;
   font-family: monospace;
-  font-size: 0.88rem;
-  margin-top: 6px;
+  font-size: 0.84rem;
   word-break: break-all;
 }
 
-/* ========== BOTONES ========== */
 .qr-actions {
   display: flex;
   justify-content: center;
@@ -120,15 +206,14 @@
   transition: all 0.2s;
   background: #C5A059;
   color: white;
-  font-family: 'Inter', sans-serif;
   display: inline-flex;
   align-items: center;
 }
 
 .btn-primary:hover {
   background: #9A7B3E;
-  box-shadow: 0 4px 10px rgba(197, 160, 89, 0.25);
   transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(197, 160, 89, 0.25);
 }
 
 .btn-secondary {
@@ -141,7 +226,6 @@
   transition: all 0.2s;
   background: #FFFFFF;
   color: #495057;
-  font-family: 'Inter', sans-serif;
   display: inline-flex;
   align-items: center;
   text-decoration: none;
@@ -152,10 +236,9 @@
   color: #212529;
 }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
-  .qr-container {
-    padding: 14px;
+  .marcas-grid {
+    grid-template-columns: 1fr;
   }
   .qr-actions {
     flex-direction: column;

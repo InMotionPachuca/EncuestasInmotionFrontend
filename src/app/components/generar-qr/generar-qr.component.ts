@@ -1,4 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { EncuestaService } from '../../services/encuesta.service';
+
+interface MarcaQR {
+  id: number;
+  nombre: string;
+  logo: string;
+}
 
 @Component({
   selector: 'app-generar-qr',
@@ -6,16 +13,33 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./generar-qr.component.css']
 })
 export class GenerarQrComponent implements OnInit {
-  // Enlace dinámico o fijo que apunta a la encuesta estática
+  marcas: MarcaQR[] = [];
+  marcaSeleccionada: MarcaQR | null = null;
   qrUrl: string = '';
 
+  constructor(private encuestaService: EncuestaService) {}
+
   ngOnInit(): void {
-    // Genera la URL completa hacia la ruta /evaluar
-    this.qrUrl = `${window.location.origin}/evaluar`;
+    const catalogo = this.encuestaService.obtenerMarcas();
+    this.marcas = catalogo.map(m => ({
+      id: m.id,
+      nombre: m.nombre,
+      logo: this.encuestaService.obtenerLogo(m.id)
+    }));
+
+    // Selecciona por defecto la primera agencia
+    if (this.marcas.length > 0) {
+      this.seleccionarMarca(this.marcas[0]);
+    }
+  }
+
+  seleccionarMarca(marca: MarcaQR): void {
+    this.marcaSeleccionada = marca;
+    // URL con parámetro de marca preseleccionada
+    this.qrUrl = `${window.location.origin}/evaluar?marcaId=${marca.id}`;
   }
 
   descargarQR(): void {
-    // Busca el canvas o img dentro del contenedor generado por angularx-qrcode
     const container = document.querySelector('.qrcode-container');
     if (!container) {
       alert('No se encontró el contenedor del código QR.');
@@ -23,15 +47,12 @@ export class GenerarQrComponent implements OnInit {
     }
 
     const qrElement = container.querySelector('canvas, img') as HTMLCanvasElement | HTMLImageElement;
-
     if (!qrElement) {
       alert('Aún no se ha renderizado el código QR.');
       return;
     }
 
     let dataUrl = '';
-
-    // Extrae la imagen en base64 según el elemento renderizado
     if (qrElement instanceof HTMLCanvasElement) {
       dataUrl = qrElement.toDataURL('image/png');
     } else if (qrElement instanceof HTMLImageElement) {
@@ -39,10 +60,13 @@ export class GenerarQrComponent implements OnInit {
     }
 
     if (dataUrl) {
-      // Crea un enlace temporal en el DOM para forzar la descarga
+      const nombreLimpio = (this.marcaSeleccionada?.nombre || 'agencia')
+        .toLowerCase()
+        .replace(/\s+/g, '_');
+
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = `codigo_qr_encuesta_${new Date().getTime()}.png`;
+      link.download = `qr_${nombreLimpio}_${new Date().getTime()}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { EncuestaService } from '../../services/encuesta.service';
 
 @Component({
@@ -17,7 +17,8 @@ export class EncuestaEstaticaComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private encuestaService: EncuestaService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.marcas = this.encuestaService.obtenerMarcas();
 
@@ -33,7 +34,15 @@ export class EncuestaEstaticaComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Si viene ?marcaId= en la URL del QR, se selecciona automáticamente en el formulario
+    this.route.queryParams.subscribe(params => {
+      if (params['marcaId']) {
+        const marcaIdParam = Number(params['marcaId']);
+        this.encuestaForm.patchValue({ marcaId: marcaIdParam });
+      }
+    });
+  }
 
   setCalificacion(controlName: string, valor: number): void {
     this.encuestaForm.get(controlName)?.setValue(valor);
@@ -106,7 +115,7 @@ export class EncuestaEstaticaComponent implements OnInit {
         this.enviando = false;
         this.exito = true;
         
-        // REDIRECCIÓN AUTOMÁTICA A LA VISTA DE AGRADECIMIENTO TRAS 1 SEGUNDO
+        // Redirección automática a la vista de agradecimiento tras 1 segundo
         setTimeout(() => {
           this.router.navigate(['/gracias']);
         }, 1000);
@@ -120,9 +129,9 @@ export class EncuestaEstaticaComponent implements OnInit {
   }
 
   onLogoError(event: Event): void {
-  const imgElement = event.target as HTMLImageElement;
-  if (imgElement) {
-    imgElement.src = 'assets/inmo1.png';
+    const imgElement = event.target as HTMLImageElement;
+    if (imgElement) {
+      imgElement.src = 'assets/inmo1.png';
+    }
   }
-}
 }
