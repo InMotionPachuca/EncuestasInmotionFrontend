@@ -36,56 +36,62 @@
 /* GRID DE CARDS POR AGENCIA */
 .marcas-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
 }
 
 .marca-card {
   background: #FFFFFF;
   border: 1px solid #E9ECEF;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 14px 16px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 .marca-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: #C5A059;
-  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.18);
+  box-shadow: 0 6px 16px rgba(197, 160, 89, 0.2);
 }
 
 .marca-card.active {
   background: #FDF8ED;
   border-color: #C5A059;
-  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.25);
-  border-left: 4px solid #C5A059;
+  box-shadow: 0 6px 16px rgba(197, 160, 89, 0.25);
+  border-left: 5px solid #C5A059;
 }
 
-.marca-card-icon {
-  font-size: 1.3rem;
-  color: #6C757D;
-  width: 38px;
-  height: 38px;
-  background: #F8F9FA;
+/* LOGO DENTRO DE LA CARD */
+.marca-logo-wrapper {
+  width: 60px;
+  height: 48px;
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
 }
 
-.marca-card.active .marca-card-icon {
+.marca-card.active .marca-logo-wrapper {
+  border-color: #C5A059;
   background: #FFFFFF;
-  border: 1px solid #E9ECEF;
 }
 
-.text-gold {
-  color: #C5A059 !important;
+.marca-card-logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .marca-card-info h3 {
@@ -94,6 +100,7 @@
   margin: 0 0 2px 0;
   color: #212529;
   font-family: 'Montserrat', sans-serif;
+  line-height: 1.2;
 }
 
 .marca-badge {
@@ -106,7 +113,7 @@
   position: absolute;
   right: 12px;
   color: #C5A059;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
 }
 
 /* TARJETA DEL QR GENERADO */
@@ -124,10 +131,20 @@
   margin: 0 auto;
 }
 
+.qr-header-logo {
+  height: 40px;
+  max-width: 100px;
+  object-fit: contain;
+  background: #FFFFFF;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #E9ECEF;
+}
+
 .agencia-pill {
   background: #1F1F1F;
   color: #C5A059;
-  padding: 6px 18px;
+  padding: 7px 18px;
   border-radius: 20px;
   font-size: 0.88rem;
   font-weight: 700;

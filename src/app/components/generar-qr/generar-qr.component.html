@@ -7,7 +7,7 @@
     </div>
   </div>
 
-  <!-- GRID DE TARJETAS POR MARCA / SUCURSAL -->
+  <!-- GRID DE TARJETAS CON LOGOS DE MARCA -->
   <div class="marcas-grid mb-4">
     <div 
       *ngFor="let marca of marcas" 
@@ -15,8 +15,13 @@
       [class.active]="marcaSeleccionada?.id === marca.id"
       (click)="seleccionarMarca(marca)">
       
-      <div class="marca-card-icon">
-        <i class="fas fa-building" [class.text-gold]="marcaSeleccionada?.id === marca.id"></i>
+      <!-- CONTENEDOR DEL LOGO DE LA AGENCIA -->
+      <div class="marca-logo-wrapper">
+        <img 
+          [src]="marca.logo" 
+          [alt]="marca.nombre" 
+          class="marca-card-logo"
+          (error)="onLogoError($event)">
       </div>
       
       <div class="marca-card-info">
@@ -33,9 +38,16 @@
   <!-- TARJETA PRINCIPAL DEL QR AUTOGENERADO -->
   <div class="qr-card" *ngIf="marcaSeleccionada">
     <div class="qr-card-header mb-3">
-      <span class="agencia-pill">
-        <i class="fas fa-qrcode me-2"></i> {{ marcaSeleccionada.nombre }}
-      </span>
+      <div class="d-flex align-items-center justify-content-center gap-3">
+        <img 
+          [src]="marcaSeleccionada.logo" 
+          [alt]="marcaSeleccionada.nombre" 
+          class="qr-header-logo"
+          (error)="onLogoError($event)">
+        <span class="agencia-pill">
+          <i class="fas fa-qrcode me-2"></i> {{ marcaSeleccionada.nombre }}
+        </span>
+      </div>
     </div>
 
     <p class="qr-instructions">
