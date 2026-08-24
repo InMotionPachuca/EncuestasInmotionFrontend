@@ -14,7 +14,6 @@ export class LoginComponent implements OnInit {
   loading = false;
   error = '';
   
-  // Toggles de visibilidad
   mostrarPassword = false;
   mostrarEmail = false;
 
@@ -68,11 +67,20 @@ export class LoginComponent implements OnInit {
     this.authService.login({ email, password }).subscribe({
       next: (res: AuthResponse) => {
         this.loading = false;
+        
+        // Guardar token y usuario
         localStorage.setItem('token', res.token);
-        localStorage.setItem('currentUser', JSON.stringify(res.usuario));
         localStorage.setItem('userEmail', email);
 
-        // Si el usuario tiene rol o perfil de facturación/gerente, dirigir a su tablero
+        if (res.usuario) {
+          localStorage.setItem('currentUser', JSON.stringify(res.usuario));
+          const rolDetectado = res.usuario.rol || res.usuario.role || res.rol || res.role || '';
+          if (rolDetectado) {
+            localStorage.setItem('userRole', rolDetectado.toString().toUpperCase().replace('ROLE_', '').trim());
+          }
+        }
+
+        // Redirección según rol
         if (this.authService.isGerente() && !this.authService.isAdmin()) {
           this.router.navigate(['/dashboard-facturacion']);
         } else {
