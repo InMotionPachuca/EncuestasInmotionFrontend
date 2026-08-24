@@ -4,6 +4,17 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from './services/auth.service';
 
+interface MenuItem {
+  route: string;
+  label: string;
+  icon: string;
+  badge?: string | null;
+  badgeClass?: string;
+  adminOnly?: boolean;
+  gerenteOnly?: boolean;
+  satisfaccionOnly?: boolean;
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,25 +22,29 @@ import { AuthService } from './services/auth.service';
 })
 export class AppComponent {
   title = 'encuestas-app';
-
-  // CONTROL DEL ESTADO DE LA BARRA LATERAL
   sidebarOculta = false;
 
-  private todosLosMenuItems = [
-    { route: '/dashboard', label: 'CXI', icon: 'fas fa-chart-pie', badge: null, badgeClass: '', adminOnly: false },
-    { route: '/dashboard-qr', label: 'CXI QR', icon: 'fas fa-qrcode', badge: null, badgeClass: 'bg-warning text-dark', adminOnly: false },
-    { route: '/usuarios', label: 'Usuarios', icon: 'fas fa-users-cog', badge: null, badgeClass: '', adminOnly: true },
-    { route: '/asesores', label: 'Asesores', icon: 'fas fa-user-tie', badge: null, badgeClass: '', adminOnly: false },
-    { route: '/crear', label: 'Crear Encuesta', icon: 'fas fa-plus-circle', badge: null, badgeClass: 'bg-danger', adminOnly: false },
-    { route: '/listar', label: 'Encuestas', icon: 'fas fa-list-alt', badge: null, badgeClass: '', adminOnly: false },
-    { route: '/importar', label: 'Importar Datos', icon: 'fas fa-file-upload', badge: null, badgeClass: '', adminOnly: false },
-    { route: '/contestar-manual', label: 'Contestar Manual', icon: 'fas fa-edit', badge: null, badgeClass: '', adminOnly: false },
-    { route: '/generar-qr', label: 'Generar QR', icon: 'fas fa-qrcode', badge: null, badgeClass: '', adminOnly: false }
+  private todosLosMenuItems: MenuItem[] = [
+    // --- VISTAS DE SATISFACCIÓN (ADMIN y USER estándar) ---
+    { route: '/dashboard', label: 'CXI', icon: 'fas fa-chart-pie', satisfaccionOnly: true },
+    { route: '/dashboard-qr', label: 'CXI QR', icon: 'fas fa-qrcode', badge: 'QR', badgeClass: 'bg-warning text-dark', satisfaccionOnly: true },
+    { route: '/listar', label: 'Encuestas', icon: 'fas fa-list-alt', satisfaccionOnly: true },
+    { route: '/encuestas-qr', label: 'Respuestas QR', icon: 'fas fa-mobile-alt', satisfaccionOnly: true },
+    { route: '/contestar-manual', label: 'Contestar Manual', icon: 'fas fa-edit', satisfaccionOnly: true },
+
+    // --- MÓDULOS DE FACTURACIÓN (GERENTE y ADMIN) ---
+    { route: '/dashboard-facturacion', label: 'Tablero Facturación', icon: 'fas fa-chart-line', gerenteOnly: true },
+    { route: '/crear', label: 'Facturación', icon: 'fas fa-file-invoice-dollar', gerenteOnly: true },
+
+    // --- MÓDULOS EXCLUSIVOS DE ADMINISTRADOR ---
+    { route: '/usuarios', label: 'Usuarios', icon: 'fas fa-users-cog', adminOnly: true },
+    { route: '/asesores', label: 'Asesores', icon: 'fas fa-user-tie', adminOnly: true },
+    { route: '/importar', label: 'Importar Datos', icon: 'fas fa-file-upload', adminOnly: true },
+    { route: '/generar-qr', label: 'Generar QR', icon: 'fas fa-qrcode', adminOnly: true }
   ];
 
   mostrarMenuUsuario = false;
   mostrarModalPassword = false;
-
   mostrarPasswordActual = false;
   mostrarNuevaPassword = false;
 
@@ -49,16 +64,23 @@ export class AppComponent {
     });
   }
 
-  // MÉTODO PARA ALTERNAR EL ESTADO DE LA BARRA LATERAL
   toggleSidebar(): void {
     this.sidebarOculta = !this.sidebarOculta;
   }
 
-  get menuItems() {
+  get menuItems(): MenuItem[] {
+    // ADMIN: Visualiza todos los módulos
     if (this.authService.isAdmin()) {
       return this.todosLosMenuItems;
     }
-    return this.todosLosMenuItems.filter(item => !item.adminOnly);
+
+    // GERENTE / FACTURACIÓN: Visualiza EXCLUSIVAMENTE los módulos de facturación
+    if (this.authService.isGerente()) {
+      return this.todosLosMenuItems.filter(item => item.gerenteOnly);
+    }
+
+    // USER NORMAL: Visualiza únicamente los módulos de satisfacción (CXI, Encuestas)
+    return this.todosLosMenuItems.filter(item => item.satisfaccionOnly);
   }
 
   isPublicRoute(): boolean {
@@ -69,15 +91,15 @@ export class AppComponent {
            url.includes('/gracias');
   }
 
-  toggleUserMenu() {
+  toggleUserMenu(): void {
     this.mostrarMenuUsuario = !this.mostrarMenuUsuario;
   }
 
-  toggleVerPasswordActual() {
+  toggleVerPasswordActual(): void {
     this.mostrarPasswordActual = !this.mostrarPasswordActual;
   }
 
-  toggleVerNuevaPassword() {
+  toggleVerNuevaPassword(): void {
     this.mostrarNuevaPassword = !this.mostrarNuevaPassword;
   }
 
@@ -94,7 +116,7 @@ export class AppComponent {
     return this.authService.getUserEmail() || 'usuario@empresa.com';
   }
 
-  abrirModalPassword() {
+  abrirModalPassword(): void {
     this.mostrarMenuUsuario = false;
     this.mensajePasswordSuccess = '';
     this.mensajePasswordError = '';
@@ -104,11 +126,11 @@ export class AppComponent {
     this.mostrarModalPassword = true;
   }
 
-  cerrarModalPassword() {
+  cerrarModalPassword(): void {
     this.mostrarModalPassword = false;
   }
 
-  cambiarPassword() {
+  cambiarPassword(): void {
     if (this.passwordForm.invalid) {
       this.mensajePasswordError = 'La nueva contraseña debe tener al menos 8 caracteres.';
       return;
@@ -140,13 +162,13 @@ export class AppComponent {
     });
   }
 
-  logout() {
+  logout(): void {
     this.mostrarMenuUsuario = false;
-    localStorage.clear();
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
 
-  onLogoError(event: Event) {
+  onLogoError(event: Event): void {
     const img = event.target as HTMLImageElement;
     img.style.display = 'none';
   }

@@ -15,10 +15,11 @@ import { EncuestaEstaticaComponent } from './components/encuesta-estatica/encues
 import { GenerarQrComponent } from './components/generar-qr/generar-qr.component';
 import { DashboardQrComponent } from './components/dashboard-qr/dashboard-qr.component'; 
 import { ListarEncuestasQrComponent } from './components/listar-encuestas-qr/listar-encuestas-qr.component';
+import { DashboardFacturacionComponent } from './components/dashboard-facturacion/dashboard-facturacion.component';
 import { AgradecimientoComponent } from './paginas/agradecimiento.component';
 
 // Guards funcionales
-import { authGuard, adminGuard } from './guards/admin.guard';
+import { authGuard, adminGuard, gerenteGuard } from './guards/admin.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -29,21 +30,24 @@ const routes: Routes = [
   { path: 'responder/:token', component: ResponderEncuestaComponent },
   { path: 'gracias', component: AgradecimientoComponent },
 
-  // --- RUTAS PROTEGIDAS (Cualquier usuario logueado) ---
+  // --- RUTAS PROTEGIDAS (Cualquier usuario autenticado) ---
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'dashboard-qr', component: DashboardQrComponent, canActivate: [authGuard] },
   { path: 'listar', component: ListarEncuestasComponent, canActivate: [authGuard] },
   { path: 'encuestas-qr', component: ListarEncuestasQrComponent, canActivate: [authGuard] },
   { path: 'contestar-manual', component: ContestarEncuestaManualComponent, canActivate: [authGuard] },
 
-  // --- RUTAS PROTEGIDAS EXCLUSIVAS DE ADMIN (oolguin@toyotapachuca.com.mx) ---
+  // --- RUTAS EXCLUSIVAS DE FACTURACIÓN (GERENTE / FACTURACION / ADMIN) ---
+  { path: 'crear', component: CrearEncuestaComponent, canActivate: [gerenteGuard] },
+  { path: 'dashboard-facturacion', component: DashboardFacturacionComponent, canActivate: [gerenteGuard] },
+
+  // --- RUTAS PROTEGIDAS EXCLUSIVAS DE ADMIN ---
   { path: 'asesores', component: AsesoresComponent, canActivate: [adminGuard] },
-  { path: 'crear', component: CrearEncuestaComponent, canActivate: [adminGuard] },
   { path: 'importar', component: ImportarEncuestasComponent, canActivate: [adminGuard] },
   { path: 'usuarios', component: UsuariosComponent, canActivate: [adminGuard] },
   { path: 'generar-qr', component: GenerarQrComponent, canActivate: [adminGuard] },
 
-  // --- CUALQUIER OTRA RUTA INEXISTENTE O NO AUTORIZADA ---
+  // --- CUALQUIER OTRA RUTA INEXISTENTE ---
   { path: '**', redirectTo: '/login' }
 ];
 

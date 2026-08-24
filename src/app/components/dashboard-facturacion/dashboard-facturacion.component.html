@@ -1,0 +1,106 @@
+<div class="facturacion-container">
+  <!-- HEADER CON TÍTULO EN BLANCO Y BOTÓN DORADO -->
+  <div class="facturacion-header">
+    <div>
+      <h1 class="header-title">Control de Clientes para Facturación</h1>
+      <p class="header-subtitle mt-1 mb-0">Resumen y control de expedientes de unidades ingresadas para facturación.</p>
+    </div>
+    <button type="button" class="btn-nueva-facturacion" routerLink="/crear">
+      <i class="fas fa-plus-circle me-2"></i> Nueva Facturación
+    </button>
+  </div>
+
+  <!-- TARJETAS DE MÉTRICAS -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon"><i class="fas fa-file-invoice"></i></div>
+      <div class="stat-content">
+        <h3>Total Expedientes</h3>
+        <p class="stat-number">{{ totalFacturados }}</p>
+      </div>
+    </div>
+    <div class="stat-card ventas">
+      <div class="stat-icon"><i class="fas fa-car-side"></i></div>
+      <div class="stat-content">
+        <h3>Ventas Nuevas</h3>
+        <p class="stat-number">{{ totalVentas }}</p>
+      </div>
+    </div>
+    <div class="stat-card postventas">
+      <div class="stat-icon"><i class="fas fa-wrench"></i></div>
+      <div class="stat-content">
+        <h3>Postventa / Servicio</h3>
+        <p class="stat-number">{{ totalPostventas }}</p>
+      </div>
+    </div>
+    <div class="stat-card unidades">
+      <div class="stat-icon"><i class="fas fa-check-double"></i></div>
+      <div class="stat-content">
+        <h3>Unidades Asignadas</h3>
+        <p class="stat-number">{{ totalUnidades }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARRA DE FILTROS -->
+  <div class="filtros-container">
+    <div class="filtro-item">
+      <label>Sucursal:</label>
+      <select [(ngModel)]="filtroSucursal" (change)="aplicarFiltros()">
+        <option value="">Todas las Sucursales</option>
+        <option *ngFor="let m of marcas" [value]="m.id">{{ m.nombre }}</option>
+      </select>
+    </div>
+    <div class="filtro-item">
+      <label>Operación:</label>
+      <select [(ngModel)]="filtroTipo" (change)="aplicarFiltros()">
+        <option value="">Todas las Operaciones</option>
+        <option value="VENTA">Venta</option>
+        <option value="POSTVENTA">Postventa</option>
+      </select>
+    </div>
+    <div class="filtro-item search-item">
+      <label>Buscar Expediente:</label>
+      <input type="text" [(ngModel)]="busquedaTexto" (input)="aplicarFiltros()" placeholder="Buscar por cliente, unidad o asesor..." />
+    </div>
+  </div>
+
+  <!-- TABLA DE EXPEDIENTES -->
+  <div class="tabla-card">
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Folio</th>
+            <th>Cliente</th>
+            <th>Teléfono</th>
+            <th>Unidad / Modelo</th>
+            <th>Operación</th>
+            <th>Asesor</th>
+            <th>Sucursal</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let reg of registrosFiltrados">
+            <td><code class="folio-tag">FAC-{{ (reg.token || '000000').substring(0, 6).toUpperCase() }}</code></td>
+            <td><strong>{{ reg.clienteNombre }}</strong></td>
+            <td>{{ reg.clienteTelefono || reg.telefono || 'Sin teléfono' }}</td>
+            <td><span class="badge-unidad">{{ reg.unidad || 'Pendiente' }}</span></td>
+            <td>
+              <span class="badge-tipo" [class.venta]="reg.tipo === 'VENTA'" [class.postventa]="reg.tipo !== 'VENTA'">
+                {{ reg.tipo }}
+              </span>
+            </td>
+            <td>{{ reg.asesor || 'Atención General' }}</td>
+            <td>{{ reg.marcaNombre }}</td>
+            <td>{{ reg.fechaEnvio | date:'dd/MM/yyyy' }}</td>
+          </tr>
+          <tr *ngIf="registrosFiltrados.length === 0">
+            <td colspan="8" class="text-center py-4 text-muted">No se encontraron expedientes con los filtros seleccionados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

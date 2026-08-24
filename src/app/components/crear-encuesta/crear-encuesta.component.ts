@@ -12,7 +12,6 @@ export class CrearEncuestaComponent {
   marcas: any[] = [];
   loading = false;
   exito = false;
-  linkGenerado = '';
   tokenGenerado = '';
   encuestaCreada: any = null;
   fechaVisitaFormateada = '';
@@ -24,38 +23,47 @@ export class CrearEncuestaComponent {
     this.marcas = this.encuestaService.obtenerMarcas();
     const hoy = new Date().toISOString().split('T')[0];
 
+    // TODOS LOS CAMPOS OBLIGATORIOS (ESTADO: NUEVO / SEMINUEVO)
     this.encuestaForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(2)]],
       apellido: ['', [Validators.required, Validators.minLength(2)]],
-      email: [''], 
-      telefono: ['', [Validators.required, Validators.minLength(8)]], 
-      asesor: [''], 
-      unidad: [''],
+      email: ['', [Validators.required, Validators.email]], 
+      telefono: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10), Validators.pattern(/^[0-9]+$/)]], 
+      asesor: ['', [Validators.required, Validators.minLength(3)]], 
+      marcaVehiculo: ['', Validators.required],
+      unidad: ['', Validators.required],
+      factura: ['', [Validators.required, Validators.minLength(4)]],
+      serie: ['', [Validators.required, Validators.minLength(8)]],
+      año: ['NUEVO', Validators.required], // Selección Nuevo / Seminuevo
       fechaVisita: [hoy, Validators.required],
       marcaId: ['', Validators.required],
-      tipo: ['POSTVENTA', Validators.required]
+      tipo: ['VENTA', Validators.required]
     });
   }
 
-  generarEncuesta() {
+  generarEncuesta(): void {
     if (this.encuestaForm.invalid) {
-      alert('Por favor complete los campos requeridos');
+      this.encuestaForm.markAllAsTouched();
+      alert('Por favor complete todos los campos obligatorios del formulario');
       return;
     }
 
     this.loading = true;
-    const formValue = this.encuestaForm.value;
+    const f = this.encuestaForm.value;
+
+    const unidadCompleta = `${f.marcaVehiculo.trim()} ${f.unidad.trim()}`.trim();
 
     const data = {
-      nombre: formValue.nombre,
-      apellido: formValue.apellido,
-      email: formValue.email || 'sin_correo@inmotion.com', 
-      telefono: formValue.telefono ? formValue.telefono.toString().replace(/\D/g, '') : '',
-      asesor: formValue.asesor || 'Atención a Clientes', 
-      unidad: formValue.unidad || '',
-      fechaVisita: formValue.fechaVisita,
-      marcaId: Number(formValue.marcaId),
-      tipo: formValue.tipo,
+      nombre: f.nombre.trim(),
+      apellido: f.apellido.trim(),
+      email: f.email.trim(), 
+      telefono: f.telefono.toString().replace(/\D/g, ''),
+      asesor: f.asesor.trim(), 
+      unidad: unidadCompleta,
+      serie: f.serie.trim(),
+      fechaVisita: f.fechaVisita,
+      marcaId: Number(f.marcaId),
+      tipo: f.tipo,
       respuestas: []
     };
 
@@ -65,30 +73,24 @@ export class CrearEncuestaComponent {
         this.exito = true;
         this.encuestaCreada = response;
         this.tokenGenerado = response.token;
-        this.linkGenerado = this.encuestaService.generarLinkEncuesta(response.token);
-        this.fechaVisitaFormateada = formValue.fechaVisita;
+        this.fechaVisitaFormateada = f.fechaVisita;
       },
       error: (error) => {
         this.loading = false;
-        alert('Error al generar la encuesta: ' + error.message);
-        console.error('Error:', error);
+        alert('Error al registrar los datos de facturación: ' + error.message);
       }
     });
   }
 
-  copiarLink() {
-    navigator.clipboard.writeText(this.linkGenerado);
-    alert('Link copiado al portapapeles');
-  }
-
-  resetForm() {
+  resetForm(): void {
     const hoy = new Date().toISOString().split('T')[0];
     this.encuestaForm.reset({ 
-      tipo: 'POSTVENTA',
-      fechaVisita: hoy 
+      tipo: 'VENTA',
+      año: 'NUEVO',
+      fechaVisita: hoy,
+      marcaId: ''
     });
     this.exito = false;
-    this.linkGenerado = '';
     this.tokenGenerado = '';
     this.encuestaCreada = null;
     this.fechaVisitaFormateada = '';

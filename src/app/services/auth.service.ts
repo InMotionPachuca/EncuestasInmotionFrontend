@@ -9,7 +9,8 @@ export interface AuthResponse {
     id: number;
     email: string;
     nombre: string;
-    rol: string;
+    rol?: string;
+    role?: string;
   };
 }
 
@@ -33,7 +34,6 @@ export class AuthService {
   private authUrl = `${environment.apiUrl}/auth`;
   private usuariosUrl = `${environment.apiUrl}/usuarios`;
 
-  // Correo de Administrador Principal
   private readonly ADMIN_EMAIL = 'oolguin@toyotapachuca.com.mx';
 
   constructor(private http: HttpClient) {}
@@ -46,17 +46,15 @@ export class AuthService {
     });
   }
 
-  // Comprueba si existe un token en localStorage (sesión activa)
   isLoggedIn(): boolean {
-    const token = localStorage.getItem('token');
-    return !!token;
+    return !!localStorage.getItem('token');
   }
 
-  // Cierra la sesión y limpia el almacenamiento
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
     localStorage.removeItem('userEmail');
+    localStorage.removeItem('userRole');
   }
 
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
@@ -74,10 +72,31 @@ export class AuthService {
     return (localStorage.getItem('userEmail') || '').toLowerCase().trim();
   }
 
-  // Verifica si el usuario actual es oolguin@toyotapachuca.com.mx
+  getUserRole(): string {
+    const userStr = localStorage.getItem('currentUser');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        const r = user.rol || user.role || user.perfil || '';
+        if (r) return r.toString().toUpperCase().replace('ROLE_', '').trim();
+      } catch (e) {}
+    }
+    const storedRole = localStorage.getItem('userRole');
+    if (storedRole) return storedRole.toUpperCase().replace('ROLE_', '').trim();
+    return '';
+  }
+
   isAdmin(): boolean {
     const email = this.getUserEmail();
-    return email === this.ADMIN_EMAIL;
+    const rol = this.getUserRole();
+    return email === this.ADMIN_EMAIL || rol === 'ADMIN';
+  }
+
+  isGerente(): boolean {
+    const email = this.getUserEmail();
+    const rol = this.getUserRole();
+    // Identifica por rol o si el correo pertenece al área de facturación/gerencia
+    return rol === 'GERENTE' || rol === 'FACTURACION' || email.includes('facturacion') || email.includes('gerente');
   }
 
   cambiarPassword(datos: CambioPassword): Observable<any> {
@@ -99,7 +118,6 @@ export class AuthService {
     return this.http.put(`${this.usuariosUrl}/${id}/estado?activo=${activo}`, {}, { headers: this.getAuthHeaders() });
   }
 
-  // Eliminar usuario permanentemente
   eliminarUsuario(id: number): Observable<any> {
     return this.http.delete(`${this.usuariosUrl}/${id}`, { headers: this.getAuthHeaders() });
   }

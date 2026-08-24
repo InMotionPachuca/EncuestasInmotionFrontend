@@ -25,6 +25,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   marcas: any[] = [];
   marcasFiltradas: any[] = [];
 
+  // FILTROS
+  filtroTipo: 'SERVICIO' | 'VENTA' | '' = '';
+  filtroMarca = '';
+  filtroEstado = '';
+  periodo: 'hoy' | 'semana' | 'mes' | 'todos' = 'todos';
+
   estadisticas: EstadisticasGenerales = {
     total: 0,
     enviadas: 0,
@@ -44,11 +50,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   encuestaSeleccionada: Encuesta | null = null;
   mostrarDetalles = false;
   copiando = false;
-  periodo: 'hoy' | 'semana' | 'mes' | 'todos' = 'todos';
   graficosInicializados = false;
   refrescando = false;
-  filtroMarca = '';
-  filtroEstado = '';
 
   periodos: { value: 'hoy' | 'semana' | 'mes' | 'todos'; label: string }[] = [
     { value: 'hoy', label: 'Hoy' },
@@ -68,6 +71,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   get Math() {
     return Math;
+  }
+
+  get conteoTotal(): number {
+    return this.encuestas.length;
+  }
+
+  get conteoServicio(): number {
+    return this.encuestas.filter(e => e.tipo !== 'VENTA').length;
+  }
+
+  get conteoVenta(): number {
+    return this.encuestas.filter(e => e.tipo === 'VENTA').length;
   }
 
   logos: { [key: number]: string } = {
@@ -118,30 +133,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     this.encuestaService.listarEncuestas().subscribe({
       next: (encuestasData: Encuesta[]) => {
-        // --- FILTRO CLAVE: EXCLUIR ENCUESTAS QR DE ESTE DASHBOARD ---
+        // Excluir encuestas QR de este Dashboard CXI tradicional
         this.encuestas = (encuestasData || []).filter(e => e.tipo !== 'QR' && e.serie !== 'QR-GENERAL');
-        
-        this.encuestasRecientes = this.encuestas.slice(0, 10);
-        this.encuestasFiltradas = [...this.encuestas];
-        
-        // Recalcular marcas y métricas dinámicamente según solo encuestas normales
-        this.procesarMarcasDinamicas(this.encuestasFiltradas);
         this.aplicarFiltroPeriodo();
-        this.calcularNPS(this.encuestasFiltradas);
         this.loading = false;
-
-        if (this.graficosInicializados) {
-          setTimeout(() => {
-            this.crearGraficoMarcas();
-            this.crearGraficoEvolucion();
-          }, 300);
-        }
       },
       error: (error) => {
         console.error('Error al cargar encuestas:', error);
         this.loading = false;
       }
     });
+  }
+
+  cambiarFiltroTipo(tipo: 'SERVICIO' | 'VENTA' | ''): void {
+    this.filtroTipo = tipo;
+    this.aplicarFiltros();
   }
 
   procesarMarcasDinamicas(encuestasList: Encuesta[]) {
@@ -158,6 +164,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           total: 0,
           respondidas: 0,
           pendientes: 0,
+          totalVentas: 0,
+          totalServicio: 0,
           promedio: 0,
           tasaRespuesta: 0,
           sumaPromedios: 0
@@ -166,6 +174,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
       const item = mapaMarcas.get(marcaId);
       item.total++;
+      if (enc.tipo === 'VENTA') {
+        item.totalVentas++;
+      } else {
+        item.totalServicio++;
+      }
+
       if (enc.estado === 'RESPONDIDA') {
         item.respondidas++;
         item.sumaPromedios += this.getPromedioEncuesta(enc);
@@ -213,12 +227,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   aplicarFiltros(): void {
     this.encuestasFiltradas = this.encuestas.filter(enc => {
-      const marcaMatch = !this.filtroMarca || enc.marcaId?.toString() === this.filtroMarca;
-      const estadoMatch = !this.filtroEstado || enc.estado === this.filtroEstado;
-      return marcaMatch && estadoMatch;
+      let matchTipo = true;
+      if (this.filtroTipo === 'VENTA') {
+        matchTipo = enc.tipo === 'VENTA';
+      } else if (this.filtroTipo === 'SERVICIO') {
+        matchTipo = enc.tipo !== 'VENTA';
+      }
+
+      const matchMarca = !this.filtroMarca || enc.marcaId?.toString() === this.filtroMarca;
+      const matchEstado = !this.filtroEstado || enc.estado === this.filtroEstado;
+
+      return matchTipo && matchMarca && matchEstado;
     });
 
     this.encuestasRecientes = this.encuestasFiltradas.slice(0, 10);
+    this.procesarMarcasDinamicas(this.encuestasFiltradas);
     this.calcularNPS(this.encuestasFiltradas);
 
     this.estadisticas.total = this.encuestasFiltradas.length;
@@ -282,17 +305,58 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       const ctx = this.graficoCanvas.nativeElement.getContext('2d');
       if (!ctx) return;
 
+      // Si se seleccionó un filtro específico, muestra Total vs Respondidas
+      // Si está en 'Todos', muestra la segmentación de Postventa vs Ventas por Marca
+      let datasets: any[] = [];
+
+      if (!this.filtroTipo) {
+        datasets = [
+          {
+            label: 'Postventa / Servicio',
+            data: marcasMostrar.map(m => m.totalServicio),
+            backgroundColor: 'rgba(33, 37, 41, 0.85)', // Gris oscuro institucional
+            borderRadius: 6
+          },
+          {
+            label: 'Ventas / Nuevos',
+            data: marcasMostrar.map(m => m.totalVentas),
+            backgroundColor: 'rgba(197, 160, 89, 0.90)', // Dorado institucional
+            borderRadius: 6
+          }
+        ];
+      } else {
+        datasets = [
+          {
+            label: 'Total ' + (this.filtroTipo === 'VENTA' ? 'Ventas' : 'Postventa'),
+            data: marcasMostrar.map(m => m.total),
+            backgroundColor: 'rgba(197, 160, 89, 0.85)',
+            borderRadius: 6
+          },
+          {
+            label: 'Respondidas',
+            data: marcasMostrar.map(m => m.respondidas),
+            backgroundColor: 'rgba(25, 135, 84, 0.85)',
+            borderRadius: 6
+          }
+        ];
+      }
+
       this.grafico = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: marcasMostrar.map(m => m.nombre),
-          datasets: [
-            { label: 'Total', data: marcasMostrar.map(m => m.total), backgroundColor: 'rgba(235, 10, 30, 0.85)', borderRadius: 6 },
-            { label: 'Respondidas', data: marcasMostrar.map(m => m.respondidas), backgroundColor: 'rgba(46, 125, 50, 0.85)', borderRadius: 6 },
-            { label: 'Pendientes', data: marcasMostrar.map(m => m.pendientes), backgroundColor: 'rgba(21, 101, 192, 0.85)', borderRadius: 6 }
-          ]
+          datasets: datasets
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { font: { family: 'Inter', size: 12 } }
+            }
+          }
+        }
       });
     } catch (error) { console.error(error); }
   }
@@ -306,8 +370,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       if (encuestasParaGrafico.length === 0) return;
 
       const dias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-      const encuestasPorDia = [0, 0, 0, 0, 0, 0, 0];
-      const respondidasPorDia = [0, 0, 0, 0, 0, 0, 0];
+      const servicioPorDia = [0, 0, 0, 0, 0, 0, 0];
+      const ventasPorDia = [0, 0, 0, 0, 0, 0, 0];
 
       const hoy = new Date();
       for (let i = 6; i >= 0; i--) {
@@ -317,8 +381,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
         encuestasParaGrafico.forEach(enc => {
           if (new Date(enc.fechaEnvio).toDateString() === fecha.toDateString()) {
-            encuestasPorDia[diaIndex]++;
-            if (enc.estado === 'RESPONDIDA') respondidasPorDia[diaIndex]++;
+            if (enc.tipo === 'VENTA') {
+              ventasPorDia[diaIndex]++;
+            } else {
+              servicioPorDia[diaIndex]++;
+            }
           }
         });
       }
@@ -331,11 +398,34 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         data: {
           labels: dias,
           datasets: [
-            { label: 'Enviadas', data: encuestasPorDia, borderColor: '#EB0A1E', fill: true },
-            { label: 'Respondidas', data: respondidasPorDia, borderColor: '#2E7D32', fill: true }
+            {
+              label: 'Postventa / Servicio',
+              data: servicioPorDia,
+              borderColor: '#1F1F1F',
+              backgroundColor: 'rgba(31, 31, 31, 0.08)',
+              tension: 0.3,
+              fill: true
+            },
+            {
+              label: 'Ventas / Nuevos',
+              data: ventasPorDia,
+              borderColor: '#C5A059',
+              backgroundColor: 'rgba(197, 160, 89, 0.15)',
+              tension: 0.3,
+              fill: true
+            }
           ]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { font: { family: 'Inter', size: 12 } }
+            }
+          }
+        }
       });
     } catch (error) { console.error(error); }
   }
@@ -405,6 +495,34 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.notificationService.show('Datos actualizados', 'info');
   }
 
-  exportarPDF(): void { /* Mantener tu lógica de PDF intacta */ }
-  exportarEstadisticas() { /* Mantener tu lógica de Excel intacta */ }
+  exportarPDF(): void {
+    const doc = new jsPDF();
+    doc.text('Reporte General CXI', 14, 15);
+    autoTable(doc, {
+      head: [['Cliente', 'Área', 'Marca', 'Estado', 'Fecha']],
+      body: this.encuestasFiltradas.map(e => [
+        e.clienteNombre,
+        e.tipo || 'POSTVENTA',
+        e.marcaNombre || 'Sin Marca',
+        this.getEstadoTexto(e.estado),
+        this.formatFecha(e.fechaEnvio)
+      ])
+    });
+    doc.save(`reporte_cxi_${new Date().toISOString().split('T')[0]}.pdf`);
+  }
+
+  exportarEstadisticas() {
+    const data = this.encuestasFiltradas.map(e => ({
+      'Cliente': e.clienteNombre,
+      'Área': e.tipo === 'VENTA' ? 'Ventas' : 'Postventa',
+      'Marca': e.marcaNombre,
+      'Estado': this.getEstadoTexto(e.estado),
+      'Fecha': this.formatFecha(e.fechaEnvio),
+      'Calificación': this.getPromedioEncuesta(e) || 'Pendiente'
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Estadísticas');
+    XLSX.writeFile(wb, `cxi_export_${new Date().toISOString().split('T')[0]}.xlsx`);
+  }
 }

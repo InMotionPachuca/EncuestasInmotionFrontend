@@ -71,7 +71,13 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('token', res.token);
         localStorage.setItem('currentUser', JSON.stringify(res.usuario));
         localStorage.setItem('userEmail', email);
-        this.router.navigate(['/dashboard']);
+
+        // Si el usuario tiene rol o perfil de facturación/gerente, dirigir a su tablero
+        if (this.authService.isGerente() && !this.authService.isAdmin()) {
+          this.router.navigate(['/dashboard-facturacion']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       },
       error: (err: HttpErrorResponse) => {
         this.loading = false;

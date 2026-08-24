@@ -1,26 +1,32 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { QRCodeModule } from 'angularx-qrcode';
+
 import { AppRoutingModule } from './app-routing.module';
+
+// Componentes Principales
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CrearEncuestaComponent } from './components/crear-encuesta/crear-encuesta.component';
 import { ResponderEncuestaComponent } from './components/responder-encuesta/responder-encuesta.component';
 import { ListarEncuestasComponent } from './components/listar-encuestas/listar-encuestas.component';
-import { ToastComponent } from './components/toast/toast.component';
 import { ImportarEncuestasComponent } from './components/importar-encuestas/importar-encuestas.component';
 import { ContestarEncuestaManualComponent } from './components/contestar-encuesta/contestar-encuesta-manual.component';
-import { AsesoresComponent } from './components/asesores/asesores.component'; 
-import { EncuestaService } from './services/encuesta.service';
+import { AsesoresComponent } from './components/asesores/asesores.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { EncuestaEstaticaComponent } from './components/encuesta-estatica/encuesta-estatica.component';
 import { GenerarQrComponent } from './components/generar-qr/generar-qr.component';
-import { DashboardQrComponent } from './components/dashboard-qr/dashboard-qr.component'; 
-import { QRCodeModule } from 'angularx-qrcode';
+import { DashboardQrComponent } from './components/dashboard-qr/dashboard-qr.component';
 import { ListarEncuestasQrComponent } from './components/listar-encuestas-qr/listar-encuestas-qr.component';
+import { DashboardFacturacionComponent } from './components/dashboard-facturacion/dashboard-facturacion.component';
+import { AgradecimientoComponent } from './paginas/agradecimiento.component';
+
+// Componente Toast Notificaciones
+import { ToastComponent } from './components/toast/toast.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +36,6 @@ import { ListarEncuestasQrComponent } from './components/listar-encuestas-qr/lis
     CrearEncuestaComponent,
     ResponderEncuestaComponent,
     ListarEncuestasComponent,
-    ToastComponent,
     ImportarEncuestasComponent,
     ContestarEncuestaManualComponent,
     AsesoresComponent,
@@ -38,18 +43,21 @@ import { ListarEncuestasQrComponent } from './components/listar-encuestas-qr/lis
     EncuestaEstaticaComponent,
     GenerarQrComponent,
     DashboardQrComponent,
-    ListarEncuestasQrComponent
+    ListarEncuestasQrComponent,
+    DashboardFacturacionComponent,
+    AgradecimientoComponent,
+    ToastComponent 
   ],
   imports: [
     BrowserModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    FormsModule,
     CommonModule,
-    AppRoutingModule,
-    QRCodeModule
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    QRCodeModule,
+    AppRoutingModule
   ],
-  providers: [EncuestaService],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
