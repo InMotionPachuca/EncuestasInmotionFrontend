@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface AuthResponse {
@@ -30,7 +30,12 @@ export class AuthService {
   private authUrl = `${environment.apiUrl}/auth`;
   private usuariosUrl = `${environment.apiUrl}/usuarios`;
 
-  private readonly ADMIN_EMAIL = 'oolguin@toyotapachuca.com.mx';
+  // LISTA DE ADMINISTRADORES INSTITUCIONALES POR CORREO
+  private readonly ADMIN_EMAILS = [
+    'oolguin@toyotapachuca.com.mx',
+    'cjuarez@toyotapachuca.com.mx',
+    'admin@inmotion.com'
+  ];
 
   constructor(private http: HttpClient) {}
 
@@ -51,10 +56,26 @@ export class AuthService {
   }
 
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.authUrl}/login`, credentials);
+    return this.http.post<AuthResponse>(`${this.authUrl}/login`, credentials).pipe(
+      tap((res: AuthResponse) => {
+        const email = credentials.email.toLowerCase().trim();
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('userEmail', email);
+
+        // Si es uno de los administradores por correo, fijar rol de inmediato
+        if (this.ADMIN_EMAILS.includes(email)) {
+          localStorage.setItem('userRole', 'ADMIN');
+        } else if (res.usuario?.rol || res.usuario?.role) {
+          localStorage.setItem('userRole', (res.usuario.rol || res.usuario.role).toUpperCase().replace('ROLE_', '').trim());
+        }
+      })
+    );
   }
 
   getUserEmail(): string {
+    const emailDirecto = localStorage.getItem('userEmail');
+    if (emailDirecto) return emailDirecto.toLowerCase().trim();
+
     const userStr = localStorage.getItem('currentUser');
     if (userStr) {
       try {
@@ -62,59 +83,36 @@ export class AuthService {
         if (user && user.email) return user.email.toLowerCase().trim();
       } catch (e) {}
     }
-    return (localStorage.getItem('userEmail') || '').toLowerCase().trim();
+    return '';
   }
 
-  /**
-   * Extrae el rol desde currentUser, localStorage directo o decodificando el JWT
-   */
   getUserRole(): string {
-    // 1. Verificar si está en localStorage directo
+    const email = this.getUserEmail();
+    if (this.ADMIN_EMAILS.includes(email)) {
+      return 'ADMIN';
+    }
+
     const directRole = localStorage.getItem('userRole');
     if (directRole) {
       return directRole.toUpperCase().replace('ROLE_', '').trim();
     }
 
-    // 2. Verificar en el objeto currentUser
     const userStr = localStorage.getItem('currentUser');
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
-        let rawRole = user.rol || user.role || user.perfil || '';
-
-        // Si viene como arreglo de roles/authorities
-        if (!rawRole && Array.isArray(user.roles) && user.roles.length > 0) {
-          rawRole = typeof user.roles[0] === 'string' ? user.roles[0] : user.roles[0].nombre || user.roles[0].name;
-        }
-        if (!rawRole && Array.isArray(user.authorities) && user.authorities.length > 0) {
-          rawRole = user.authorities[0].authority || user.authorities[0];
-        }
-
-        if (rawRole) {
-          return rawRole.toString().toUpperCase().replace('ROLE_', '').trim();
-        }
+        const r = user.rol || user.role || user.perfil || '';
+        if (r) return r.toString().toUpperCase().replace('ROLE_', '').trim();
       } catch (e) {}
     }
 
-    // 3. Decodificar desde el Payload del JWT Token
-    const token = localStorage.getItem('token');
-    if (token && token.includes('.')) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const jwtRole = payload.role || payload.rol || payload.roles || (payload.authorities && payload.authorities[0]);
-        if (jwtRole) {
-          return jwtRole.toString().toUpperCase().replace('ROLE_', '').trim();
-        }
-      } catch (e) {}
-    }
-
-    return '';
+    return 'USER';
   }
 
   isAdmin(): boolean {
     const email = this.getUserEmail();
     const rol = this.getUserRole();
-    return email === this.ADMIN_EMAIL || rol === 'ADMIN' || rol === 'ROLE_ADMIN' || rol === 'ADMINISTRADOR';
+    return this.ADMIN_EMAILS.includes(email) || rol === 'ADMIN' || rol === 'ROLE_ADMIN' || rol === 'ADMINISTRADOR';
   }
 
   isGerente(): boolean {
