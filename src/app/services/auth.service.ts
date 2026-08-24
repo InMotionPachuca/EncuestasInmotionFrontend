@@ -34,6 +34,7 @@ export class AuthService {
   private authUrl = `${environment.apiUrl}/auth`;
   private usuariosUrl = `${environment.apiUrl}/usuarios`;
 
+  // Correo de Administrador Maestro
   private readonly ADMIN_EMAIL = 'oolguin@toyotapachuca.com.mx';
 
   constructor(private http: HttpClient) {}
@@ -86,17 +87,26 @@ export class AuthService {
     return '';
   }
 
+  /**
+   * Verifica si el usuario actual es Administrador (por correo maestro o por rol en BD)
+   */
   isAdmin(): boolean {
     const email = this.getUserEmail();
     const rol = this.getUserRole();
-    return email === this.ADMIN_EMAIL || rol === 'ADMIN';
+    return email === this.ADMIN_EMAIL || rol === 'ADMIN' || rol === 'ROLE_ADMIN' || rol === 'ADMINISTRADOR';
   }
 
+  /**
+   * Verifica si el usuario actual es Gerente/Facturación.
+   * Si es ADMIN, devuelve false para que no sea reclasificado como solo gerente.
+   */
   isGerente(): boolean {
+    if (this.isAdmin()) {
+      return false;
+    }
     const email = this.getUserEmail();
     const rol = this.getUserRole();
-    // Identifica por rol o si el correo pertenece al área de facturación/gerencia
-    return rol === 'GERENTE' || rol === 'FACTURACION' || email.includes('facturacion') || email.includes('gerente');
+    return rol === 'GERENTE' || rol === 'ROLE_GERENTE' || rol === 'FACTURACION' || email.includes('facturacion');
   }
 
   cambiarPassword(datos: CambioPassword): Observable<any> {
