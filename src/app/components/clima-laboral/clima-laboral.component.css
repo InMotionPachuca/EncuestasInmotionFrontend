@@ -147,7 +147,7 @@
   line-height: 1.4;
 }
 
-/* SUCURSALES (PASO 1 CON SVGS DE ASSETS) */
+/* SUCURSALES (PASO 1 CON LOGOS) */
 .grid-agencias-cards {
   display: flex;
   flex-direction: column;
@@ -170,27 +170,26 @@
 }
 
 .agencia-logo-box {
-  width: 68px;
-  height: 46px;
-  background-color: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  width: 84px;
+  height: 48px;
+  background-color: #FFFFFF !important;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 4px 8px;
   flex-shrink: 0;
-  padding: 4px;
-  transition: background-color 0.2s, border-color 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .logo-svg-item {
-  max-width: 44px;
-  max-height: 30px;
+  max-width: 100%;
+  max-height: 100%;
   width: auto;
   height: auto;
   object-fit: contain;
-  filter: brightness(0) invert(1) opacity(0.8);
-  transition: filter 0.2s ease, transform 0.2s ease;
+  filter: none !important;
 }
 
 .agencia-info {
@@ -234,14 +233,9 @@
   transform: translateX(4px);
 }
 
-.card-agencia-item:hover .logo-svg-item {
-  filter: brightness(0) invert(1) opacity(1);
-  transform: scale(1.05);
-}
-
 .card-agencia-item:hover .agencia-logo-box {
-  background-color: rgba(197, 160, 89, 0.12);
-  border-color: rgba(197, 160, 89, 0.3);
+  transform: scale(1.04);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
 }
 
 .card-agencia-item.seleccionada {
@@ -250,11 +244,11 @@
   box-shadow: 0 0 0 2px rgba(197, 160, 89, 0.4);
 }
 
-.card-agencia-item.seleccionada .logo-svg-item {
-  filter: invert(74%) sepia(21%) saturate(996%) hue-rotate(4deg) brightness(91%) contrast(87%);
+.card-agencia-item.seleccionada .agencia-logo-box {
+  box-shadow: 0 0 0 2px #C5A059, 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* OPCIONES SIMPLES (DEPARTAMENTOS) */
+/* OPCIONES SIMPLES (DEPARTAMENTOS Y ANTIGÜEDAD) */
 .grid-opciones {
   display: flex;
   flex-direction: column;
@@ -311,7 +305,7 @@
   color: #FFFFFF;
 }
 
-/* ESCALA 1 A 5 */
+/* ESCALA NUMÉRICA 1 A 5 */
 .contenedor-escala-calificacion { margin-top: 10px; }
 
 .fila-botones-escala {
@@ -382,6 +376,7 @@
   border-radius: 4px;
 }
 
+/* CAMPO TEXTAREA */
 .contenedor-textarea-paso textarea {
   width: 100%;
   background-color: #111827;
@@ -494,6 +489,7 @@
   background-color: #9A7B3E;
 }
 
+/* FOOTER Y BOTONES DE NAVEGACIÓN */
 .footer-clima {
   padding: 18px 36px;
   display: flex;
@@ -572,5 +568,5 @@
   .teclado-hint { display: none; }
   .grid-prioridades { grid-template-columns: 1fr; }
   .card-agencia-item { gap: 12px; padding: 12px 14px; }
-  .agencia-logo-box { width: 52px; height: 38px; }
+  .agencia-logo-box { width: 70px; height: 42px; }
 }
