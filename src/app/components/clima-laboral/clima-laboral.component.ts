@@ -37,10 +37,10 @@ export class ClimaLaboralComponent implements OnInit {
 
   // Catálogo de agencias con sus logos en assets
   readonly agenciasVisuales: OpcionAgencia[] = [
-    { nombre: 'Toyota Pachuca', subtitulo: 'Agencia Matriz', logo: 'assets/logos/Toyota.png' },
+    { nombre: 'Toyota Pachuca', subtitulo: 'Agencia Matriz', logo: 'assets/logos/pachuca.svg' },
     { nombre: 'Toyota Tulancingo', subtitulo: 'Sucursal Tulancingo', logo: 'assets/logos/tulancingo.svg' },
-    { nombre: 'Centro de Servicio Toyota Pachuca', subtitulo: 'Taller y Postventa', logo: 'assets/logos/Toyota.png', icono: 'fas fa-wrench' },
-    { nombre: 'Carsline Pachuca', subtitulo: 'Seminuevos Garantizados', logo: 'assets/logos/carsline.png' },
+    { nombre: 'Centro de Servicio Toyota Pachuca', subtitulo: 'Taller y Postventa', logo: 'assets/logos/toyota.svg' },
+    { nombre: 'Carsline Pachuca', subtitulo: 'Seminuevos Garantizados', logo: 'assets/logos/carsline.svg' },
     { nombre: 'Subaru', subtitulo: 'Agencia Subaru', logo: 'assets/logos/subaru.svg' }
   ];
 
