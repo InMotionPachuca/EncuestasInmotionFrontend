@@ -39,7 +39,7 @@ export class ClimaLaboralComponent implements OnInit {
     { nombre: 'Toyota Pachuca', subtitulo: 'Agencia Matriz', logoSvg: 'assets/logos/pachuca.svg' },
     { nombre: 'Toyota Tulancingo', subtitulo: 'Sucursal Tulancingo', logoSvg: 'assets/logos/tulancingo.svg' },
     { nombre: 'Centro de Servicio Toyota Pachuca', subtitulo: 'Taller y Postventa', logoSvg: 'assets/logos/toyota.svg' },
-    { nombre: 'Carsline Pachuca', subtitulo: 'Seminuevos Garantizados', logoSvg: 'assets/logos/carsline.svg' },
+    { nombre: 'Carsline Pachuca', subtitulo: 'Seminuevos Garantizados', logoSvg: 'assets/logos/carsline.png' },
     { nombre: 'Subaru', subtitulo: 'Agencia Subaru', logoSvg: 'assets/logos/subaru.svg' }
   ];
 
