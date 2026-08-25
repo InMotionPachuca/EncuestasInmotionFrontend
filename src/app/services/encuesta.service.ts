@@ -19,7 +19,7 @@ export class EncuestaService {
     1: 'Toyota.png',       // Toyota Pachuca
     2: 'carsline.png',     // Carsline Pachuca
     3: 'carsline.png',     // Carsline Queretaro
-    4: 'gwm.png',          // GWM Celaya (ID 4)
+    4: 'gwm.png',          // GWM (ID 4)
     5: 'subaru.webp',      // Subaru (ID 5)
     6: 'comprocars.png',   // ComproCars Queretaro (ID 6)
     7: 'comprocars.png',   // Compro Pachuca (ID 7)
@@ -31,7 +31,7 @@ export class EncuestaService {
     { id: 1, nombre: 'Toyota Pachuca' },
     { id: 2, nombre: 'Carsline Pachuca' },
     { id: 3, nombre: 'Carsline Querétaro' },
-    { id: 4, nombre: 'GWM Celaya' },
+    { id: 4, nombre: 'GWM' },
     { id: 5, nombre: 'Subaru' },
     { id: 6, nombre: 'ComproCars Querétaro' },
     { id: 7, nombre: 'ComproCars Pachuca' },

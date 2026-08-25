@@ -25,14 +25,18 @@ export class AppComponent {
   sidebarOculta = false;
 
   private todosLosMenuItems: MenuItem[] = [
-    // --- VISTAS DE SATISFACCIÓN ---
+    // --- VISTAS DE SATISFACCIÓN (ADMIN Y USER) ---
     { route: '/dashboard', label: 'CXI', icon: 'fas fa-chart-pie', satisfaccionOnly: true },
-    { route: '/dashboard-qr', label: 'CXI QR', icon: 'fas fa-qrcode', badge: 'QR', badgeClass: 'bg-warning text-dark', satisfaccionOnly: true },
+    { route: '/dashboard-qr', label: 'CXI QR', icon: 'fas fa-qrcode', badge: null, badgeClass: 'bg-warning text-dark', satisfaccionOnly: true },
     { route: '/listar', label: 'Encuestas', icon: 'fas fa-list-alt', satisfaccionOnly: true },
     { route: '/encuestas-qr', label: 'Respuestas QR', icon: 'fas fa-mobile-alt', satisfaccionOnly: true },
     { route: '/contestar-manual', label: 'Contestar Manual', icon: 'fas fa-edit', satisfaccionOnly: true },
 
-    // --- MÓDULOS DE FACTURACIÓN ---
+    // --- MÓDULO DE CLIMA LABORAL ---
+    { route: '/clima-laboral', label: 'Encuesta Clima', icon: 'fas fa-clipboard-check', satisfaccionOnly: true },
+    { route: '/dashboard-clima', label: 'Tablero Clima', icon: 'fas fa-chart-pie', badge: null, badgeClass: 'bg-primary', adminOnly: true },
+
+    // --- MÓDULOS DE FACTURACIÓN (GERENTE Y ADMIN) ---
     { route: '/dashboard-facturacion', label: 'Tablero Facturación', icon: 'fas fa-chart-line', gerenteOnly: true },
     { route: '/crear', label: 'Facturación', icon: 'fas fa-file-invoice-dollar', gerenteOnly: true },
 
@@ -69,17 +73,12 @@ export class AppComponent {
   }
 
   get menuItems(): MenuItem[] {
-    // 1. Si es Administrador (reconocido por correo o rol), muestra todas las opciones
     if (this.authService.isAdmin()) {
       return this.todosLosMenuItems;
     }
-
-    // 2. Si es Gerente / Facturación, muestra únicamente los módulos de facturación
     if (this.authService.isGerente()) {
       return this.todosLosMenuItems.filter(item => item.gerenteOnly);
     }
-
-    // 3. Usuario estándar (USER), muestra únicamente módulos de satisfacción
     return this.todosLosMenuItems.filter(item => item.satisfaccionOnly);
   }
 
@@ -88,7 +87,9 @@ export class AppComponent {
     return url.includes('/login') || 
            url.includes('/responder') || 
            url.includes('/evaluar') || 
-           url.includes('/gracias');
+           url.includes('/gracias') ||
+           url.includes('/clima-laboral') ||
+           url.includes('/gracias-clima');
   }
 
   toggleUserMenu(): void {

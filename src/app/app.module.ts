@@ -5,6 +5,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { QRCodeModule } from 'angularx-qrcode';
 
+// Configuración moderna de Lottie en Angular 17
+import { LottieComponent, provideLottieOptions } from 'ngx-lottie';
+import player from 'lottie-web';
+
 import { AppRoutingModule } from './app-routing.module';
 
 // Componentes Principales
@@ -24,9 +28,17 @@ import { DashboardQrComponent } from './components/dashboard-qr/dashboard-qr.com
 import { ListarEncuestasQrComponent } from './components/listar-encuestas-qr/listar-encuestas-qr.component';
 import { DashboardFacturacionComponent } from './components/dashboard-facturacion/dashboard-facturacion.component';
 import { AgradecimientoComponent } from './paginas/agradecimiento.component';
-
-// Componente Toast Notificaciones
 import { ToastComponent } from './components/toast/toast.component';
+
+// Componentes de Clima Laboral
+import { ClimaLaboralComponent } from './components/clima-laboral/clima-laboral.component';
+import { AgradecimientoClimaComponent } from './paginas/agradecimiento-clima/agradecimiento-clima.component';
+import { DashboardClimaComponent } from './components/dashboard-clima/dashboard-clima.component';
+
+// Factoría requerida para inicializar el motor web de Lottie
+export function playerFactory() {
+  return player;
+}
 
 @NgModule({
   declarations: [
@@ -46,7 +58,10 @@ import { ToastComponent } from './components/toast/toast.component';
     ListarEncuestasQrComponent,
     DashboardFacturacionComponent,
     AgradecimientoComponent,
-    ToastComponent 
+    ToastComponent,
+    ClimaLaboralComponent,
+    AgradecimientoClimaComponent,
+    DashboardClimaComponent
   ],
   imports: [
     BrowserModule,
@@ -55,9 +70,14 @@ import { ToastComponent } from './components/toast/toast.component';
     ReactiveFormsModule,
     HttpClientModule,
     QRCodeModule,
-    AppRoutingModule
+    AppRoutingModule,
+    LottieComponent
   ],
-  providers: [],
+  providers: [
+    provideLottieOptions({
+      player: playerFactory
+    })
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

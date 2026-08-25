@@ -33,7 +33,12 @@ export class DashboardFacturacionComponent implements OnInit {
     this.loading = true;
     this.encuestaService.listarEncuestas().subscribe({
       next: (data: Encuesta[]) => {
-        this.registros = data || [];
+        // Excluir registros generados por la encuesta de clima laboral
+        this.registros = (data || []).filter(e => 
+          e.tipo !== 'CLIMA_LABORAL' && 
+          e.serie !== 'CLIMA-LABORAL-2026' &&
+          e.tipo !== 'CLIMA'
+        );
         this.aplicarFiltros();
         this.loading = false;
       },

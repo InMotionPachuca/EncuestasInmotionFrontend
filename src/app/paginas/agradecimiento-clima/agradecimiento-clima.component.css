@@ -1,0 +1,96 @@
+.gracias-clima-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 85vh;
+  padding: 20px;
+  background: #F4F6F9;
+  font-family: 'Inter', sans-serif;
+}
+
+.card-gracias-clima {
+  text-align: center;
+  padding: 45px 36px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border-top: 5px solid #C5A059;
+  border-left: 1px solid #E9ECEF;
+  border-right: 1px solid #E9ECEF;
+  border-bottom: 1px solid #E9ECEF;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logo-box {
+  margin-bottom: 20px;
+}
+
+.logo-inmotion {
+  height: 52px;
+  width: auto;
+  filter: brightness(0.9);
+}
+
+.shield-icon {
+  font-size: 3.6rem;
+  color: #C5A059;
+  margin-bottom: 16px;
+}
+
+.card-gracias-clima h2 {
+  color: #1F1F1F;
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.subtitle {
+  color: #495057;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.info-card {
+  background: #FDF8ED;
+  border-left: 4px solid #C5A059;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.info-text {
+  font-size: 0.85rem;
+  color: #555555;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.text-gold {
+  color: #C5A059;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #C5A059 50%, transparent 100%);
+  margin: 20px auto;
+  width: 80%;
+}
+
+.footer-text {
+  color: #6C757D;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}

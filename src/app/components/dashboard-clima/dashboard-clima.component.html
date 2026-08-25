@@ -1,0 +1,469 @@
+<div class="clima-dash-container">
+  
+  <!-- CABECERA PRINCIPAL DORADO/NEGRO -->
+  <div class="clima-dash-header">
+    <div>
+      <h1>Tablero de Clima Laboral 2026</h1>
+      <p class="header-subtitle mt-1 mb-0">Resultados ejecutivos y retroalimentación institucional por agencia y departamento (Modelo 47 Reactivos)</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-action-dash btn-refresh" (click)="cargarDatos()">
+        <i class="fas fa-sync-alt me-1"></i> Actualizar
+      </button>
+      <button class="btn-action-dash btn-pdf" (click)="exportarPDF()">
+        <i class="fas fa-file-pdf me-1"></i> Reporte PDF
+      </button>
+      <button class="btn-action-dash btn-export" (click)="exportarExcel()">
+        <i class="fas fa-file-excel me-1"></i> Exportar Excel
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTROS AVANZADOS -->
+  <div class="filtros-box">
+    <div class="filtro-item">
+      <label>Agencia / Sucursal:</label>
+      <select [(ngModel)]="filtroAgencia" (change)="aplicarFiltros()">
+        <option value="">Todas las Agencias</option>
+        <option *ngFor="let ag of agencias" [value]="ag">{{ ag }}</option>
+      </select>
+    </div>
+
+    <div class="filtro-item">
+      <label>Departamento / Área:</label>
+      <select [(ngModel)]="filtroDepto" (change)="aplicarFiltros()">
+        <option value="">Todos los Departamentos</option>
+        <option *ngFor="let d of departamentos" [value]="d">{{ d }}</option>
+      </select>
+    </div>
+
+    <div class="filtro-item">
+      <label>Rango de Antigüedad:</label>
+      <select [(ngModel)]="filtroAntiguedad" (change)="aplicarFiltros()">
+        <option value="">Cualquier Antigüedad</option>
+        <option *ngFor="let a of antiguedades" [value]="a">{{ a }}</option>
+      </select>
+    </div>
+
+    <div class="filtro-item">
+      <label>Nivel de Satisfacción (eNPS):</label>
+      <select [(ngModel)]="filtroSegmento" (change)="aplicarFiltros()">
+        <option value="">Todos los Colaboradores</option>
+        <option value="PROMOTORES">Embajadores / Promotores (5★)</option>
+        <option value="NEUTROS">Neutrales / En Espera (4★)</option>
+        <option value="DETRACTORES">Detractores / Foco Crítico (1-3★)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- MATRIZ DE KPIS, SLA Y ENPS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-users"></i></div>
+      <div class="stat-content">
+        <h3>Participación</h3>
+        <p class="stat-number">{{ totalRespuestas }}</p>
+        <span class="sub-caption">Respuestas capturadas</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon gold"><i class="fas fa-star"></i></div>
+      <div class="stat-content">
+        <h3>Índice General</h3>
+        <p class="stat-number text-gold">{{ promedioGlobal }} <span class="sub-scale">/ 5 ★</span></p>
+        <span class="sub-caption">
+          <span [class.text-success]="promedioGlobal >= META_SLA" [class.text-danger]="promedioGlobal < META_SLA">
+            <i class="fas" [class.fa-check-circle]="promedioGlobal >= META_SLA" [class.fa-exclamation-circle]="promedioGlobal < META_SLA"></i>
+            Meta SLA: {{ META_SLA }}
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <div class="stat-card enps-card">
+      <div class="stat-icon" [class.enps-green]="enpsScore >= 30" [class.enps-yellow]="enpsScore < 30 && enpsScore >= 0" [class.enps-red]="enpsScore < 0">
+        <i class="fas fa-heart"></i>
+      </div>
+      <div class="stat-content">
+        <h3>eNPS Organizacional</h3>
+        <p class="stat-number">{{ enpsScore > 0 ? '+' : '' }}{{ enpsScore }}</p>
+        <span class="sub-caption">{{ promotoresPct }}% Promotores | {{ detractoresPct }}% Detractores</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+      <div class="stat-content">
+        <h3>Liderazgo & Dirección</h3>
+        <p class="stat-number">{{ promedioLiderazgo }} <span class="sub-scale">/ 5 ★</span></p>
+        <span class="sub-caption">Comunicación y apoyo</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TERMÓMETRO DE SALUD CULTURAL & COMPROMISO -->
+  <div class="salud-cultural-card">
+    <div class="salud-header">
+      <div>
+        <h2><i class="fas fa-heartbeat me-2 text-gold"></i>Termómetro de Salud Laboral</h2>
+        <p class="seccion-sub">Medición integral del nivel de bienestar, fidelidad laboral y cohesión del equipo.</p>
+      </div>
+    </div>
+
+    <div class="salud-grid">
+      <div class="gauge-box">
+        <div class="gauge-circle">
+          <span class="gauge-number">{{ porcentajeSaludOrg }}%</span>
+          <span class="gauge-label">Salud General</span>
+        </div>
+        <div class="gauge-status-badge" [class.status-green]="porcentajeSaludOrg >= 84" [class.status-amber]="porcentajeSaludOrg >= 70 && porcentajeSaludOrg < 84" [class.status-red]="porcentajeSaludOrg < 70">
+          <i class="fas fa-shield-alt me-1"></i> {{ estadoSaludOrg }}
+        </div>
+      </div>
+
+      <div class="engagement-breakdown">
+        <h4>Segmentación de Compromiso (eNPS Breakdown)</h4>
+        
+        <div class="engagement-bar-row">
+          <div class="eng-meta">
+            <span><i class="fas fa-award text-success me-1"></i> Promotores / Embajadores (5★)</span>
+            <strong>{{ promotoresPct }}%</strong>
+          </div>
+          <div class="barra-track">
+            <div class="barra-fill bg-success" [style.width.%]="promotoresPct"></div>
+          </div>
+        </div>
+
+        <div class="engagement-bar-row">
+          <div class="eng-meta">
+            <span><i class="fas fa-minus-circle text-warning me-1"></i> Neutrales / En Espera (4★)</span>
+            <strong>{{ neutrosPct }}%</strong>
+          </div>
+          <div class="barra-track">
+            <div class="barra-fill bg-warning" [style.width.%]="neutrosPct"></div>
+          </div>
+        </div>
+
+        <div class="engagement-bar-row">
+          <div class="eng-meta">
+            <span><i class="fas fa-exclamation-triangle text-danger me-1"></i> Detractores / Foco de Atención (1-3★)</span>
+            <strong>{{ detractoresPct }}%</strong>
+          </div>
+          <div class="barra-track">
+            <div class="barra-fill bg-danger" [style.width.%]="detractoresPct"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARJETAS DE FOCO: FORTALEZAS VS ATENCIÓN -->
+  <div class="foco-grid">
+    <div class="foco-card fortaleza">
+      <div class="foco-header">
+        <i class="fas fa-arrow-trend-up me-2"></i>
+        <span>Pilar Más Sólido (Top Fortaleza)</span>
+      </div>
+      <h4>{{ mayorFortaleza.label }}</h4>
+      <div class="foco-calif">{{ mayorFortaleza.promedio }} ★ / 5</div>
+    </div>
+
+    <div class="foco-card oportunidad">
+      <div class="foco-header">
+        <i class="fas fa-triangle-exclamation me-2"></i>
+        <span>Área Crítica de Atención (Foco Rojo)</span>
+      </div>
+      <h4>{{ areaOportunidad.label }}</h4>
+      <div class="foco-calif">{{ areaOportunidad.promedio }} ★ / 5</div>
+    </div>
+  </div>
+
+  <!-- 3 GRÁFICAS SUPERIORES -->
+  <div class="graficos-grid-3">
+    <div class="grafico-card">
+      <h3><i class="fas fa-building me-2 text-gold"></i>Satisfacción por Sucursal</h3>
+      <div class="grafico-wrapper">
+        <canvas #graficoAgencias></canvas>
+      </div>
+    </div>
+
+    <div class="grafico-card">
+      <h3><i class="fas fa-chart-pie me-2 text-gold"></i>Radar de las 12 Dimensiones</h3>
+      <div class="grafico-wrapper">
+        <canvas #graficoDimensiones></canvas>
+      </div>
+    </div>
+
+    <div class="grafico-card">
+      <h3><i class="fas fa-fire-alt me-2 text-danger"></i>% Insatisfacción (1 y 2 ★)</h3>
+      <div class="grafico-wrapper">
+        <canvas #graficoInsatisfaccion></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOVEDAD 1: MÓDULO DE PRIORIDADES DE MEJORA (PREGUNTA 47) -->
+  <div class="prioridades-seccion">
+    <div class="seccion-header">
+      <h2><i class="fas fa-list-check me-2 text-gold"></i>Prioridades de Inversión y Mejora Elegidas por el Personal (P47)</h2>
+      <p class="seccion-sub">Aspectos más votados por los colaboradores para focalizar los recursos y planes de acción directivos.</p>
+    </div>
+
+    <div class="prioridades-grid-layout">
+      <div class="prioridades-grafico-box">
+        <div class="grafico-wrapper">
+          <canvas #graficoPrioridades></canvas>
+        </div>
+      </div>
+
+      <div class="prioridades-tabla-box">
+        <table class="tabla-custom">
+          <thead>
+            <tr>
+              <th>Aspecto Prioritario</th>
+              <th class="text-center">Votos</th>
+              <th class="text-center">% Mención</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of rankingPrioridades">
+              <td><strong>{{ item.nombre }}</strong></td>
+              <td class="text-center">{{ item.votos }}</td>
+              <td class="text-center"><span class="badge-prioridad-pct">{{ item.porcentaje }}%</span></td>
+            </tr>
+            <tr *ngIf="rankingPrioridades.length === 0">
+              <td colspan="3" class="text-center text-muted p-3">No hay datos suficientes de priorización.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOVEDAD 2: MAPA DE CALOR (HEATMAP) DEPARTAMENTOS VS 12 DIMENSIONES -->
+  <div class="heatmap-seccion">
+    <div class="seccion-header">
+      <h2><i class="fas fa-th me-2 text-gold"></i>Mapa de Calor por Departamento vs. 12 Dimensiones Psicométricas</h2>
+      <p class="seccion-sub">Identificación visual de focos rojos departamentales y fortalezas operativas.</p>
+    </div>
+
+    <div class="table-responsive">
+      <table class="tabla-heatmap">
+        <thead>
+          <tr>
+            <th class="col-depto-th">Departamento</th>
+            <th class="text-center">Muestra</th>
+            <th *ngFor="let dim of dimensionesDefinicion" class="text-center dim-th" [title]="dim.label">
+              {{ dim.label.substring(0, 10) }}...
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let fila of heatmapFilas">
+            <td class="col-depto-td"><strong>{{ fila.departamento }}</strong></td>
+            <td class="text-center">{{ fila.respuestasCount }}</td>
+            <td *ngFor="let dim of dimensionesDefinicion" class="text-center cell-calif"
+                [class.calif-excelente]="fila.valores[dim.id] >= 4.2"
+                [class.calif-aceptable]="fila.valores[dim.id] >= 3.5 && fila.valores[dim.id] < 4.2"
+                [class.calif-critico]="fila.valores[dim.id] > 0 && fila.valores[dim.id] < 3.5"
+                [class.calif-sin-datos]="fila.valores[dim.id] === 0">
+              {{ fila.valores[dim.id] > 0 ? fila.valores[dim.id] : '-' }}
+            </td>
+          </tr>
+          <tr *ngIf="heatmapFilas.length === 0">
+            <td [attr.colspan]="dimensionesDefinicion.length + 2" class="text-center text-muted p-3">
+              No hay respuestas suficientes para construir el mapa de calor.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="heatmap-leyenda">
+      <span class="dot-legend dot-green"></span> Excelente (≥ 4.2 ★)
+      <span class="dot-legend dot-yellow ms-3"></span> Aceptable / Regular (3.5 a 4.1 ★)
+      <span class="dot-legend dot-red ms-3"></span> Foco Crítico (< 3.5 ★)
+    </div>
+  </div>
+
+  <!-- NOVEDAD 3: DESGLOSE EN ACORDEÓN POR LAS 12 DIMENSIONES (40 REACTIVOS) -->
+  <div class="acordeon-dimensiones-seccion">
+    <div class="seccion-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <h2><i class="fas fa-layer-group me-2 text-gold"></i>Auditoría Detallada de Reactivos por Dimensión (Acordeones)</h2>
+        <p class="seccion-sub">Despliega o contrae cada una de las 12 dimensiones para inspeccionar el desglose del 1 al 5.</p>
+      </div>
+      <div class="btn-group-acordeon">
+        <button type="button" class="btn-acordeon-toggle" (click)="expandirTodosAcordeones(true)">
+          <i class="fas fa-expand-alt me-1"></i> Expandir Todos
+        </button>
+        <button type="button" class="btn-acordeon-toggle ms-2" (click)="expandirTodosAcordeones(false)">
+          <i class="fas fa-compress-alt me-1"></i> Contraer Todos
+        </button>
+      </div>
+    </div>
+
+    <div class="acordeon-lista">
+      <div class="acordeon-item-card" *ngFor="let ac of acordeonesDimensiones">
+        
+        <!-- CABECERA DEL ACORDEÓN -->
+        <div class="acordeon-header" (click)="toggleAcordeon(ac)">
+          <div class="acordeon-title-left">
+            <i class="fas" [class.fa-chevron-down]="ac.abierto" [class.fa-chevron-right]="!ac.abierto"></i>
+            <span class="acordeon-label">{{ ac.label }}</span>
+            <span class="badge-acordeon-count">{{ ac.preguntas.length }} preguntas</span>
+          </div>
+          <div class="acordeon-prom-badge">
+            <span>{{ ac.promedio }} ★ / 5</span>
+          </div>
+        </div>
+
+        <!-- CUERPO EXPANDIBLE CON LAS PREGUNTAS DE ESA DIMENSIÓN -->
+        <div class="acordeon-body" *ngIf="ac.abierto">
+          <div class="preguntas-grid-acordeon">
+            <div class="pregunta-card" *ngFor="let p of ac.preguntas">
+              <div class="pregunta-card-header">
+                <div>
+                  <span class="badge-numero-pregunta">Reactivo P{{ p.id }}</span>
+                  <h4>{{ p.titulo }}</h4>
+                </div>
+                <div class="promedio-pregunta-badge">
+                  <span class="num">{{ p.promedio }}</span>
+                  <span class="sub">/ 5 ★</span>
+                </div>
+              </div>
+
+              <p class="pregunta-texto-completo">{{ p.preguntaCompleta }}</p>
+
+              <div class="distribucion-barras">
+                <div class="fila-nivel" *ngFor="let nivel of [5, 4, 3, 2, 1]">
+                  <span class="nivel-label">{{ nivel }} ★</span>
+                  <div class="barra-track">
+                    <div class="barra-fill" [class]="'color-nivel-' + nivel" [style.width.%]="p.porcentajes[nivel - 1]"></div>
+                  </div>
+                  <span class="nivel-pct">{{ p.porcentajes[nivel - 1] }}% ({{ p.distribucion[nivel - 1] }})</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- NUBE DE PALABRAS / MAPA DE CONCEPTOS -->
+  <div class="nube-palabras-card">
+    <div class="nube-header">
+      <div>
+        <h3><i class="fas fa-cloud me-2 text-gold"></i>Mapa de Conceptos y Palabras Clave</h3>
+        <p class="sub-nube">Términos más recurrentes expresados en las preguntas abiertas. Haz clic en una palabra para filtrar comentarios.</p>
+      </div>
+      <div class="nube-leyenda">
+        <span class="dot-pos"></span> Positivo
+        <span class="dot-mej ms-3"></span> Oportunidad / Mejora
+      </div>
+    </div>
+
+    <div class="nube-contenedor">
+      <button 
+        type="button" 
+        *ngFor="let item of palabrasClave" 
+        class="tag-palabra"
+        [class.tag-positivo]="item.tipo === 'positivo'"
+        [class.tag-mejora]="item.tipo === 'mejora'"
+        [class.tag-activo]="palabraSeleccionadaFiltro === item.texto"
+        [ngClass]="'peso-' + item.peso"
+        (click)="filtrarPorPalabraNube(item.texto)">
+        {{ item.texto }} <span class="tag-count">{{ item.frecuencia }}</span>
+      </button>
+
+      <div *ngIf="palabrasClave.length === 0" class="sin-palabras">
+        <span>Aún no hay suficientes comentarios para generar el mapa de conceptos.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOVEDAD 4: RETROALIMENTACIÓN CUALITATIVA CON SELECTOR DE PREGUNTA ABIERTA (P41 A P47) -->
+  <div class="comentarios-seccion">
+    <div class="comentarios-top-bar">
+      <h2><i class="fas fa-comments me-2 text-gold"></i>Comentarios, Propuestas Abiertas y Priorización (P41 a P47)</h2>
+      
+      <div class="comentarios-filtros-bar">
+        <!-- SELECTOR DE DIMENSIÓN / PREGUNTA ABIERTA -->
+        <select class="select-dimension-comentario" [(ngModel)]="filtroDimensionComentario" (change)="aplicarFiltros()">
+          <option value="">Todas las Preguntas Abiertas</option>
+          <option value="41">P41. Lo más valorado</option>
+          <option value="42">P42. Lo mejor de la empresa</option>
+          <option value="43">P43. Principal propuesta de mejora</option>
+          <option value="44">P44. Cambio deseado</option>
+          <option value="45">P45. Apoyo del líder</option>
+          <option value="46">P46. Comentario adicional</option>
+          <option value="47">P47. Prioridades elegidas</option>
+        </select>
+
+        <div class="busqueda-box">
+          <i class="fas fa-search"></i>
+          <input 
+            type="text" 
+            placeholder="Buscar por palabra clave..." 
+            [(ngModel)]="busquedaComentario" 
+            (input)="aplicarFiltros()">
+        </div>
+      </div>
+    </div>
+    
+    <div class="comentarios-grid">
+      <div class="comentario-card" *ngFor="let enc of encuestasFiltradas">
+        <div class="comentario-header">
+          <span class="badge-agencia">{{ obtenerAgenciaEncuesta(enc) }}</span>
+          <span class="badge-depto">{{ enc.asesor }}</span>
+          <span class="badge-antiguedad">{{ enc.unidad }}</span>
+        </div>
+
+        <div class="comentario-body">
+          <div *ngIf="(!filtroDimensionComentario || filtroDimensionComentario === '41') && (obtenerTextoRespuesta(enc, 41) || obtenerTextoRespuesta(enc, 7)) as pos" class="texto-bloque positivo">
+            <strong class="text-success"><i class="fas fa-heart me-1"></i> Lo más valorado (P41):</strong>
+            <p>{{ pos }}</p>
+          </div>
+
+          <div *ngIf="(!filtroDimensionComentario || filtroDimensionComentario === '42') && obtenerTextoRespuesta(enc, 42) as mejor" class="texto-bloque">
+            <strong class="text-gold"><i class="fas fa-gem me-1"></i> Lo mejor de la empresa (P42):</strong>
+            <p>{{ mejor }}</p>
+          </div>
+
+          <div *ngIf="(!filtroDimensionComentario || filtroDimensionComentario === '43') && (obtenerTextoRespuesta(enc, 43) || obtenerTextoRespuesta(enc, 8)) as mej" class="texto-bloque mejora">
+            <strong class="text-warning"><i class="fas fa-wrench me-1"></i> Principal mejora sugerida (P43):</strong>
+            <p>{{ mej }}</p>
+          </div>
+
+          <div *ngIf="(!filtroDimensionComentario || filtroDimensionComentario === '44') && obtenerTextoRespuesta(enc, 44) as cambio" class="texto-bloque">
+            <strong class="text-info"><i class="fas fa-magic me-1"></i> Si pudiera cambiar una cosa (P44):</strong>
+            <p>{{ cambio }}</p>
+          </div>
+
+          <div *ngIf="(!filtroDimensionComentario || filtroDimensionComentario === '45') && obtenerTextoRespuesta(enc, 45) as lider" class="texto-bloque">
+            <strong class="text-secondary"><i class="fas fa-user-tie me-1"></i> Apoyo del líder directo (P45):</strong>
+            <p>{{ lider }}</p>
+          </div>
+
+          <div *ngIf="(!filtroDimensionComentario || filtroDimensionComentario === '46') && obtenerTextoRespuesta(enc, 46) as extra" class="texto-bloque">
+            <strong class="text-muted"><i class="fas fa-comment-medical me-1"></i> Comentario adicional (P46):</strong>
+            <p>{{ extra }}</p>
+          </div>
+
+          <div *ngIf="(!filtroDimensionComentario || filtroDimensionComentario === '47') && obtenerTextoRespuesta(enc, 47) as prioridades" class="texto-bloque priorizacion-box">
+            <strong class="text-gold"><i class="fas fa-list-check me-1"></i> Prioridades seleccionadas (P47):</strong>
+            <p>{{ prioridades }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="encuestasFiltradas.length === 0" class="sin-datos">
+        <p>No se encontraron respuestas con los criterios seleccionados.</p>
+      </div>
+    </div>
+  </div>
+
+</div>

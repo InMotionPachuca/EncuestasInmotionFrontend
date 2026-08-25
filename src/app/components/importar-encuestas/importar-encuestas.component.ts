@@ -28,7 +28,7 @@ export class ImportarEncuestasComponent {
     'Toyota Tulancingo': 'assets/whatsapp/toyotaTulancingo.jpeg',
     'Carsline Pachuca': 'assets/whatsapp/carsline.png',
     'Carsline Querétaro': 'assets/whatsapp/carsline.png',
-    'GWM Celaya': 'assets/whatsapp/gwm.png',
+    'GWM': 'assets/whatsapp/gwm.png',
     'Subaru': 'assets/whatsapp/subaruPachuca.png',
     'ComproCars Querétaro': 'assets/whatsapp/comproCars.png',
     'ComproCars Pachuca': 'assets/whatsapp/comproCars.png'
@@ -87,7 +87,7 @@ export class ImportarEncuestasComponent {
     if (limpio.includes('toyota')) return 'Toyota Pachuca';
     if (limpio.includes('carsline') && limpio.includes('queretaro')) return 'Carsline Querétaro';
     if (limpio.includes('carsline')) return 'Carsline Pachuca';
-    if (limpio.includes('gwm')) return 'GWM Celaya';
+    if (limpio.includes('gwm')) return 'GWM';
     if (limpio.includes('subaru')) return 'Subaru';
     if (limpio.includes('compro') && limpio.includes('queretaro')) return 'ComproCars Querétaro';
     if (limpio.includes('compro')) return 'ComproCars Pachuca';

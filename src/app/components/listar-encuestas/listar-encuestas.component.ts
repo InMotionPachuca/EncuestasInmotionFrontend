@@ -59,7 +59,6 @@ export class ListarEncuestasComponent implements OnInit {
     'toyota tulancingo': 'assets/whatsapp/toyotaTulancingo.jpeg',
     'carsline': 'assets/whatsapp/carsline.png',
     'gwm': 'assets/whatsapp/gwm.png',
-    'gwm celaya': 'assets/whatsapp/gwm.png',
     'comprocars': 'assets/whatsapp/comproCars.png'
   };
 
@@ -95,7 +94,7 @@ export class ListarEncuestasComponent implements OnInit {
   obtenerNombreMarcaMostrar(nombreOriginal: string): string {
     if (!nombreOriginal) return 'InMotion';
     const limpio = this.normalizarTexto(nombreOriginal);
-    if (limpio.includes('gwm')) return 'GWM Celaya';
+    if (limpio.includes('gwm')) return 'GWM';
     return nombreOriginal;
   }
 
@@ -123,7 +122,7 @@ export class ListarEncuestasComponent implements OnInit {
         
         const listadoNormalizado = listado.map(e => {
           if (e.marcaNombre && this.normalizarTexto(e.marcaNombre).includes('gwm')) {
-            e.marcaNombre = 'GWM Celaya';
+            e.marcaNombre = 'GWM';
           }
           return e;
         });

@@ -23,7 +23,7 @@ export class GenerarQrComponent implements OnInit {
     'toyota tulancingo': 'assets/whatsapp/toyotaTulancingo.jpeg',
     'carsline pachuca': 'assets/whatsapp/carsline.png',
     'carsline querétaro': 'assets/whatsapp/carsline.png',
-    'gwm celaya': 'assets/whatsapp/gwm.png',
+    'gwm': 'assets/whatsapp/gwm.png',
     'subaru': 'assets/whatsapp/subaruPachuca.png',
     'comprocars querétaro': 'assets/whatsapp/comproCars.png',
     'comprocars pachuca': 'assets/whatsapp/comproCars.png'

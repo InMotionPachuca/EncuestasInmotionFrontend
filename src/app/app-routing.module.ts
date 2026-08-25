@@ -18,17 +18,26 @@ import { ListarEncuestasQrComponent } from './components/listar-encuestas-qr/lis
 import { DashboardFacturacionComponent } from './components/dashboard-facturacion/dashboard-facturacion.component';
 import { AgradecimientoComponent } from './paginas/agradecimiento.component';
 
-// Guards funcionales
+// Componentes de Clima Laboral
+import { ClimaLaboralComponent } from './components/clima-laboral/clima-laboral.component';
+import { AgradecimientoClimaComponent } from './paginas/agradecimiento-clima/agradecimiento-clima.component';
+import { DashboardClimaComponent } from './components/dashboard-clima/dashboard-clima.component';
+
+// Guards
 import { authGuard, adminGuard, gerenteGuard } from './guards/admin.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 
-  // --- RUTAS PÚBLICAS ---
+  // --- RUTAS PÚBLICAS (Sin autenticación) ---
   { path: 'login', component: LoginComponent },
   { path: 'evaluar', component: EncuestaEstaticaComponent },
   { path: 'responder/:token', component: ResponderEncuestaComponent },
   { path: 'gracias', component: AgradecimientoComponent },
+  
+  // Clima Laboral Público
+  { path: 'clima-laboral', component: ClimaLaboralComponent },
+  { path: 'gracias-clima', component: AgradecimientoClimaComponent },
 
   // --- RUTAS PROTEGIDAS (Cualquier usuario autenticado) ---
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
@@ -37,17 +46,18 @@ const routes: Routes = [
   { path: 'encuestas-qr', component: ListarEncuestasQrComponent, canActivate: [authGuard] },
   { path: 'contestar-manual', component: ContestarEncuestaManualComponent, canActivate: [authGuard] },
 
-  // --- RUTAS EXCLUSIVAS DE FACTURACIÓN (GERENTE / FACTURACION / ADMIN) ---
+  // --- RUTAS EXCLUSIVAS DE FACTURACIÓN (GERENTE Y ADMIN) ---
   { path: 'crear', component: CrearEncuestaComponent, canActivate: [gerenteGuard] },
   { path: 'dashboard-facturacion', component: DashboardFacturacionComponent, canActivate: [gerenteGuard] },
 
   // --- RUTAS PROTEGIDAS EXCLUSIVAS DE ADMIN ---
+  { path: 'dashboard-clima', component: DashboardClimaComponent, canActivate: [adminGuard] },
   { path: 'asesores', component: AsesoresComponent, canActivate: [adminGuard] },
   { path: 'importar', component: ImportarEncuestasComponent, canActivate: [adminGuard] },
   { path: 'usuarios', component: UsuariosComponent, canActivate: [adminGuard] },
   { path: 'generar-qr', component: GenerarQrComponent, canActivate: [adminGuard] },
 
-  // --- CUALQUIER OTRA RUTA INEXISTENTE ---
+  // --- CUALQUIER OTRA RUTA ---
   { path: '**', redirectTo: '/login' }
 ];
 
