@@ -93,6 +93,7 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
   busquedaComentario = '';
   palabraSeleccionadaFiltro = '';
 
+  // 5 Sucursales Oficiales
   readonly agencias = [
     'Toyota Pachuca',
     'Toyota Tulancingo',
@@ -101,15 +102,12 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
     'Subaru'
   ];
 
+  // 4 Áreas Segmentadas
   readonly departamentos = [
     'Ventas',
-    'Postventa / Taller de Servicio',
-    'Hojalatería y Pintura (B&P)',
-    'Refacciones / Almacén',
-    'Administración / Finanzas / Facturación',
-    'Recursos Humanos',
-    'CXI / Calidad',
-    'Dirección / Gerencia'
+    'Administración',
+    'Área Técnica',
+    'Intendencia'
   ];
 
   readonly antiguedades = [
@@ -244,14 +242,29 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
   }
 
   obtenerAgenciaEncuesta(e: Encuesta): string {
-    if (e.marcaNombre && e.marcaNombre.trim() !== '') {
-      return e.marcaNombre;
+    const encuestaObj = e as any;
+    const textoIdentificador = `${encuestaObj.clienteApellido || ''} ${encuestaObj.clienteNombre || ''} ${encuestaObj.nombre || ''} ${encuestaObj.apellido || ''}`;
+
+    if (textoIdentificador.includes('[') && textoIdentificador.includes(']')) {
+      const extraido = textoIdentificador.substring(
+        textoIdentificador.indexOf('[') + 1, 
+        textoIdentificador.indexOf(']')
+      ).trim();
+      
+      const coincide = this.agencias.find(a => a.toLowerCase() === extraido.toLowerCase());
+      if (coincide) {
+        return coincide;
+      }
     }
-    const nombre = e.clienteNombre || '';
-    if (nombre.includes('[') && nombre.includes(']')) {
-      return nombre.substring(nombre.indexOf('[') + 1, nombre.indexOf(']'));
+
+    if (e.marcaNombre) {
+      const matchMarca = this.agencias.find(a => a.toLowerCase().includes(e.marcaNombre!.toLowerCase()));
+      if (matchMarca) {
+        return matchMarca;
+      }
     }
-    return 'General';
+
+    return 'Toyota Pachuca';
   }
 
   aplicarFiltros(): void {
@@ -848,7 +861,7 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
 
-    // 1. ENCABEZADO
+    // 1. Encabezado
     doc.setFillColor(31, 31, 31);
     doc.rect(0, 0, pageWidth, 24, 'F');
     doc.setFillColor(138, 109, 59);
@@ -864,7 +877,7 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
     doc.setTextColor(200, 200, 200);
     doc.text(`Generado: ${new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' })}`, pageWidth - 14, 15, { align: 'right' });
 
-    // 2. FILTROS Y RESUMEN
+    // 2. Filtros y Resumen
     let yPos = 34;
     doc.setFontSize(9);
     doc.setTextColor(60, 60, 60);
@@ -891,7 +904,7 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
 
     yPos = (doc as any).lastAutoTable.finalY + 8;
 
-    // 3. GRÁFICAS
+    // 3. Gráficas
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(31, 31, 31);
@@ -910,7 +923,7 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
       }
     } catch (e) {}
 
-    // 4. TABLA RESUMEN POR LAS 12 DIMENSIONES
+    // 4. Tabla Resumen por las 12 Dimensiones
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text('EVALUACION POR DIMENSIONES CORPORATIVAS', 14, yPos);
@@ -932,7 +945,7 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
       margin: { left: 14, right: 14 }
     });
 
-    // 5. SECCIÓN CUALITATIVA (PÁGINA 2)
+    // 5. Sección Cualitativa (Página 2)
     const comentariosConTexto = this.encuestasFiltradas.filter(
       e => [41, 42, 43, 44, 45, 46, 47, 7, 8].some(id => this.obtenerTextoRespuesta(e, id))
     );

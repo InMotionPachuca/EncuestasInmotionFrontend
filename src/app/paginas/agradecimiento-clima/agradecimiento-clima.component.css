@@ -2,20 +2,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 85vh;
-  padding: 20px;
+  min-height: 88vh;
+  padding: 24px;
   background: #F4F6F9;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .card-gracias-clima {
   text-align: center;
-  padding: 45px 36px;
+  padding: 44px 38px;
   background: #FFFFFF;
-  border-radius: 16px;
-  max-width: 520px;
+  border-radius: 18px;
+  max-width: 500px;
   width: 100%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.07);
   border-top: 5px solid #C5A059;
   border-left: 1px solid #E9ECEF;
   border-right: 1px solid #E9ECEF;
@@ -24,47 +24,67 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* CONTENEDOR DEL LOGO VECTORIAL */
 .logo-box {
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 24px;
 }
 
 .logo-inmotion {
-  height: 52px;
+  height: 48px;
+  max-width: 210px;
   width: auto;
-  filter: brightness(0.9);
+  object-fit: contain;
+  filter: none;
 }
 
-.shield-icon {
-  font-size: 3.6rem;
+/* BADGE DEL ESCUDO */
+.shield-badge {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px auto;
+  background: rgba(197, 160, 89, 0.12);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.9rem;
   color: #C5A059;
-  margin-bottom: 16px;
 }
 
 .card-gracias-clima h2 {
   color: #1F1F1F;
   font-size: 1.45rem;
   font-weight: 700;
-  margin-bottom: 12px;
-  font-family: 'Montserrat', sans-serif;
+  margin-bottom: 10px;
+  font-family: 'Montserrat', system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: #495057;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  margin-bottom: 20px;
+  color: #4B5563;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin: 0 auto 22px auto;
+}
+
+.subtitle strong {
+  color: #1F2937;
 }
 
 .info-card {
   background: #FDF8ED;
   border-left: 4px solid #C5A059;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 20px;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 22px;
   text-align: left;
 }
 
@@ -72,7 +92,7 @@
   font-size: 0.85rem;
   color: #555555;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .text-gold {
@@ -81,16 +101,16 @@
 
 .divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, #C5A059 50%, transparent 100%);
-  margin: 20px auto;
-  width: 80%;
+  background: linear-gradient(90deg, transparent 0%, #E2E8F0 50%, transparent 100%);
+  margin: 22px auto;
+  width: 85%;
 }
 
 .footer-text {
-  color: #6C757D;
-  font-size: 0.82rem;
-  font-weight: 600;
+  color: #64748B;
+  font-size: 0.78rem;
+  font-weight: 700;
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
 }

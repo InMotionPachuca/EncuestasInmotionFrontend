@@ -133,8 +133,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     this.encuestaService.listarEncuestas().subscribe({
       next: (encuestasData: Encuesta[]) => {
-        // Excluir encuestas QR de este Dashboard CXI tradicional
-        this.encuestas = (encuestasData || []).filter(e => e.tipo !== 'QR' && e.serie !== 'QR-GENERAL');
+        // Excluir encuestas QR y encuestas de CLIMA LABORAL de este Dashboard CXI
+        this.encuestas = (encuestasData || []).filter(e => 
+          e.tipo !== 'QR' && 
+          e.serie !== 'QR-GENERAL' &&
+          e.tipo !== 'CLIMA_LABORAL' &&
+          e.serie !== 'CLIMA-LABORAL-2026'
+        );
         this.aplicarFiltroPeriodo();
         this.loading = false;
       },
@@ -305,8 +310,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       const ctx = this.graficoCanvas.nativeElement.getContext('2d');
       if (!ctx) return;
 
-      // Si se seleccionó un filtro específico, muestra Total vs Respondidas
-      // Si está en 'Todos', muestra la segmentación de Postventa vs Ventas por Marca
       let datasets: any[] = [];
 
       if (!this.filtroTipo) {
@@ -314,13 +317,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           {
             label: 'Postventa / Servicio',
             data: marcasMostrar.map(m => m.totalServicio),
-            backgroundColor: 'rgba(33, 37, 41, 0.85)', // Gris oscuro institucional
+            backgroundColor: 'rgba(33, 37, 41, 0.85)',
             borderRadius: 6
           },
           {
             label: 'Ventas / Nuevos',
             data: marcasMostrar.map(m => m.totalVentas),
-            backgroundColor: 'rgba(197, 160, 89, 0.90)', // Dorado institucional
+            backgroundColor: 'rgba(197, 160, 89, 0.90)',
             borderRadius: 6
           }
         ];

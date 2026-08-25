@@ -127,11 +127,20 @@ export class ListarEncuestasComponent implements OnInit {
           return e;
         });
 
-        // 1. Tradicionales
-        this.encuestasTradicionales = listadoNormalizado.filter(e => e.tipo !== 'QR' && e.serie !== 'QR-GENERAL');
+        // 1. Tradicionales (Excluye encuestas QR y encuestas de CLIMA LABORAL)
+        this.encuestasTradicionales = listadoNormalizado.filter(e => 
+          e.tipo !== 'QR' && 
+          e.serie !== 'QR-GENERAL' &&
+          e.tipo !== 'CLIMA_LABORAL' &&
+          e.serie !== 'CLIMA-LABORAL-2026'
+        );
         
-        // 2. QR
-        this.encuestasQr = listadoNormalizado.filter(e => e.tipo === 'QR' || e.serie === 'QR-GENERAL');
+        // 2. QR (Excluye encuestas de CLIMA LABORAL)
+        this.encuestasQr = listadoNormalizado.filter(e => 
+          (e.tipo === 'QR' || e.serie === 'QR-GENERAL') &&
+          e.tipo !== 'CLIMA_LABORAL' &&
+          e.serie !== 'CLIMA-LABORAL-2026'
+        );
         this.encuestasQrFiltradas = [...this.encuestasQr];
 
         this.filtrarEncuestas();
@@ -351,7 +360,6 @@ export class ListarEncuestasComponent implements OnInit {
     this.plantillaActual = '';
   }
 
-  // --- MÉTODOS PARA EL NUEVO MODAL DE RESPUESTAS DEL CLIENTE ---
   verRespuestasCliente(encuesta: Encuesta) {
     this.encuestaSeleccionada = encuesta;
     this.mostrarModalRespuestas = true;
