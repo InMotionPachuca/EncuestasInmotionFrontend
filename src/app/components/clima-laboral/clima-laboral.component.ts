@@ -5,8 +5,7 @@ import { EncuestaService } from '../../services/encuesta.service';
 interface OpcionAgencia {
   nombre: string;
   subtitulo: string;
-  tipoLogo: 'toyota' | 'carsline' | 'subaru';
-  icono?: string;
+  logoSvg: string;
 }
 
 interface PasoClima {
@@ -35,15 +34,16 @@ export class ClimaLaboralComponent implements OnInit {
 
   private readonly STORAGE_KEY = 'inmotion_clima_2026_completado';
 
-  // Catálogo de agencias con identificadores de SVG
+  // Rutas directas a los SVGs de tu carpeta assets
   readonly agenciasVisuales: OpcionAgencia[] = [
-    { nombre: 'Toyota Pachuca', subtitulo: 'Agencia Matriz', tipoLogo: 'toyota' },
-    { nombre: 'Toyota Tulancingo', subtitulo: 'Sucursal Tulancingo', tipoLogo: 'toyota' },
-    { nombre: 'Centro de Servicio Toyota Pachuca', subtitulo: 'Taller y Postventa', tipoLogo: 'toyota' },
-    { nombre: 'Carsline Pachuca', subtitulo: 'Seminuevos Garantizados', tipoLogo: 'carsline' },
-    { nombre: 'Subaru', subtitulo: 'Agencia Subaru', tipoLogo: 'subaru' }
+    { nombre: 'Toyota Pachuca', subtitulo: 'Agencia Matriz', logoSvg: 'assets/logos/pachuca.svg' },
+    { nombre: 'Toyota Tulancingo', subtitulo: 'Sucursal Tulancingo', logoSvg: 'assets/logos/tulancingo.svg' },
+    { nombre: 'Centro de Servicio Toyota Pachuca', subtitulo: 'Taller y Postventa', logoSvg: 'assets/logos/toyota.svg' },
+    { nombre: 'Carsline Pachuca', subtitulo: 'Seminuevos Garantizados', logoSvg: 'assets/logos/carsline.svg' },
+    { nombre: 'Subaru', subtitulo: 'Agencia Subaru', logoSvg: 'assets/logos/subaru.svg' }
   ];
 
+  // Segmentación oficial por sucursal
   readonly estructuraSucursales: { [key: string]: string[] } = {
     'Centro de Servicio Toyota Pachuca': [
       'Administración',

@@ -147,7 +147,7 @@
   line-height: 1.4;
 }
 
-/* SUCURSALES (PASO 1 CON SVGS) */
+/* SUCURSALES (PASO 1 CON SVGS DE ASSETS) */
 .grid-agencias-cards {
   display: flex;
   flex-direction: column;
@@ -179,14 +179,18 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  padding: 4px;
   transition: background-color 0.2s, border-color 0.2s;
 }
 
-.brand-svg {
-  width: 40px;
-  height: 28px;
-  color: #94A3B8;
-  transition: color 0.2s ease, transform 0.2s ease;
+.logo-svg-item {
+  max-width: 44px;
+  max-height: 30px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1) opacity(0.8);
+  transition: filter 0.2s ease, transform 0.2s ease;
 }
 
 .agencia-info {
@@ -230,8 +234,8 @@
   transform: translateX(4px);
 }
 
-.card-agencia-item:hover .brand-svg {
-  color: #FFFFFF;
+.card-agencia-item:hover .logo-svg-item {
+  filter: brightness(0) invert(1) opacity(1);
   transform: scale(1.05);
 }
 
@@ -246,8 +250,8 @@
   box-shadow: 0 0 0 2px rgba(197, 160, 89, 0.4);
 }
 
-.card-agencia-item.seleccionada .brand-svg {
-  color: #C5A059;
+.card-agencia-item.seleccionada .logo-svg-item {
+  filter: invert(74%) sepia(21%) saturate(996%) hue-rotate(4deg) brightness(91%) contrast(87%);
 }
 
 /* OPCIONES SIMPLES (DEPARTAMENTOS) */
