@@ -5,7 +5,7 @@ import { EncuestaService } from '../../services/encuesta.service';
 interface OpcionAgencia {
   nombre: string;
   subtitulo: string;
-  logo: string;
+  tipoLogo: 'toyota' | 'carsline' | 'subaru';
   icono?: string;
 }
 
@@ -35,16 +35,15 @@ export class ClimaLaboralComponent implements OnInit {
 
   private readonly STORAGE_KEY = 'inmotion_clima_2026_completado';
 
-  // Catálogo de agencias con sus logos en assets
+  // Catálogo de agencias con identificadores de SVG
   readonly agenciasVisuales: OpcionAgencia[] = [
-    { nombre: 'Toyota Pachuca', subtitulo: 'Agencia Matriz', logo: 'assets/logos/pachuca.svg' },
-    { nombre: 'Toyota Tulancingo', subtitulo: 'Sucursal Tulancingo', logo: 'assets/logos/tulancingo.svg' },
-    { nombre: 'Centro de Servicio Toyota Pachuca', subtitulo: 'Taller y Postventa', logo: 'assets/logos/toyota.svg' },
-    { nombre: 'Carsline Pachuca', subtitulo: 'Seminuevos Garantizados', logo: 'assets/logos/carsline.svg' },
-    { nombre: 'Subaru', subtitulo: 'Agencia Subaru', logo: 'assets/logos/subaru.svg' }
+    { nombre: 'Toyota Pachuca', subtitulo: 'Agencia Matriz', tipoLogo: 'toyota' },
+    { nombre: 'Toyota Tulancingo', subtitulo: 'Sucursal Tulancingo', tipoLogo: 'toyota' },
+    { nombre: 'Centro de Servicio Toyota Pachuca', subtitulo: 'Taller y Postventa', tipoLogo: 'toyota' },
+    { nombre: 'Carsline Pachuca', subtitulo: 'Seminuevos Garantizados', tipoLogo: 'carsline' },
+    { nombre: 'Subaru', subtitulo: 'Agencia Subaru', tipoLogo: 'subaru' }
   ];
 
-  // Mapeo exacto de departamentos por sucursal
   readonly estructuraSucursales: { [key: string]: string[] } = {
     'Centro de Servicio Toyota Pachuca': [
       'Administración',
@@ -255,7 +254,6 @@ export class ClimaLaboralComponent implements OnInit {
   seleccionarAgencia(nombreAgencia: string): void {
     this.paso.valor = nombreAgencia;
 
-    // Poblar dinámicamente el paso del departamento según la sucursal seleccionada
     const pasoDepto = this.pasos.find(p => p.campoNombre === 'departamento');
     if (pasoDepto) {
       pasoDepto.opciones = this.estructuraSucursales[nombreAgencia] || [
@@ -335,7 +333,6 @@ export class ClimaLaboralComponent implements OnInit {
 
     const respuestas: any[] = [];
 
-    // Empacar las preguntas 1 a 40 (numéricas)
     for (let i = 1; i <= 40; i++) {
       const pObj = this.pasos.find(p => p.campoNombre === `p${i}`);
       respuestas.push({
@@ -345,7 +342,6 @@ export class ClimaLaboralComponent implements OnInit {
       });
     }
 
-    // Empacar las preguntas 41 a 46 (abiertas)
     for (let i = 41; i <= 46; i++) {
       const pObj = this.pasos.find(p => p.campoNombre === `p${i}`);
       respuestas.push({
@@ -355,7 +351,6 @@ export class ClimaLaboralComponent implements OnInit {
       });
     }
 
-    // Empacar pregunta 47 (Priorización)
     const prioridadesFinal = [...this.priorizacionSeleccionadas];
     if (this.otroPriorizacion.trim()) {
       prioridadesFinal.push(`Otro: ${this.otroPriorizacion.trim()}`);

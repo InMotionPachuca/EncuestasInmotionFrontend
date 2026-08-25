@@ -45,7 +45,7 @@
       <h1 class="pregunta-titulo">{{ paso.pregunta }}</h1>
       <p class="pregunta-subtitulo" *ngIf="paso.subtitulo">{{ paso.subtitulo }}</p>
 
-      <!-- 1. SELECCIÓN DE SUCURSAL CON LOGOS VISUALES (PASO 1) -->
+      <!-- 1. SELECCIÓN DE SUCURSAL CON SVGS INTEGRADOS (PASO 1) -->
       <div *ngIf="paso.tipo === 'agencias'" class="grid-agencias-cards">
         <button 
           type="button" 
@@ -55,7 +55,29 @@
           (click)="seleccionarAgencia(ag.nombre)">
           
           <div class="agencia-logo-box">
-            <img [src]="ag.logo" [alt]="ag.nombre" class="logo-agencia-img" />
+            <!-- TOYOTA -->
+            <svg *ngIf="ag.tipoLogo === 'toyota'" class="brand-svg" viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="50" cy="35" rx="45" ry="29" stroke="currentColor" stroke-width="4.5"/>
+              <ellipse cx="50" cy="35" rx="17" ry="28" stroke="currentColor" stroke-width="4"/>
+              <ellipse cx="50" cy="23" rx="31" ry="12" stroke="currentColor" stroke-width="4"/>
+            </svg>
+
+            <!-- CARSLINE -->
+            <svg *ngIf="ag.tipoLogo === 'carsline'" class="brand-svg" viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="35" r="28" stroke="currentColor" stroke-width="5"/>
+              <path d="M62 23 C58 19, 42 19, 38 23 C31 30, 31 40, 38 47 C42 51, 58 51, 62 47" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+            </svg>
+
+            <!-- SUBARU -->
+            <svg *ngIf="ag.tipoLogo === 'subaru'" class="brand-svg" viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="50" cy="35" rx="45" ry="26" stroke="currentColor" stroke-width="4"/>
+              <path d="M38 23 Q38 31 46 31 Q38 31 38 39 Q38 31 30 31 Q38 31 38 23 Z" fill="currentColor"/>
+              <path d="M57 26 Q57 30 61 30 Q57 30 57 34 Q57 30 53 30 Q57 30 57 26 Z" fill="currentColor"/>
+              <path d="M68 31 Q68 35 72 35 Q68 35 68 39 Q68 35 64 35 Q68 35 68 31 Z" fill="currentColor"/>
+              <path d="M51 38 Q51 42 55 42 Q51 42 51 46 Q51 42 47 42 Q51 42 51 38 Z" fill="currentColor"/>
+              <path d="M64 42 Q64 46 68 46 Q64 46 64 50 Q64 46 60 46 Q64 46 64 42 Z" fill="currentColor"/>
+              <path d="M74 45 Q74 48 77 48 Q74 48 74 51 Q74 48 71 48 Q74 48 74 45 Z" fill="currentColor"/>
+            </svg>
           </div>
 
           <div class="agencia-info">
@@ -70,7 +92,7 @@
         </button>
       </div>
 
-      <!-- 2. OPCIONES DE SELECCIÓN SIMPLE (DEPARTAMENTO Y ANTIGÜEDAD) -->
+      <!-- 2. OPCIONES DE SELECCIÓN SIMPLE -->
       <div *ngIf="paso.tipo === 'select'" class="grid-opciones">
         <button 
           type="button" 
@@ -123,7 +145,7 @@
         </div>
       </div>
 
-      <!-- 5. SELECCIÓN MÚLTIPLE DE PRIORIZACIÓN (P47) -->
+      <!-- 5. SELECCIÓN MÚLTIPLE DE PRIORIZACIÓN -->
       <div *ngIf="paso.tipo === 'multiselect'" class="contenedor-multiselect-paso">
         <div class="grid-prioridades">
           <button 

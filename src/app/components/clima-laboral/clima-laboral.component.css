@@ -59,9 +59,9 @@
   gap: 10px;
 }
 
-.badge-tiempo {
+.badge-tiempo,
+.badge-privacidad {
   background-color: #1E293B;
-  color: #FBBF24;
   border: 1px solid #334155;
   padding: 5px 12px;
   border-radius: 20px;
@@ -69,15 +69,8 @@
   font-weight: 600;
 }
 
-.badge-privacidad {
-  background-color: #1E293B;
-  color: #C5A059;
-  border: 1px solid #334155;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
+.badge-tiempo { color: #FBBF24; }
+.badge-privacidad { color: #C5A059; }
 
 .tarjeta-principal-paso {
   max-width: 860px;
@@ -154,7 +147,7 @@
   line-height: 1.4;
 }
 
-/* CARDS CON LOGOS PARA SUCURSALES (PASO 1) */
+/* SUCURSALES (PASO 1 CON SVGS) */
 .grid-agencias-cards {
   display: flex;
   flex-direction: column;
@@ -165,10 +158,10 @@
   background-color: #111827;
   border: 1px solid #283548;
   border-radius: 12px;
-  padding: 14px 20px;
+  padding: 12px 18px;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
   cursor: pointer;
   text-align: left;
   transition: all 0.22s ease;
@@ -177,22 +170,23 @@
 }
 
 .agencia-logo-box {
-  width: 90px;
-  height: 48px;
-  background-color: #FFFFFF;
+  width: 68px;
+  height: 46px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 10px;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
-.logo-agencia-img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+.brand-svg {
+  width: 40px;
+  height: 28px;
+  color: #94A3B8;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .agencia-info {
@@ -236,10 +230,24 @@
   transform: translateX(4px);
 }
 
+.card-agencia-item:hover .brand-svg {
+  color: #FFFFFF;
+  transform: scale(1.05);
+}
+
+.card-agencia-item:hover .agencia-logo-box {
+  background-color: rgba(197, 160, 89, 0.12);
+  border-color: rgba(197, 160, 89, 0.3);
+}
+
 .card-agencia-item.seleccionada {
   background-color: #1E2A38;
   border-color: #C5A059;
   box-shadow: 0 0 0 2px rgba(197, 160, 89, 0.4);
+}
+
+.card-agencia-item.seleccionada .brand-svg {
+  color: #C5A059;
 }
 
 /* OPCIONES SIMPLES (DEPARTAMENTOS) */
@@ -560,5 +568,5 @@
   .teclado-hint { display: none; }
   .grid-prioridades { grid-template-columns: 1fr; }
   .card-agencia-item { gap: 12px; padding: 12px 14px; }
-  .agencia-logo-box { width: 70px; height: 40px; }
+  .agencia-logo-box { width: 52px; height: 38px; }
 }
