@@ -124,10 +124,10 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
     { id: 3, label: 'Liderazgo y Comunicación', promedio: 0, preguntasIds: [7, 8, 9] },
     { id: 4, label: 'Reconocimiento y Valoración', promedio: 0, preguntasIds: [10, 11, 12] },
     { id: 5, label: 'Instalaciones y Seguridad', promedio: 0, preguntasIds: [13, 14, 15] },
-    { id: 6, label: 'Sentido de Pertenencia', promedio: 0, preguntasIds: [16, 17, 18] },
+    { id: 6, label: 'Pertenencia y Orgullo', promedio: 0, preguntasIds: [16, 17, 18] },
     { id: 7, label: 'Desarrollo y Crecimiento', promedio: 0, preguntasIds: [19, 20, 21] },
-    { id: 8, label: 'Equidad y Respeto', promedio: 0, preguntasIds: [22, 23, 24] },
-    { id: 9, label: 'Carga de Trabajo y Bienestar', promedio: 0, preguntasIds: [25, 26, 27] },
+    { id: 8, label: 'Equidad y Justicia', promedio: 0, preguntasIds: [22, 23, 24] },
+    { id: 9, label: 'Bienestar y Carga', promedio: 0, preguntasIds: [25, 26, 27] },
     { id: 10, label: 'Participación y Escucha', promedio: 0, preguntasIds: [28, 29, 30] },
     { id: 11, label: 'Seguridad Psicológica', promedio: 0, preguntasIds: [31, 32, 33] },
     { id: 12, label: 'Motivación y Compromiso', promedio: 0, preguntasIds: [34, 35, 36] }
@@ -137,43 +137,42 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
     { id: 1, dimensionId: 1, dimension: 'Herramientas y Recursos', titulo: 'Herramientas de trabajo', preguntaCompleta: '¿Cuentas con las herramientas y recursos necesarios para realizar tu trabajo de manera eficiente?' },
     { id: 2, dimensionId: 1, dimension: 'Herramientas y Recursos', titulo: 'Equipos y sistemas', preguntaCompleta: '¿Los equipos, sistemas y materiales que utilizas funcionan adecuadamente?' },
     { id: 3, dimensionId: 1, dimension: 'Herramientas y Recursos', titulo: 'Oportunidad de recursos', preguntaCompleta: '¿Recibes oportunamente los recursos que necesitas para cumplir con tus responsabilidades?' },
-    { id: 4, dimensionId: 2, dimension: 'Ambiente y Equipo', titulo: 'Respeto y compañerismo', preguntaCompleta: '¿Consideras que existe un ambiente de respeto y compañerismo entre los colaboradores?' },
-    { id: 5, dimensionId: 2, dimension: 'Ambiente y Equipo', titulo: 'Colaboración en el área', preguntaCompleta: '¿Existe una buena colaboración entre los integrantes de tu equipo?' },
-    { id: 6, dimensionId: 2, dimension: 'Ambiente y Equipo', titulo: 'Disposición de apoyo', preguntaCompleta: '¿Consideras que tus compañeros están dispuestos a apoyarte cuando lo necesitas?' },
-    { id: 7, dimensionId: 3, dimension: 'Liderazgo y Comunicación', titulo: 'Comunicación con líder', preguntaCompleta: '¿La comunicación con tu líder directo o gerencia es clara y constructiva?' },
-    { id: 8, dimensionId: 3, dimension: 'Liderazgo y Comunicación', titulo: 'Claridad en objetivos', preguntaCompleta: '¿Tu líder comunica de manera clara las prioridades, objetivos y expectativas de tu trabajo?' },
-    { id: 9, dimensionId: 3, dimension: 'Liderazgo y Comunicación', titulo: 'Disponibilidad de escucha', preguntaCompleta: '¿Consideras que tu líder está disponible para escuchar y atender tus inquietudes?' },
-    { id: 10, dimensionId: 4, dimension: 'Reconocimiento', titulo: 'Valoración del esfuerzo', preguntaCompleta: '¿Sientes que tu esfuerzo, dedicación y contribución son valorados?' },
-    { id: 11, dimensionId: 4, dimension: 'Reconocimiento', titulo: 'Reconocimiento a resultados', preguntaCompleta: '¿Recibes reconocimiento cuando realizas un buen trabajo o alcanzas resultados importantes?' },
-    { id: 12, dimensionId: 4, dimension: 'Reconocimiento', titulo: 'Reconocimiento institucional', preguntaCompleta: '¿Consideras que la empresa reconoce adecuadamente las aportaciones de sus colaboradores?' },
+    { id: 4, dimensionId: 2, dimension: 'Ambiente y Equipo', titulo: 'Respeto y compañerismo', preguntaCompleta: '¿Existe un ambiente de respeto y compañerismo entre las personas con las que trabajas?' },
+    { id: 5, dimensionId: 2, dimension: 'Ambiente y Equipo', titulo: 'Colaboración en el equipo', preguntaCompleta: '¿Existe una buena colaboración entre los integrantes de tu equipo para alcanzar los objetivos?' },
+    { id: 6, dimensionId: 2, dimension: 'Ambiente y Equipo', titulo: 'Apoyo ante dificultades', preguntaCompleta: '¿Puedes contar con el apoyo de tus compañeros cuando enfrentas una dificultad en tu trabajo?' },
+    { id: 7, dimensionId: 3, dimension: 'Liderazgo y Comunicación', titulo: 'Claridad en objetivos', preguntaCompleta: '¿Tu líder comunica claramente las prioridades, objetivos y expectativas de tu trabajo?' },
+    { id: 8, dimensionId: 3, dimension: 'Liderazgo y Comunicación', titulo: 'Comunicación con líder', preguntaCompleta: '¿La comunicación con tu líder directo es clara, respetuosa y constructiva?' },
+    { id: 9, dimensionId: 3, dimension: 'Liderazgo y Comunicación', titulo: 'Disponibilidad y apoyo', preguntaCompleta: '¿Tu líder está disponible cuando necesitas orientación, apoyo o resolver alguna inquietud?' },
+    { id: 10, dimensionId: 4, dimension: 'Reconocimiento y Valoración', titulo: 'Valoración del esfuerzo', preguntaCompleta: '¿Sientes que tu esfuerzo y contribución son valorados en tu área de trabajo?' },
+    { id: 11, dimensionId: 4, dimension: 'Reconocimiento y Valoración', titulo: 'Reconocimiento a resultados', preguntaCompleta: '¿Recibes reconocimiento cuando realizas un buen trabajo o alcanzas resultados importantes?' },
+    { id: 12, dimensionId: 4, dimension: 'Reconocimiento y Valoración', titulo: 'Criterios claros', preguntaCompleta: '¿Consideras que los criterios para reconocer el buen desempeño son claros y consistentes?' },
     { id: 13, dimensionId: 5, dimension: 'Instalaciones y Seguridad', titulo: 'Instalaciones adecuadas', preguntaCompleta: '¿Las instalaciones donde trabajas son adecuadas para realizar tus actividades?' },
-    { id: 14, dimensionId: 5, dimension: 'Instalaciones y Seguridad', titulo: 'Sanitarios, comedores y limpieza', preguntaCompleta: '¿Consideras que la limpieza, higiene e insumos en sanitarios, comedores y áreas comunes son adecuados y suficientes?' },
-    { id: 15, dimensionId: 5, dimension: 'Instalaciones y Seguridad', titulo: 'Seguridad en el trabajo', preguntaCompleta: '¿Consideras que existen medidas suficientes para garantizar tu seguridad durante la jornada laboral?' },
-    { id: 16, dimensionId: 6, dimension: 'Sentido de Pertenencia', titulo: 'Orgullo institucional', preguntaCompleta: '¿Te sientes orgulloso/a de pertenecer a Grupo InMotion?' },
-    { id: 17, dimensionId: 6, dimension: 'Sentido de Pertenencia', titulo: 'Coherencia de valores', preguntaCompleta: '¿Consideras que los valores de la empresa son coherentes con la manera en que se trabaja día a día?' },
-    { id: 18, dimensionId: 6, dimension: 'Sentido de Pertenencia', titulo: 'Recomendación laboral', preguntaCompleta: '¿Recomendarías Grupo InMotion como un buen lugar para trabajar?' },
-    { id: 19, dimensionId: 7, dimension: 'Desarrollo y Crecimiento', titulo: 'Nuevas habilidades', preguntaCompleta: '¿Consideras que tienes oportunidades para aprender y desarrollar nuevas habilidades?' },
-    { id: 20, dimensionId: 7, dimension: 'Desarrollo y Crecimiento', titulo: 'Capacitación recibida', preguntaCompleta: '¿La empresa te proporciona capacitación adecuada para mejorar tu desempeño?' },
-    { id: 21, dimensionId: 7, dimension: 'Desarrollo y Crecimiento', titulo: 'Oportunidad de crecimiento', preguntaCompleta: '¿Consideras que existen oportunidades reales de crecimiento y desarrollo profesional dentro de la empresa?' },
-    { id: 22, dimensionId: 8, dimension: 'Equidad y Justicia', titulo: 'Trato justo', preguntaCompleta: '¿Consideras que los colaboradores reciben un trato justo y respetuoso?' },
-    { id: 23, dimensionId: 8, dimension: 'Equidad y Justicia', titulo: 'Equidad de oportunidades', preguntaCompleta: '¿Percibes que las oportunidades de crecimiento, reconocimiento y desarrollo se asignan de manera justa?' },
+    { id: 14, dimensionId: 5, dimension: 'Instalaciones y Seguridad', titulo: 'Higiene e insumos', preguntaCompleta: '¿La limpieza, higiene e insumos de sanitarios, comedores y áreas comunes son adecuados y suficientes?' },
+    { id: 15, dimensionId: 5, dimension: 'Instalaciones y Seguridad', titulo: 'Medidas de seguridad', preguntaCompleta: '¿Consideras que existen medidas adecuadas para garantizar tu seguridad durante la jornada laboral?' },
+    { id: 16, dimensionId: 6, dimension: 'Pertenencia y Orgullo', titulo: 'Orgullo institucional', preguntaCompleta: '¿Te sientes orgulloso/a de pertenecer a Grupo InMotion?' },
+    { id: 17, dimensionId: 6, dimension: 'Pertenencia y Orgullo', titulo: 'Reflejo de valores', preguntaCompleta: '¿Consideras que los valores de Grupo InMotion se reflejan en la manera en que se trabaja día a día?' },
+    { id: 18, dimensionId: 6, dimension: 'Pertenencia y Orgullo', titulo: 'Identificación cultural', preguntaCompleta: '¿Te identificas con la cultura y la forma de trabajar de Grupo InMotion?' },
+    { id: 19, dimensionId: 7, dimension: 'Desarrollo y Crecimiento', titulo: 'Nuevas habilidades', preguntaCompleta: '¿Tienes oportunidades para aprender y desarrollar nuevas habilidades?' },
+    { id: 20, dimensionId: 7, dimension: 'Desarrollo y Crecimiento', titulo: 'Capacitación recibida', preguntaCompleta: '¿La capacitación que recibes te ayuda a mejorar tu desempeño y prepararte para tus responsabilidades?' },
+    { id: 21, dimensionId: 7, dimension: 'Desarrollo y Crecimiento', titulo: 'Oportunidades de crecimiento', preguntaCompleta: '¿Percibes oportunidades reales de crecimiento y desarrollo profesional dentro de la empresa?' },
+    { id: 22, dimensionId: 8, dimension: 'Equidad y Justicia', titulo: 'Trato justo y respetuoso', preguntaCompleta: '¿Consideras que las personas reciben un trato justo y respetuoso, independientemente de su puesto o área?' },
+    { id: 23, dimensionId: 8, dimension: 'Equidad y Justicia', titulo: 'Equidad en desarrollo', preguntaCompleta: '¿Percibes que las oportunidades de crecimiento y desarrollo se asignan de manera justa?' },
     { id: 24, dimensionId: 8, dimension: 'Equidad y Justicia', titulo: 'Políticas consistentes', preguntaCompleta: '¿Consideras que las reglas y políticas de la empresa se aplican de manera consistente para todos?' },
-    { id: 25, dimensionId: 9, dimension: 'Bienestar y Carga', titulo: 'Carga de trabajo', preguntaCompleta: '¿Consideras que tu carga de trabajo es adecuada para el tiempo disponible?' },
-    { id: 26, dimensionId: 9, dimension: 'Bienestar y Carga', titulo: 'Balance vida-trabajo', preguntaCompleta: '¿Consideras que tienes un equilibrio saludable entre tus responsabilidades laborales y tu vida personal?' },
-    { id: 27, dimensionId: 9, dimension: 'Bienestar y Carga', titulo: 'Interés por el bienestar', preguntaCompleta: '¿La empresa muestra interés por el bienestar y las necesidades de sus colaboradores?' },
-    { id: 28, dimensionId: 10, dimension: 'Participación y Escucha', titulo: 'Opiniones tomadas en cuenta', preguntaCompleta: '¿Sientes que tus opiniones y sugerencias son escuchadas por tus líderes?' },
+    { id: 25, dimensionId: 9, dimension: 'Bienestar y Carga', titulo: 'Carga de trabajo razonable', preguntaCompleta: '¿Consideras que tu carga de trabajo es razonable para el tiempo y los recursos disponibles?' },
+    { id: 26, dimensionId: 9, dimension: 'Bienestar y Carga', titulo: 'Equilibrio vida-trabajo', preguntaCompleta: '¿Puedes mantener un equilibrio saludable entre tus responsabilidades laborales y tu vida personal?' },
+    { id: 27, dimensionId: 9, dimension: 'Bienestar y Carga', titulo: 'Interés por el bienestar', preguntaCompleta: '¿Consideras que la empresa demuestra interés por el bienestar de sus colaboradores?' },
+    { id: 28, dimensionId: 10, dimension: 'Participación y Escucha', titulo: 'Opiniones escuchadas', preguntaCompleta: '¿Sientes que tus opiniones y sugerencias son escuchadas por tus líderes?' },
     { id: 29, dimensionId: 10, dimension: 'Participación y Escucha', titulo: 'Propuestas de mejora', preguntaCompleta: '¿Tienes oportunidades para proponer ideas o mejoras relacionadas con tu trabajo?' },
-    { id: 30, dimensionId: 10, dimension: 'Participación y Escucha', titulo: 'Mejora con base en escucha', preguntaCompleta: '¿Consideras que la empresa toma en cuenta las opiniones de los colaboradores para mejorar?' },
-    { id: 31, dimensionId: 11, dimension: 'Seguridad Psicológica', titulo: 'Libertad de expresión', preguntaCompleta: '¿Te sientes con la confianza de expresar tus ideas, dudas o desacuerdos?' },
-    { id: 32, dimensionId: 11, dimension: 'Seguridad Psicológica', titulo: 'Comunicación sin temor', preguntaCompleta: '¿Consideras que puedes comunicar un problema o error sin temor a recibir un trato negativo?' },
-    { id: 33, dimensionId: 11, dimension: 'Seguridad Psicológica', titulo: 'Ambiente de respeto libre', preguntaCompleta: '¿Sientes que existe un ambiente donde las personas pueden expresar sus opiniones con respeto y libertad?' },
+    { id: 30, dimensionId: 10, dimension: 'Participación y Escucha', titulo: 'Decisiones basadas en ideas', preguntaCompleta: '¿Percibes que las ideas y sugerencias de los colaboradores se consideran al momento de tomar decisiones o implementar mejoras?' },
+    { id: 31, dimensionId: 11, dimension: 'Seguridad Psicológica', titulo: 'Confianza para expresarse', preguntaCompleta: '¿Te sientes con la confianza de expresar tus ideas, dudas o desacuerdos?' },
+    { id: 32, dimensionId: 11, dimension: 'Seguridad Psicológica', titulo: 'Comunicación sin temor', preguntaCompleta: '¿Puedes comunicar un problema o reconocer un error sin temor a recibir un trato negativo?' },
+    { id: 33, dimensionId: 11, dimension: 'Seguridad Psicológica', titulo: 'Puntos de vista respetados', preguntaCompleta: '¿Consideras que en tu equipo las personas pueden expresar diferentes puntos de vista con respeto?' },
     { id: 34, dimensionId: 12, dimension: 'Motivación y Compromiso', titulo: 'Motivación diaria', preguntaCompleta: '¿Te sientes motivado/a para realizar tu trabajo y alcanzar tus objetivos?' },
-    { id: 35, dimensionId: 12, dimension: 'Motivación y Compromiso', titulo: 'Contribución a metas', preguntaCompleta: '¿Consideras que tu trabajo contribuye de manera importante a los objetivos de Grupo InMotion?' },
-    { id: 36, dimensionId: 12, dimension: 'Motivación y Compromiso', titulo: 'Permanencia a futuro', preguntaCompleta: '¿Te gustaría continuar desarrollándote y trabajando en Grupo InMotion durante los próximos años?' },
+    { id: 35, dimensionId: 12, dimension: 'Motivación y Compromiso', titulo: 'Contribución a objetivos', preguntaCompleta: '¿Consideras que tu trabajo contribuye de manera importante a los objetivos de Grupo InMotion?' },
+    { id: 36, dimensionId: 12, dimension: 'Motivación y Compromiso', titulo: 'Continuidad a futuro', preguntaCompleta: '¿Te gustaría continuar desarrollándote y trabajando en Grupo InMotion durante los próximos años?' },
     { id: 37, dimensionId: 12, dimension: 'Evaluación General', titulo: 'Satisfacción general', preguntaCompleta: 'En términos generales, ¿qué tan satisfecho/a estás trabajando en Grupo InMotion?' },
     { id: 38, dimensionId: 12, dimension: 'Evaluación General', titulo: 'Evaluación del clima global', preguntaCompleta: 'En términos generales, ¿cómo evaluarías el clima laboral de Grupo InMotion?' },
-    { id: 39, dimensionId: 12, dimension: 'Evaluación General', titulo: 'Reelección de empresa', preguntaCompleta: 'Si tuvieras la oportunidad de elegir nuevamente, ¿volverías a elegir trabajar en Grupo InMotion?' },
-    { id: 40, dimensionId: 12, dimension: 'Evaluación General', titulo: 'eNPS Recomendación', preguntaCompleta: '¿Qué tan probable es que recomiendes Grupo InMotion como lugar de trabajo a un familiar, amigo o conocido?' }
+    { id: 39, dimensionId: 12, dimension: 'Evaluación General', titulo: 'eNPS Recomendación', preguntaCompleta: '¿Qué tan probable es que recomiendes Grupo InMotion como un buen lugar para trabajar?' }
   ];
 
   totalRespuestas = 0;
@@ -274,9 +273,7 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
       const matchDepto = !this.filtroDepto || e.asesor === this.filtroDepto;
       const matchAntiguedad = !this.filtroAntiguedad || e.unidad === this.filtroAntiguedad;
       
-      const rRecom = e.respuestas?.find(r => r.preguntaId === 40)?.valorNumerico || 
-                     e.respuestas?.find(r => r.preguntaId === 18)?.valorNumerico || 
-                     e.respuestas?.find(r => r.preguntaId === 6)?.valorNumerico || 0;
+      const rRecom = e.respuestas?.find(r => r.preguntaId === 39)?.valorNumerico || 0;
       
       let matchSegmento = true;
       if (this.filtroSegmento === 'PROMOTORES') matchSegmento = rRecom === 5;
@@ -286,13 +283,9 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
       let matchDimension = true;
       if (this.filtroDimensionComentario) {
         const dimId = parseInt(this.filtroDimensionComentario, 10);
-        if (dimId === 41) matchDimension = !!this.obtenerTextoRespuesta(e, 41) || !!this.obtenerTextoRespuesta(e, 7);
-        else if (dimId === 42) matchDimension = !!this.obtenerTextoRespuesta(e, 42);
-        else if (dimId === 43) matchDimension = !!this.obtenerTextoRespuesta(e, 43) || !!this.obtenerTextoRespuesta(e, 8);
-        else if (dimId === 44) matchDimension = !!this.obtenerTextoRespuesta(e, 44);
-        else if (dimId === 45) matchDimension = !!this.obtenerTextoRespuesta(e, 45);
-        else if (dimId === 46) matchDimension = !!this.obtenerTextoRespuesta(e, 46);
-        else if (dimId === 47) matchDimension = !!this.obtenerTextoRespuesta(e, 47);
+        if ([40, 41, 42, 43, 44, 45].includes(dimId)) {
+          matchDimension = !!this.obtenerTextoRespuesta(e, dimId);
+        }
       }
 
       let matchBusqueda = true;
@@ -388,17 +381,17 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
             sumaTotal += r.valorNumerico;
             countTotal++;
 
-            if (pId === 7 || pId === 8 || pId === 9 || pId === 3) {
+            if (pId === 7 || pId === 8 || pId === 9) {
               sumaLiderazgo += r.valorNumerico;
               countLiderazgo++;
             }
 
-            if (pId === 4 || pId === 5 || pId === 6 || pId === 2) {
+            if (pId === 4 || pId === 5 || pId === 6) {
               sumaAmbiente += r.valorNumerico;
               countAmbiente++;
             }
 
-            if (pId === 40 || pId === 18 || (pId === 6 && !enc.respuestas.some(x => x.preguntaId === 40))) {
+            if (pId === 39) {
               sumaRecom += r.valorNumerico;
               countRecom++;
               if (r.valorNumerico === 5) promotores++;
@@ -513,7 +506,7 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
     let totalEncuestasConPrioridad = 0;
 
     this.encuestasFiltradas.forEach(e => {
-      const texto = this.obtenerTextoRespuesta(e, 47);
+      const texto = this.obtenerTextoRespuesta(e, 45);
       if (texto) {
         totalEncuestasConPrioridad++;
         const partes = texto.split('|').map(p => p.trim()).filter(p => p.length > 0);
@@ -552,8 +545,8 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
       let countRecon = 0;
 
       encDep.forEach(e => {
-        const rLider = e.respuestas?.filter(r => r.preguntaId !== undefined && [7, 8, 9, 3].includes(r.preguntaId));
-        const rRecon = e.respuestas?.filter(r => r.preguntaId !== undefined && [10, 11, 12, 4].includes(r.preguntaId));
+        const rLider = e.respuestas?.filter(r => r.preguntaId !== undefined && [7, 8, 9].includes(r.preguntaId));
+        const rRecon = e.respuestas?.filter(r => r.preguntaId !== undefined && [10, 11, 12].includes(r.preguntaId));
 
         rLider?.forEach(r => { if (r.valorNumerico) { sumaLider += r.valorNumerico; countLider++; } });
         rRecon?.forEach(r => { if (r.valorNumerico) { sumaRecon += r.valorNumerico; countRecon++; } });
@@ -608,18 +601,15 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
 
     this.encuestasFiltradas.forEach(enc => {
       const pos = [
-        this.obtenerTextoRespuesta(enc, 41),
-        this.obtenerTextoRespuesta(enc, 42),
-        this.obtenerTextoRespuesta(enc, 7)
+        this.obtenerTextoRespuesta(enc, 40),
+        this.obtenerTextoRespuesta(enc, 41)
       ].join(' ');
 
       const mej = [
+        this.obtenerTextoRespuesta(enc, 42),
         this.obtenerTextoRespuesta(enc, 43),
         this.obtenerTextoRespuesta(enc, 44),
-        this.obtenerTextoRespuesta(enc, 45),
-        this.obtenerTextoRespuesta(enc, 46),
-        this.obtenerTextoRespuesta(enc, 47),
-        this.obtenerTextoRespuesta(enc, 8)
+        this.obtenerTextoRespuesta(enc, 45)
       ].join(' ');
 
       this.extraerPalabras(pos).forEach(p => conteoPositivo[p] = (conteoPositivo[p] || 0) + 1);
@@ -795,7 +785,7 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
       data: {
         labels: labels,
         datasets: [{
-          label: 'Total de Votos (P47)',
+          label: 'Total de Votos (P45)',
           data: data,
           backgroundColor: '#C5A059',
           borderRadius: 6
@@ -817,7 +807,7 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
     return r?.valorTexto && r.valorTexto !== 'Sin comentarios' && r.valorTexto !== 'Sin propuestas' && r.valorTexto !== 'Sin selección' ? r.valorTexto : '';
   }
 
-exportarExcel(): void {
+  exportarExcel(): void {
     if (this.encuestasFiltradas.length === 0) {
       alert('No hay respuestas para exportar.');
       return;
@@ -831,12 +821,10 @@ exportarExcel(): void {
         'Fecha': e.fechaEnvio ? new Date(e.fechaEnvio).toLocaleDateString('es-MX') : ''
       };
 
-      // Preguntas Likert P1 a P39
       this.preguntasDefinicion.forEach(p => {
         row[`P${p.id}. ${p.preguntaCompleta}`] = e.respuestas?.find(r => r.preguntaId === p.id)?.valorNumerico || 0;
       });
 
-      // Preguntas abiertas P40 a P44 y Priorización P45
       row['P40. Lo que más valora'] = this.obtenerTextoRespuesta(e, 40);
       row['P41. Principal fortaleza'] = this.obtenerTextoRespuesta(e, 41);
       row['P42. Principal mejora sugerida'] = this.obtenerTextoRespuesta(e, 42);
@@ -900,7 +888,7 @@ exportarExcel(): void {
       ]],
       theme: 'grid',
       headStyles: { fillColor: [138, 109, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8, halign: 'center' },
-      bodyStyles: { fontSize: 7.5, halign: 'center', textColor: [33, 37, 41] },
+      bodyStyles: { fontSize: 8, halign: 'center', textColor: [33, 37, 41] },
       margin: { left: 14, right: 14 }
     });
 
@@ -925,7 +913,7 @@ exportarExcel(): void {
 
     const tablaDims = this.dimensionesCalculadas.map(d => [
       d.label,
-      `${d.promedio} / 5 ★`,
+      `${d.promedio} / 5 pts`,
       d.promedio >= 4.2 ? 'Excelente (Meta SLA)' : (d.promedio >= 3.5 ? 'Aceptable' : 'Crítico / Atención')
     ]);
 
@@ -957,12 +945,12 @@ exportarExcel(): void {
       const preguntasDeDim = this.preguntasDesglose.filter(p => dim.preguntasIds.includes(p.id));
 
       preguntasDeDim.forEach(p => {
-        const distTexto = `5★:${p.porcentajes[4]}% | 4★:${p.porcentajes[3]}% | 3★:${p.porcentajes[2]}% | 2★:${p.porcentajes[1]}% | 1★:${p.porcentajes[0]}%`;
+        const distTexto = `5: ${p.porcentajes[4]}% | 4: ${p.porcentajes[3]}% | 3: ${p.porcentajes[2]}% | 2: ${p.porcentajes[1]}% | 1: ${p.porcentajes[0]}%`;
         filasPreguntasDetalle.push([
           `P${p.id}`,
           dim.label,
           p.preguntaCompleta,
-          `${p.promedio} ★`,
+          `${p.promedio}`,
           distTexto
         ]);
       });
@@ -970,19 +958,28 @@ exportarExcel(): void {
 
     autoTable(doc, {
       startY: 22,
-      head: [['#', 'Dimensión', 'Pregunta / Reactivo Completo', 'Prom.', 'Distribución de Escala (1 a 5 ★)']],
+      head: [['#', 'Dimensión', 'Pregunta / Reactivo Completo', 'Prom.', 'Distribución (Niveles 5 al 1)']],
       body: filasPreguntasDetalle,
       theme: 'grid',
-      headStyles: { fillColor: [138, 109, 59], textColor: [255, 255, 255], fontSize: 7.5, halign: 'center' },
-      bodyStyles: { fontSize: 6.8, cellPadding: 2, textColor: [33, 37, 41] },
+      headStyles: { 
+        fillColor: [138, 109, 59], 
+        textColor: [255, 255, 255], 
+        fontSize: 7.5, 
+        halign: 'center' 
+      },
+      bodyStyles: { 
+        fontSize: 6.8, 
+        cellPadding: 2, 
+        textColor: [33, 37, 41] 
+      },
       columnStyles: {
         0: { halign: 'center', cellWidth: 10, fontStyle: 'bold' },
-        1: { cellWidth: 35, fontStyle: 'bold' },
-        2: { cellWidth: 80 },
+        1: { cellWidth: 36, fontStyle: 'bold' },
+        2: { cellWidth: 84 },
         3: { halign: 'center', cellWidth: 14, fontStyle: 'bold' },
-        4: { halign: 'center', cellWidth: 43, fontSize: 6.2 }
+        4: { halign: 'center', cellWidth: 42, fontSize: 6.2 }
       },
-      margin: { left: 14, right: 14 }
+      margin: { left: 12, right: 12 }
     });
 
     // =========================================================================
