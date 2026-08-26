@@ -817,7 +817,7 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
     return r?.valorTexto && r.valorTexto !== 'Sin comentarios' && r.valorTexto !== 'Sin propuestas' && r.valorTexto !== 'Sin selección' ? r.valorTexto : '';
   }
 
-  exportarExcel(): void {
+exportarExcel(): void {
     if (this.encuestasFiltradas.length === 0) {
       alert('No hay respuestas para exportar.');
       return;
@@ -831,17 +831,18 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
         'Fecha': e.fechaEnvio ? new Date(e.fechaEnvio).toLocaleDateString('es-MX') : ''
       };
 
+      // Preguntas Likert P1 a P39
       this.preguntasDefinicion.forEach(p => {
-        row[`P${p.id}. ${p.titulo}`] = e.respuestas?.find(r => r.preguntaId === p.id)?.valorNumerico || 0;
+        row[`P${p.id}. ${p.preguntaCompleta}`] = e.respuestas?.find(r => r.preguntaId === p.id)?.valorNumerico || 0;
       });
 
-      row['P41. Valoración'] = this.obtenerTextoRespuesta(e, 41) || this.obtenerTextoRespuesta(e, 7);
-      row['P42. Lo mejor de la empresa'] = this.obtenerTextoRespuesta(e, 42);
-      row['P43. Principal mejora'] = this.obtenerTextoRespuesta(e, 43) || this.obtenerTextoRespuesta(e, 8);
-      row['P44. Cambio deseado'] = this.obtenerTextoRespuesta(e, 44);
-      row['P45. Apoyo de líder'] = this.obtenerTextoRespuesta(e, 45);
-      row['P46. Comentario adicional'] = this.obtenerTextoRespuesta(e, 46);
-      row['P47. Prioridades'] = this.obtenerTextoRespuesta(e, 47);
+      // Preguntas abiertas P40 a P44 y Priorización P45
+      row['P40. Lo que más valora'] = this.obtenerTextoRespuesta(e, 40);
+      row['P41. Principal fortaleza'] = this.obtenerTextoRespuesta(e, 41);
+      row['P42. Principal mejora sugerida'] = this.obtenerTextoRespuesta(e, 42);
+      row['P43. Sugerencia para líder directo'] = this.obtenerTextoRespuesta(e, 43);
+      row['P44. Comentario o situación adicional'] = this.obtenerTextoRespuesta(e, 44);
+      row['P45. Aspectos prioritarios elegidos'] = this.obtenerTextoRespuesta(e, 45);
 
       return row;
     });
@@ -849,7 +850,7 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Clima_Laboral_2026');
-    XLSX.writeFile(wb, `clima_laboral_inmotion_47p_${new Date().toISOString().split('T')[0]}.xlsx`);
+    XLSX.writeFile(wb, `clima_laboral_inmotion_completo_${new Date().toISOString().split('T')[0]}.xlsx`);
   }
 
   exportarPDF(): void {
@@ -861,33 +862,34 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
 
-    // 1. Encabezado
+    // ==========================================
+    // PÁGINA 1: RESUMEN EJECUTIVO Y GRÁFICAS
+    // ==========================================
     doc.setFillColor(31, 31, 31);
     doc.rect(0, 0, pageWidth, 24, 'F');
     doc.setFillColor(138, 109, 59);
     doc.rect(0, 24, pageWidth, 2, 'F');
 
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
+    doc.setFontSize(13);
     doc.setTextColor(255, 255, 255);
-    doc.text('GRUPO INMOTION | REPORTE DE CLIMA LABORAL 2026', 14, 15);
+    doc.text('GRUPO INMOTION | REPORTE EJECUTIVO CLIMA LABORAL 2026', 14, 15);
 
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(200, 200, 200);
     doc.text(`Generado: ${new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' })}`, pageWidth - 14, 15, { align: 'right' });
 
-    // 2. Filtros y Resumen
     let yPos = 34;
-    doc.setFontSize(9);
+    doc.setFontSize(8.5);
     doc.setTextColor(60, 60, 60);
-    const filtroTxt = `Filtros: [Agencia: ${this.filtroAgencia || 'Todas'}] [Area: ${this.filtroDepto || 'Todas'}] [Antiguedad: ${this.filtroAntiguedad || 'Todas'}] [Segmento: ${this.filtroSegmento || 'Todos'}]`;
+    const filtroTxt = `Filtros: [Agencia: ${this.filtroAgencia || 'Todas'}] [Área: ${this.filtroDepto || 'Todas'}] [Antigüedad: ${this.filtroAntiguedad || 'Todas'}] [Segmento: ${this.filtroSegmento || 'Todos'}]`;
     doc.text(filtroTxt, 14, yPos);
 
-    yPos += 6;
+    yPos += 5;
     autoTable(doc, {
       startY: yPos,
-      head: [['Muestra Evaluada', 'Indice General', 'Salud Cultural', 'eNPS Score', 'Top Fortaleza', 'Foco Rojo']],
+      head: [['Muestra Evaluada', 'Índice General', 'Salud Cultural', 'eNPS Score', 'Top Fortaleza', 'Foco Rojo']],
       body: [[
         `${this.totalRespuestas} Colaboradores`,
         `${this.promedioGlobal} / 5`,
@@ -898,56 +900,96 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
       ]],
       theme: 'grid',
       headStyles: { fillColor: [138, 109, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8, halign: 'center' },
-      bodyStyles: { fontSize: 8, halign: 'center', textColor: [33, 37, 41] },
+      bodyStyles: { fontSize: 7.5, halign: 'center', textColor: [33, 37, 41] },
       margin: { left: 14, right: 14 }
     });
 
-    yPos = (doc as any).lastAutoTable.finalY + 8;
-
-    // 3. Gráficas
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(31, 31, 31);
-    doc.text('ANALISIS GRAFICO: SUCURSALES Y DIMENSIONES', 14, yPos);
-    yPos += 4;
+    yPos = (doc as any).lastAutoTable.finalY + 7;
 
     try {
       if (this.canvasAgencias && this.canvasDimensiones) {
         const imgAgencias = this.canvasAgencias.nativeElement.toDataURL('image/png', 1.0);
         const imgDimensiones = this.canvasDimensiones.nativeElement.toDataURL('image/png', 1.0);
         const imgWidth = 88;
-        const imgHeight = 52;
+        const imgHeight = 48;
         doc.addImage(imgAgencias, 'PNG', 14, yPos, imgWidth, imgHeight);
         doc.addImage(imgDimensiones, 'PNG', 108, yPos, imgWidth, imgHeight);
-        yPos += imgHeight + 8;
+        yPos += imgHeight + 7;
       }
     } catch (e) {}
 
-    // 4. Tabla Resumen por las 12 Dimensiones
-    doc.setFontSize(10);
+    doc.setFontSize(9.5);
     doc.setFont('helvetica', 'bold');
-    doc.text('EVALUACION POR DIMENSIONES CORPORATIVAS', 14, yPos);
+    doc.setTextColor(31, 31, 31);
+    doc.text('EVALUACIÓN RESUMEN POR DIMENSIONES CORPORATIVAS', 14, yPos);
 
     const tablaDims = this.dimensionesCalculadas.map(d => [
       d.label,
       `${d.promedio} / 5 ★`,
-      d.promedio >= 4.2 ? 'Excelente' : (d.promedio >= 3.5 ? 'Aceptable' : 'Critico')
+      d.promedio >= 4.2 ? 'Excelente (Meta SLA)' : (d.promedio >= 3.5 ? 'Aceptable' : 'Crítico / Atención')
     ]);
 
     autoTable(doc, {
       startY: yPos + 3,
-      head: [['Dimension Psicometrica', 'Promedio General', 'Estado SLA']],
+      head: [['Dimensión Psicométrica', 'Promedio General', 'Estado SLA']],
       body: tablaDims,
       theme: 'grid',
       headStyles: { fillColor: [31, 31, 31], textColor: [255, 255, 255], fontSize: 7.5, halign: 'center' },
-      bodyStyles: { fontSize: 7.5, halign: 'center' },
-      columnStyles: { 0: { halign: 'left', cellWidth: 90 } },
+      bodyStyles: { fontSize: 7.2, halign: 'center' },
+      columnStyles: { 0: { halign: 'left', cellWidth: 95 } },
       margin: { left: 14, right: 14 }
     });
 
-    // 5. Sección Cualitativa (Página 2)
+    // =========================================================================
+    // PÁGINA 2: AUDITORÍA DETALLADA DE REACTIVOS INDIVIDUALES (P1 a P39)
+    // =========================================================================
+    doc.addPage();
+    doc.setFillColor(31, 31, 31);
+    doc.rect(0, 0, pageWidth, 16, 'F');
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text('GRUPO INMOTION | DESGLOSE Y AUDITORÍA POR PREGUNTA (P1 A P39)', 14, 11);
+
+    const filasPreguntasDetalle: any[] = [];
+
+    this.dimensionesCalculadas.forEach(dim => {
+      const preguntasDeDim = this.preguntasDesglose.filter(p => dim.preguntasIds.includes(p.id));
+
+      preguntasDeDim.forEach(p => {
+        const distTexto = `5★:${p.porcentajes[4]}% | 4★:${p.porcentajes[3]}% | 3★:${p.porcentajes[2]}% | 2★:${p.porcentajes[1]}% | 1★:${p.porcentajes[0]}%`;
+        filasPreguntasDetalle.push([
+          `P${p.id}`,
+          dim.label,
+          p.preguntaCompleta,
+          `${p.promedio} ★`,
+          distTexto
+        ]);
+      });
+    });
+
+    autoTable(doc, {
+      startY: 22,
+      head: [['#', 'Dimensión', 'Pregunta / Reactivo Completo', 'Prom.', 'Distribución de Escala (1 a 5 ★)']],
+      body: filasPreguntasDetalle,
+      theme: 'grid',
+      headStyles: { fillColor: [138, 109, 59], textColor: [255, 255, 255], fontSize: 7.5, halign: 'center' },
+      bodyStyles: { fontSize: 6.8, cellPadding: 2, textColor: [33, 37, 41] },
+      columnStyles: {
+        0: { halign: 'center', cellWidth: 10, fontStyle: 'bold' },
+        1: { cellWidth: 35, fontStyle: 'bold' },
+        2: { cellWidth: 80 },
+        3: { halign: 'center', cellWidth: 14, fontStyle: 'bold' },
+        4: { halign: 'center', cellWidth: 43, fontSize: 6.2 }
+      },
+      margin: { left: 14, right: 14 }
+    });
+
+    // =========================================================================
+    // PÁGINA 3: PREGUNTAS ABIERTAS (P40 A P44) Y PRIORIZACIÓN (P45)
+    // =========================================================================
     const comentariosConTexto = this.encuestasFiltradas.filter(
-      e => [41, 42, 43, 44, 45, 46, 47, 7, 8].some(id => this.obtenerTextoRespuesta(e, id))
+      e => [40, 41, 42, 43, 44, 45].some(id => this.obtenerTextoRespuesta(e, id))
     );
 
     if (comentariosConTexto.length > 0) {
@@ -957,32 +999,46 @@ export class DashboardClimaComponent implements OnInit, AfterViewInit {
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
-      doc.text('GRUPO INMOTION | RETROALIMENTACION Y PROPUESTAS DE COLABORADORES', 14, 11);
+      doc.text('GRUPO INMOTION | RETROALIMENTACIÓN CUALITATIVA Y PRIORIZACIÓN', 14, 11);
 
       const comentariosData = comentariosConTexto.map(e => {
-        const val = this.obtenerTextoRespuesta(e, 41) || this.obtenerTextoRespuesta(e, 7) || 'N/A';
-        const mej = this.obtenerTextoRespuesta(e, 43) || this.obtenerTextoRespuesta(e, 8) || 'N/A';
-        const prior = this.obtenerTextoRespuesta(e, 47) || 'N/A';
+        const p40 = this.obtenerTextoRespuesta(e, 40) || 'N/A';
+        const p41 = this.obtenerTextoRespuesta(e, 41) || 'N/A';
+        const p42 = this.obtenerTextoRespuesta(e, 42) || 'N/A';
+        const p43 = this.obtenerTextoRespuesta(e, 43) || 'N/A';
+        const p44 = this.obtenerTextoRespuesta(e, 44) || 'N/A';
+        const p45 = this.obtenerTextoRespuesta(e, 45) || 'Sin selección';
+
+        const textoCualitativo = 
+          `• P40. Lo más valorado: ${p40}\n` +
+          `• P41. Fortaleza: ${p41}\n` +
+          `• P42. Mejora sugerida: ${p42}\n` +
+          `• P43. Apoyo del líder: ${p43}\n` +
+          (p44 !== 'N/A' ? `• P44. Comentario adicional: ${p44}\n` : '');
 
         return [
-          `${this.obtenerAgenciaEncuesta(e)}\n(${e.asesor || 'Area general'})`,
-          `Positivo:\n${val}\n\nMejora Sugerida:\n${mej}`,
-          `Prioridades seleccionadas:\n${prior}`
+          `${this.obtenerAgenciaEncuesta(e)}\n(${e.asesor || 'Área general'})\n[${e.unidad || 'Antigüedad'}]`,
+          textoCualitativo.trim(),
+          `Prioridades elegidas (P45):\n${p45}`
         ];
       });
 
       autoTable(doc, {
-        startY: 24,
-        head: [['Agencia / Area', 'Comentarios Abiertos (Positivos y Oportunidades)', 'Priorizacion']],
+        startY: 22,
+        head: [['Agencia / Área / Trayectoria', 'Respuestas Cualitativas (P40 a P44)', 'Prioridades de Inversión (P45)']],
         body: comentariosData,
         theme: 'grid',
-        headStyles: { fillColor: [138, 109, 59], textColor: [255, 255, 255], fontSize: 8 },
-        bodyStyles: { fontSize: 7.5, cellPadding: 3, textColor: [33, 37, 41] },
-        columnStyles: { 0: { cellWidth: 40, fontStyle: 'bold' }, 1: { cellWidth: 85 }, 2: { cellWidth: 55 } },
+        headStyles: { fillColor: [138, 109, 59], textColor: [255, 255, 255], fontSize: 7.5 },
+        bodyStyles: { fontSize: 6.8, cellPadding: 2.5, textColor: [33, 37, 41] },
+        columnStyles: { 
+          0: { cellWidth: 42, fontStyle: 'bold' }, 
+          1: { cellWidth: 88 }, 
+          2: { cellWidth: 52 } 
+        },
         margin: { left: 14, right: 14 }
       });
     }
 
-    doc.save(`reporte_ejecutivo_clima_47p_${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`reporte_clima_laboral_inmotion_${new Date().toISOString().split('T')[0]}.pdf`);
   }
 }
