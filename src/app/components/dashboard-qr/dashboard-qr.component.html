@@ -4,9 +4,12 @@
     <div>
       <div class="d-flex align-items-center gap-3 flex-wrap">
         <h1>CXI QR</h1>
+        <span class="badge-periodo">
+          {{ filtroMesSeleccionado ? ('Mes: ' + filtroMesSeleccionado) : 'Histórico General' }}
+        </span>
       </div>
       <p class="header-subtitle mt-1 mb-0" style="font-size:0.9rem;">
-        Módulo independiente de atención y satisfacción de clientes por código QR
+        Módulo independiente de atención y satisfacción de clientes por código QR segmentado por mes
       </p>
     </div>
     <div class="header-actions">
@@ -15,6 +18,52 @@
       </button>
       <button class="btn-pdf" (click)="exportarPDF()">
         <i class="fas fa-file-pdf me-1"></i> PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- CALENDARIO Y SEGMENTACIÓN POR MES -->
+  <div class="calendario-meses-container mb-3">
+    <div class="calendario-header-bar">
+      <span class="calendario-label">
+        <i class="fas fa-calendar-alt text-gold me-2"></i>Filtrar por Mes:
+      </span>
+
+      <div class="input-calendario-wrapper">
+        <input 
+          type="month" 
+          class="input-calendario-mes" 
+          [(ngModel)]="filtroMesSeleccionado" 
+          (change)="aplicarFiltros()" 
+          title="Selecciona año y mes específico" />
+        <button 
+          *ngIf="filtroMesSeleccionado" 
+          type="button" 
+          class="btn-limpiar-mes" 
+          (click)="limpiarFiltroMes()" 
+          title="Ver todos los meses">
+          <i class="fas fa-times me-1"></i> Ver Todo
+        </button>
+      </div>
+    </div>
+
+    <!-- Píldoras de Acceso Rápido por Meses -->
+    <div class="pills-meses-grid" *ngIf="mesesDisponibles.length > 0">
+      <button 
+        type="button" 
+        class="pill-mes-item" 
+        [class.active]="filtroMesSeleccionado === ''" 
+        (click)="limpiarFiltroMes()">
+        Histórico General ({{ encuestasQr.length }})
+      </button>
+
+      <button 
+        type="button" 
+        *ngFor="let m of mesesDisponibles" 
+        class="pill-mes-item" 
+        [class.active]="filtroMesSeleccionado === m.valor" 
+        (click)="seleccionarMesRapido(m.valor)">
+        {{ m.etiqueta }} ({{ m.conteo }})
       </button>
     </div>
   </div>
@@ -113,7 +162,7 @@
       </div>
     </div>
 
-    <!-- TABLA DE DESEMPEÑO COMPARATIVO POR SUCURSAL CORREGIDA -->
+    <!-- TABLA DE DESEMPEÑO COMPARATIVO POR SUCURSAL -->
     <div class="grafico-card">
       <h3 class="grafico-title">
         <span class="title-icon"><i class="fas fa-trophy me-1"></i></span> Métricas de Desempeño por Sucursal
@@ -144,7 +193,7 @@
               </td>
             </tr>
             <tr *ngIf="resumenAgencias.length === 0">
-              <td colspan="5" class="sin-encuestas">Sin datos disponibles.</td>
+              <td colspan="5" class="sin-encuestas">Sin datos disponibles en este período.</td>
             </tr>
           </tbody>
         </table>
@@ -153,7 +202,7 @@
 
   </div>
 
-  <!-- SECCIÓN 3: TABLA DETALLADA DE ENCUESTAS QR (ENTERPRISE) -->
+  <!-- SECCIÓN 3: TABLA DETALLADA DE ENCUESTAS QR -->
   <div class="encuestas-recientes mt-4">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
       <h2 class="marcas-title mb-0">
@@ -265,7 +314,7 @@
 
           <tr *ngIf="encuestasTablaFiltradas.length === 0">
             <td colspan="8" class="text-center py-4" style="color: #888888; font-style: italic;">
-              No se encontraron coincidencias para la búsqueda.
+              No se encontraron coincidencias para la búsqueda o el período seleccionado.
             </td>
           </tr>
         </tbody>

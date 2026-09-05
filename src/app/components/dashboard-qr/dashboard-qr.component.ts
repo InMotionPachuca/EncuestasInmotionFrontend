@@ -27,6 +27,10 @@ export class DashboardQrComponent implements OnInit, AfterViewInit {
   filtroMarca: string = '';
   filtroTextoTabla: string = '';
 
+  // CALENDARIO Y SEGMENTACIÓN POR MES
+  filtroMesSeleccionado: string = '';
+  mesesDisponibles: { valor: string; etiqueta: string; conteo: number }[] = [];
+
   // Métricas Principales
   totalRespuestas: number = 0;
   promedioExperiencia: number = 0;
@@ -72,6 +76,7 @@ export class DashboardQrComponent implements OnInit, AfterViewInit {
     this.encuestaService.listarEncuestas().subscribe({
       next: (data: Encuesta[]) => {
         this.encuestasQr = (data || []).filter(e => e.tipo === 'QR' || e.serie === 'QR-GENERAL');
+        this.generarMesesDisponibles();
         this.aplicarFiltros();
         this.loading = false;
       },
@@ -82,6 +87,48 @@ export class DashboardQrComponent implements OnInit, AfterViewInit {
     });
   }
 
+  generarMesesDisponibles(): void {
+    const mapaMeses = new Map<string, number>();
+
+    this.encuestasQr.forEach(enc => {
+      const fechaBase = enc.fechaRespuesta || enc.fechaEnvio;
+      if (fechaBase) {
+        const fecha = new Date(fechaBase);
+        if (!isNaN(fecha.getTime())) {
+          const key = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+          mapaMeses.set(key, (mapaMeses.get(key) || 0) + 1);
+        }
+      }
+    });
+
+    const mesesNombres = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    this.mesesDisponibles = Array.from(mapaMeses.entries())
+      .map(([valor, conteo]) => {
+        const [anio, mesNum] = valor.split('-');
+        const nombreMes = mesesNombres[parseInt(mesNum, 10) - 1];
+        return {
+          valor,
+          etiqueta: `${nombreMes} ${anio}`,
+          conteo
+        };
+      })
+      .sort((a, b) => b.valor.localeCompare(a.valor));
+  }
+
+  seleccionarMesRapido(mesValor: string): void {
+    this.filtroMesSeleccionado = mesValor;
+    this.aplicarFiltros();
+  }
+
+  limpiarFiltroMes(): void {
+    this.filtroMesSeleccionado = '';
+    this.aplicarFiltros();
+  }
+
   obtenerTelefono(e: Encuesta): string {
     const enc = e as any;
     return enc.clienteTelefono || enc.telefono || 'Sin teléfono';
@@ -90,7 +137,20 @@ export class DashboardQrComponent implements OnInit, AfterViewInit {
   aplicarFiltros(): void {
     this.encuestasFiltradas = this.encuestasQr.filter(enc => {
       const matchMarca = !this.filtroMarca || enc.marcaId?.toString() === this.filtroMarca;
-      return matchMarca;
+
+      let matchMes = true;
+      if (this.filtroMesSeleccionado) {
+        const fechaBase = enc.fechaRespuesta || enc.fechaEnvio;
+        if (fechaBase) {
+          const fecha = new Date(fechaBase);
+          if (!isNaN(fecha.getTime())) {
+            const mesEncuesta = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+            matchMes = mesEncuesta === this.filtroMesSeleccionado;
+          }
+        }
+      }
+
+      return matchMarca && matchMes;
     });
 
     // Filtro para el buscador de la tabla detallada
@@ -184,7 +244,6 @@ export class DashboardQrComponent implements OnInit, AfterViewInit {
         item.sumaExp += e.respuestas.find(r => r.preguntaId === 2)?.valorNumerico || 0;
         item.sumaAtencion += e.respuestas.find(r => r.preguntaId === 3)?.valorNumerico || 0;
 
-        // Evaluación robusta para Recomendación (Pregunta 5)
         const respRec = e.respuestas.find(r => r.preguntaId === 5);
         if (respRec) {
           const esSi = respRec.opcionId === 1 || 
@@ -228,7 +287,7 @@ export class DashboardQrComponent implements OnInit, AfterViewInit {
 
     const ctx = this.graficoCanvas.nativeElement.getContext('2d');
     const marcasConConteo = this.marcas.map(m => {
-      const total = this.encuestasQr.filter(e => e.marcaId === m.id).length;
+      const total = this.encuestasFiltradas.filter(e => e.marcaId === m.id).length;
       return { nombre: m.nombre, total };
     });
 
@@ -350,7 +409,8 @@ export class DashboardQrComponent implements OnInit, AfterViewInit {
     doc.setFontSize(10);
     doc.setTextColor(100);
     doc.text(`Fecha de emisión: ${new Date().toLocaleString('es-MX')}`, 14, 28);
-    doc.text(`Total Respuestas: ${this.totalRespuestas} | Exp. Promedio: ${this.promedioExperiencia}/5 | Atención: ${this.promedioAtencion}/5 | NPS Score: ${this.npsData.score}`, 14, 34);
+    const periodoTexto = this.filtroMesSeleccionado ? `Mes filtrado: ${this.filtroMesSeleccionado}` : 'Período: Histórico General';
+    doc.text(`${periodoTexto} | Total Respuestas: ${this.totalRespuestas} | Exp. Promedio: ${this.promedioExperiencia}/5 | Atención: ${this.promedioAtencion}/5 | NPS Score: ${this.npsData.score}`, 14, 34);
 
     const tableData = this.encuestasFiltradas.map(enc => [
       this.obtenerRespuestaTexto(enc, 1),

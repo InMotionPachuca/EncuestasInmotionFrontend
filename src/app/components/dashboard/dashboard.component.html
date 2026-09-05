@@ -7,11 +7,11 @@
       <div class="d-flex align-items-center gap-3 flex-wrap">
         <h1>CXI</h1>
         <span class="badge-periodo">
-          {{ periodo === 'todos' ? 'Todos los períodos' : periodo }}
+          {{ filtroMesSeleccionado ? ('Mes: ' + filtroMesSeleccionado) : (periodo === 'todos' ? 'Todos los períodos' : periodo) }}
         </span>
       </div>
       <p class="header-subtitle mt-1 mb-0">
-        Control de encuestas y estadísticas segmentadas por Postventa y Ventas
+        Control de encuestas y estadísticas segmentadas por Postventa, Ventas y Mes de Operación
       </p>
     </div>
     <div class="header-actions">
@@ -27,29 +27,76 @@
     </div>
   </div>
 
+  <!-- CALENDARIO Y SEGMENTACIÓN POR MES -->
+  <div class="calendario-meses-container mb-3">
+    <div class="calendario-header-bar">
+      <span class="calendario-label">
+        <i class="fas fa-calendar-alt text-gold me-2"></i>Filtrar por Mes:
+      </span>
+
+      <!-- Selector tipo Calendario HTML5 -->
+      <div class="input-calendario-wrapper">
+        <input 
+          type="month" 
+          class="input-calendario-mes" 
+          [(ngModel)]="filtroMesSeleccionado" 
+          (change)="aplicarFiltros()" 
+          title="Selecciona año y mes específico" />
+        <button 
+          *ngIf="filtroMesSeleccionado" 
+          type="button" 
+          class="btn-limpiar-mes" 
+          (click)="limpiarFiltroMes()" 
+          title="Ver todos los meses">
+          <i class="fas fa-times me-1"></i> Ver Todo
+        </button>
+      </div>
+    </div>
+
+    <!-- Píldoras de Acceso Rápido por Meses con Datos -->
+    <div class="pills-meses-grid" *ngIf="mesesDisponibles.length > 0">
+      <button 
+        type="button" 
+        class="pill-mes-item" 
+        [class.active]="filtroMesSeleccionado === ''" 
+        (click)="limpiarFiltroMes()">
+        Histórico General ({{ conteoTotal }})
+      </button>
+
+      <button 
+        type="button" 
+        *ngFor="let m of mesesDisponibles" 
+        class="pill-mes-item" 
+        [class.active]="filtroMesSeleccionado === m.valor" 
+        (click)="seleccionarMesRapido(m.valor)">
+        {{ m.etiqueta }} ({{ m.conteo }})
+      </button>
+    </div>
+  </div>
+
   <!-- SEGMENTACIÓN OPERATIVA: POSTVENTA VS VENTAS -->
   <div class="segmento-tipo-container mb-3 d-flex align-items-center gap-2 flex-wrap">
     <span class="segmento-label"><i class="fas fa-filter me-1 text-gold"></i> Segmento Operativo:</span>
 
     <button type="button" class="btn-segmento" [class.active]="filtroTipo === ''" (click)="cambiarFiltroTipo('')">
-      <i class="fas fa-layer-group me-1"></i> Todas las Áreas ({{ conteoTotal }})
+      <i class="fas fa-layer-group me-1"></i> Todas las Áreas ({{ estadisticas.total }})
     </button>
 
     <button type="button" class="btn-segmento" [class.active]="filtroTipo === 'SERVICIO'" (click)="cambiarFiltroTipo('SERVICIO')">
-      <i class="fas fa-tools me-1"></i> Postventa / Servicio ({{ conteoServicio }})
+      <i class="fas fa-tools me-1"></i> Postventa / Servicio
     </button>
 
     <button type="button" class="btn-segmento" [class.active]="filtroTipo === 'VENTA'" (click)="cambiarFiltroTipo('VENTA')">
-      <i class="fas fa-car me-1"></i> Ventas / Nuevos ({{ conteoVenta }})
+      <i class="fas fa-car me-1"></i> Ventas / Nuevos
     </button>
   </div>
 
-  <!-- FILTROS SECUNDARIOS DE PERÍODO Y MARCA -->
+  <!-- FILTROS SECUNDARIOS DE PERÍODO RELATIVO, MARCA Y ESTADO -->
   <div class="filtros-container">
     <div class="filtros-left">
-      <span class="filtros-label">Período:</span>
+      <span class="filtros-label">Rango Rápido:</span>
       <div class="filtros-buttons">
-        <button *ngFor="let p of periodos" (click)="filtrarPorPeriodo(p.value)" [class.active]="periodo === p.value" class="btn-filtro">
+        <button *ngFor="let p of periodos" (click)="filtrarPorPeriodo(p.value)" [class.active]="periodo === p.value && !filtroMesSeleccionado" class="btn-filtro">
           {{ p.label }}
         </button>
       </div>
@@ -241,7 +288,7 @@
             </td>
           </tr>
           <tr *ngIf="encuestasRecientes.length === 0">
-            <td colspan="7" class="sin-encuestas">No hay encuestas disponibles en este segmento</td>
+            <td colspan="7" class="sin-encuestas">No hay encuestas disponibles en este período o segmento seleccionado</td>
           </tr>
         </tbody>
       </table>

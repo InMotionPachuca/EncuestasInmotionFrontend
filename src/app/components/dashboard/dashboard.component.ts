@@ -25,11 +25,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   marcas: any[] = [];
   marcasFiltradas: any[] = [];
 
-  // FILTROS
+  // FILTROS OPERATIVOS
   filtroTipo: 'SERVICIO' | 'VENTA' | '' = '';
   filtroMarca = '';
   filtroEstado = '';
   periodo: 'hoy' | 'semana' | 'mes' | 'todos' = 'todos';
+
+  // CALENDARIO Y SEGMENTACIÓN POR MES
+  filtroMesSeleccionado: string = '';
+  mesesDisponibles: { valor: string; etiqueta: string; conteo: number }[] = [];
 
   estadisticas: EstadisticasGenerales = {
     total: 0,
@@ -56,8 +60,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   periodos: { value: 'hoy' | 'semana' | 'mes' | 'todos'; label: string }[] = [
     { value: 'hoy', label: 'Hoy' },
     { value: 'semana', label: 'Semana' },
-    { value: 'mes', label: 'Mes' },
-    { value: 'todos', label: 'Todos' }
+    { value: 'mes', label: 'Últimos 30 días' },
+    { value: 'todos', label: 'Histórico' }
   ];
 
   npsData = {
@@ -140,6 +144,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           e.tipo !== 'CLIMA_LABORAL' &&
           e.serie !== 'CLIMA-LABORAL-2026'
         );
+        this.generarMesesDisponibles();
         this.aplicarFiltroPeriodo();
         this.loading = false;
       },
@@ -148,6 +153,48 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.loading = false;
       }
     });
+  }
+
+  generarMesesDisponibles(): void {
+    const mapaMeses = new Map<string, number>();
+
+    this.encuestas.forEach(enc => {
+      if (enc.fechaEnvio) {
+        const fecha = new Date(enc.fechaEnvio);
+        if (!isNaN(fecha.getTime())) {
+          const key = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+          mapaMeses.set(key, (mapaMeses.get(key) || 0) + 1);
+        }
+      }
+    });
+
+    const mesesNombres = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    this.mesesDisponibles = Array.from(mapaMeses.entries())
+      .map(([valor, conteo]) => {
+        const [anio, mesNum] = valor.split('-');
+        const nombreMes = mesesNombres[parseInt(mesNum, 10) - 1];
+        return {
+          valor,
+          etiqueta: `${nombreMes} ${anio}`,
+          conteo
+        };
+      })
+      .sort((a, b) => b.valor.localeCompare(a.valor));
+  }
+
+  seleccionarMesRapido(mesValor: string): void {
+    this.filtroMesSeleccionado = mesValor;
+    this.periodo = 'todos';
+    this.aplicarFiltros();
+  }
+
+  limpiarFiltroMes(): void {
+    this.filtroMesSeleccionado = '';
+    this.aplicarFiltros();
   }
 
   cambiarFiltroTipo(tipo: 'SERVICIO' | 'VENTA' | ''): void {
@@ -242,7 +289,33 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       const matchMarca = !this.filtroMarca || enc.marcaId?.toString() === this.filtroMarca;
       const matchEstado = !this.filtroEstado || enc.estado === this.filtroEstado;
 
-      return matchTipo && matchMarca && matchEstado;
+      let matchMes = true;
+      if (this.filtroMesSeleccionado && enc.fechaEnvio) {
+        const fecha = new Date(enc.fechaEnvio);
+        if (!isNaN(fecha.getTime())) {
+          const mesEncuesta = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+          matchMes = mesEncuesta === this.filtroMesSeleccionado;
+        }
+      }
+
+      let matchPeriodo = true;
+      if (!this.filtroMesSeleccionado && this.periodo !== 'todos' && enc.fechaEnvio) {
+        const hoy = new Date();
+        const fechaEnc = new Date(enc.fechaEnvio);
+        if (this.periodo === 'hoy') {
+          matchPeriodo = fechaEnc.toDateString() === hoy.toDateString();
+        } else if (this.periodo === 'semana') {
+          const haceUnaSemana = new Date(hoy);
+          haceUnaSemana.setDate(hoy.getDate() - 7);
+          matchPeriodo = fechaEnc >= haceUnaSemana;
+        } else if (this.periodo === 'mes') {
+          const haceUnMes = new Date(hoy);
+          haceUnMes.setMonth(hoy.getMonth() - 1);
+          matchPeriodo = fechaEnc >= haceUnMes;
+        }
+      }
+
+      return matchTipo && matchMarca && matchEstado && matchMes && matchPeriodo;
     });
 
     this.encuestasRecientes = this.encuestasFiltradas.slice(0, 10);
@@ -265,38 +338,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   aplicarFiltroPeriodo() {
-    const hoy = new Date();
-    let fechaInicio = new Date();
-
-    switch (this.periodo) {
-      case 'hoy':
-        fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-        break;
-      case 'semana':
-        fechaInicio = new Date(hoy);
-        fechaInicio.setDate(hoy.getDate() - 7);
-        break;
-      case 'mes':
-        fechaInicio = new Date(hoy);
-        fechaInicio.setMonth(hoy.getMonth() - 1);
-        break;
-      case 'todos':
-      default:
-        fechaInicio = new Date(0);
-        break;
-    }
-
-    this.encuestasFiltradas = this.encuestas.filter(enc => {
-      const fechaEnc = new Date(enc.fechaEnvio);
-      return fechaEnc >= fechaInicio;
-    });
-
     this.aplicarFiltros();
   }
 
   filtrarPorPeriodo(periodo: 'hoy' | 'semana' | 'mes' | 'todos') {
     this.periodo = periodo;
-    this.aplicarFiltroPeriodo();
+    this.filtroMesSeleccionado = '';
+    this.aplicarFiltros();
   }
 
   crearGraficoMarcas() {

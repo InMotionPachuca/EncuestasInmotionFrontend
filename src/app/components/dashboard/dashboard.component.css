@@ -122,6 +122,114 @@
   100% { transform: rotate(360deg); }
 }
 
+/* =======================================================
+   MÓDULO CALENDARIO Y SEGMENTACIÓN POR MES
+   ======================================================= */
+.calendario-meses-container {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 16px 20px;
+  border: 1px solid #E9ECEF;
+  border-top: 4px solid #C5A059;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.calendario-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.calendario-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1F1F1F;
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  align-items: center;
+}
+
+.input-calendario-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.input-calendario-mes {
+  padding: 7px 14px;
+  border: 1px solid #CED4DA;
+  border-radius: 8px;
+  background-color: #F8F9FA;
+  color: #212529;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-calendario-mes:focus {
+  border-color: #C5A059;
+  box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.18);
+  background-color: #FFFFFF;
+}
+
+.btn-limpiar-mes {
+  padding: 7px 12px;
+  background: #F8F9FA;
+  border: 1px solid #CED4DA;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6C757D;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-limpiar-mes:hover {
+  background: #E9ECEF;
+  color: #212529;
+}
+
+.pills-meses-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.pill-mes-item {
+  background: #F8F9FA;
+  border: 1px solid #CED4DA;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.pill-mes-item:hover {
+  background: #FDF8ED;
+  border-color: #C5A059;
+  color: #C5A059;
+}
+
+.pill-mes-item.active {
+  background: #1F1F1F;
+  border-color: #C5A059;
+  color: #E0C283;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
 /* BOTONES DE SEGMENTO OPERATIVO */
 .segmento-tipo-container {
   background: white;
@@ -673,4 +781,5 @@
 @media (max-width: 768px) {
   .segmento-tipo-container { flex-direction: column; align-items: flex-start; }
   .btn-segmento { width: 100%; }
+  .calendario-header-bar { flex-direction: column; align-items: flex-start; }
 }
