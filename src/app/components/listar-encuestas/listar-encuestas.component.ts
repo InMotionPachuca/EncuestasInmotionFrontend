@@ -272,6 +272,15 @@ export class ListarEncuestasComponent implements OnInit {
     return e.clienteTelefono || e.telefono || 'Sin teléfono';
   }
 
+  limpiarNumeroTelefono(telefono: string): string {
+    if (!telefono) return '';
+    let limpio = telefono.replace(/\D/g, '');
+    if (limpio.length === 10) {
+      limpio = '52' + limpio;
+    }
+    return limpio;
+  }
+
   obtenerRespuestaTexto(encuesta: Encuesta, preguntaId: number): string {
     const resp = encuesta.respuestas?.find(r => r.preguntaId === preguntaId);
     if (!resp) return '-';
@@ -347,6 +356,19 @@ export class ListarEncuestasComponent implements OnInit {
     return plantilla;
   }
 
+  // ENVÍO DIRECTO A WHATSAPP WEB
+  enviarWhatsApp(encuesta: any) {
+    const telefono = this.limpiarNumeroTelefono(this.obtenerTelefono(encuesta));
+    if (!telefono || telefono === '0000000000') {
+      this.notificationService.show('El cliente no tiene un número telefónico válido', 'warning');
+      return;
+    }
+
+    const mensaje = encodeURIComponent(this.generarPlantilla(encuesta));
+    const url = `https://api.whatsapp.com/send?phone=${telefono}&text=${mensaje}`;
+    window.open(url, '_blank');
+  }
+
   verDetallesYPlantilla(encuesta: Encuesta) {
     this.encuestaSeleccionada = encuesta;
     this.plantillaActual = this.generarPlantilla(encuesta);
@@ -370,11 +392,6 @@ export class ListarEncuestasComponent implements OnInit {
     this.encuestaSeleccionada = null;
   }
 
-  copiarPlantilla(plantilla: string) {
-    navigator.clipboard.writeText(plantilla);
-    this.notificationService.show('Plantilla de texto copiada al portapapeles', 'success');
-  }
-
   async copiarImagen(imagenUrl: string) {
     try {
       const imageBlob = await new Promise<Blob>((resolve, reject) => {
@@ -396,7 +413,7 @@ export class ListarEncuestasComponent implements OnInit {
 
       const clipboardItem = new ClipboardItem({ 'image/png': imageBlob });
       await navigator.clipboard.write([clipboardItem]);
-      this.notificationService.show('Imagen copiada. Lista para pegar en WhatsApp', 'success');
+      this.notificationService.show('Imagen copiada al portapapeles', 'success');
     } catch (error) {
       this.notificationService.show('No se pudo copiar la imagen al portapapeles', 'error');
     }

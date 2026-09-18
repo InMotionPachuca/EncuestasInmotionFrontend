@@ -231,8 +231,9 @@
   flex-wrap: nowrap;
   white-space: nowrap;
 }
+
 .btn-sm {
-  height: 32px; /* Misma altura exacta para todos */
+  height: 32px;
   padding: 0 12px;
   border-radius: 6px;
   font-size: 0.78rem;
@@ -247,10 +248,24 @@
   box-sizing: border-box;
 }
 
+/* BOTÓN DIRECTO DE WHATSAPP EN LA TABLA */
+.btn-whatsapp-directo {
+  background-color: #25D366;
+  border: 1px solid #20BD5A;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.btn-whatsapp-directo:hover {
+  background-color: #20BD5A;
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.35);
+  transform: translateY(-1px);
+}
+
 .btn-ver { background: #C5A059; color: white; border: none; }
 .btn-ver:hover { background: #9A7B3E; }
 
-/* NUEVO BOTÓN: RESPUESTAS */
 .btn-respuestas {
   background: #D1E7DD;
   border: 1px solid #BADBCC;
@@ -354,20 +369,24 @@
   background: #9A7B3E;
 }
 
-.btn-copy-plantilla {
-  background: #D1E7DD;
-  color: #0F5132;
-  border: 1px solid #BADBCC;
+/* BOTÓN DE WHATSAPP WEB DENTRO DEL MODAL */
+.btn-enviar-wa-modal {
+  background-color: #25D366;
+  color: #FFFFFF;
+  border: 1px solid #20BD5A;
   border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.82rem;
+  font-weight: 700;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
   transition: all 0.2s;
 }
 
-.btn-copy-plantilla:hover {
-  background: #198754;
-  color: #FFFFFF;
+.btn-enviar-wa-modal:hover {
+  background-color: #20BD5A;
+  box-shadow: 0 3px 10px rgba(37, 211, 102, 0.4);
+  transform: translateY(-1px);
 }
 
 .btn-copy {
