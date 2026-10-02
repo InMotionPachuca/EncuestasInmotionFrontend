@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -23,6 +24,7 @@ import { ContestarEncuestaManualComponent } from './components/contestar-encuest
 import { AsesoresComponent } from './components/asesores/asesores.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { EncuestaEstaticaComponent } from './components/encuesta-estatica/encuesta-estatica.component';
+import { EncuestaComprasAutoComponent } from './components/encuesta-compras-auto/encuesta-compras-auto.component';
 import { GenerarQrComponent } from './components/generar-qr/generar-qr.component';
 import { DashboardQrComponent } from './components/dashboard-qr/dashboard-qr.component';
 import { ListarEncuestasQrComponent } from './components/listar-encuestas-qr/listar-encuestas-qr.component';
@@ -61,10 +63,12 @@ export function playerFactory() {
     ToastComponent,
     ClimaLaboralComponent,
     AgradecimientoClimaComponent,
-    DashboardClimaComponent
+    DashboardClimaComponent,
+    EncuestaComprasAutoComponent
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
