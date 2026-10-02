@@ -113,9 +113,17 @@ export class ImportarEncuestasComponent {
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
-        jsonData.forEach((row: any, index: number) => {
+        jsonData.forEach((rowRaw: any, index: number) => {
+          // Normalizar las claves (headers) para evitar problemas con espacios (ej. "SUCURSAL ")
+          const row: any = {};
+          for (const key in rowRaw) {
+            if (Object.prototype.hasOwnProperty.call(rowRaw, key)) {
+              row[key.trim().toUpperCase()] = rowRaw[key];
+            }
+          }
+
           let fecha = '';
-          const posiblesNombresFecha = ['FECHA ORDEN', 'FECHA DE FACTURACIÓN', 'FECHA DE FACTURACION', 'FECHA', 'fecha', 'Fecha', 'A', 'Fecha Venta', 'FECHA VENTA', 'FECHA DE COMPRA'];
+          const posiblesNombresFecha = ['FECHA ORDEN', 'FECHA DE FACTURACIÓN', 'FECHA DE FACTURACION', 'FECHA', 'FECHA VENTA', 'FECHA DE COMPRA'];
           for (const nombre of posiblesNombresFecha) {
             if (row[nombre] !== undefined && row[nombre] !== null && row[nombre] !== '') {
               fecha = row[nombre];
@@ -130,21 +138,23 @@ export class ImportarEncuestasComponent {
             }
           }
 
-          const noFactura = row['No. FACTURA'] || row['# ORDEN'] || row['NO FACTURA'] || row['B'] || '';
+          const noFactura = row['NO. FACTURA'] || row['# ORDEN'] || row['NO FACTURA'] || row['B'] || '';
           const tipo = row['ALTA/BAJA'] || row['TIPO'] || row['C'] || '';
           const serie = row['SERIE'] || row['D'] || '';
-          const marcaNombreRaw = row['MARCA'] || row['Marca'] || row['marca'] || row['SUCURSAL'] || row['sucursal'] || '';
+          
+          // Buscar Sucursal o Marca en mayúsculas
+          const marcaNombreRaw = row['MARCA'] || row['SUCURSAL'] || row['AGENCIA'] || '';
           const marcaNombreOficial = this.normalizarNombreMarcaOficial(marcaNombreRaw ? marcaNombreRaw.toString().trim() : '');
           
-          const unidad = row['UNIDAD'] || row['Unidad'] || row['unidad'] || row['E'] || '';
-          const anio = row['AÑO'] || row['Año'] || row['anio'] || row['F'] || '';
+          const unidad = row['UNIDAD'] || row['E'] || '';
+          const anio = row['AÑO'] || row['ANIO'] || row['F'] || '';
 
-          const asesorRaw = row['ASESOR'] || row['Asesor'] || row['asesor'] || row['ADV'] || row['G'] || row['ASESOR COMPRAS'] || row['ASESOR VENTAS'] || '';
+          const asesorRaw = row['ASESOR'] || row['ADV'] || row['G'] || row['ASESOR COMPRAS'] || row['ASESOR VENTAS'] || '';
           const asesor = asesorRaw ? asesorRaw.toString().trim() : 'Asesor de Servicio';
 
-          const nombreCliente = row['NOMBRE CLIENTE'] || row['Cliente'] || row['H'] || '';
-          const telefono = row['TELEFONO'] || row['TELEFONO 1'] || row['Telefono'] || row['I'] || '';
-          const email = row['CORREO ELECTRONICO'] || row['CORREO'] || row['EMAIL'] || row['Email'] || '';
+          const nombreCliente = row['NOMBRE CLIENTE'] || row['CLIENTE'] || row['H'] || '';
+          const telefono = row['TELEFONO'] || row['TELEFONO 1'] || row['CELULAR'] || row['I'] || '';
+          const email = row['CORREO ELECTRONICO'] || row['CORREO'] || row['EMAIL'] || '';
 
           if (nombreCliente && nombreCliente.toString().trim()) {
             const marcaId = this.obtenerMarcaId(marcaNombreOficial);
