@@ -1,122 +1,165 @@
 <div class="responder-container">
-  <div class="encuesta-header header-dorado-oscuro">
-    <!-- LOGO TEAM INMOTION - DORADO OSCURO -->
-    <div class="logo-principal-container">
-      <img 
-        src="assets/inmo1.webp" 
-        alt="Team InMotion" 
-        class="logo-team-inmotion-principal logo-dorado-oscuro"
-      >
-    </div>
-    
-    <h1>Encuesta de Satisfacción en Servicio</h1>
-    
-    <div class="marca-logo-container">
-      <span class="marca-nombre-text">{{ encuesta?.marcaNombre }}</span>
-    </div>
-    
-    <p>Agradecemos su reciente visita, nos gustaría que nos compartiera su experiencia.</p>
-    <p class="highlight">¡Tu opinión es importante!</p>
+  
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-gold" role="status"></div>
+    <p class="mt-3 text-muted">Cargando encuesta...</p>
   </div>
 
-  <div *ngIf="loading" class="loading">
-    <div class="spinner"></div>
-    <p>Cargando encuesta...</p>
-  </div>
-
-  <div *ngIf="error" class="error-message">
+  <div *ngIf="error && !loading" class="status-box expirada">
+    <i class="fas fa-exclamation-triangle status-icon"></i>
+    <h3>Acceso no disponible</h3>
     <p>{{ error }}</p>
-    <button class="btn-volver" (click)="volver()">Volver</button>
   </div>
 
-  <div *ngIf="exito" class="success-message">
-    <h3>Encuesta respondida exitosamente!</h3>
-    <p>Gracias por su participación</p>
-    <button class="btn-volver" (click)="volver()">Volver</button>
-  </div>
-
-  <div *ngIf="!loading && !error && !exito && encuesta" class="encuesta-content">
-    <!-- BLOQUE INFORMATIVO CON CLIENTE, EMAIL Y ASESOR -->
-    <div class="cliente-info">
-      <p><strong>Cliente:</strong> {{ encuesta.clienteNombre }}</p>
-      <p><strong>Email:</strong> {{ encuesta.clienteEmail }}</p>
-      <p><strong>Asesor:</strong> {{ encuesta.asesor || 'Asesor de Servicio' }}</p>
+  <div *ngIf="!loading && !error">
+    <div class="encuesta-header header-dorado-oscuro">
+      <div class="logo-principal-container">
+        <img 
+          src="assets/logos/inmotion.png" 
+          alt="Team InMotion" 
+          class="logo-team-inmotion-principal"
+          (error)="onLogoError($event)"
+        >
+      </div>
+      
+      <h1>{{ getTituloEncuesta() }}</h1>
+      
+      <div class="marca-logo-container">
+        <span class="marca-nombre-text">{{ encuesta?.marcaNombre || 'Carsline Pachuca' }}</span>
+      </div>
+      
+      <p>{{ getSubtituloEncuesta() }}</p>
+      <p class="highlight">¡Tu opinión es importante!</p>
     </div>
 
-    <form [formGroup]="encuestaForm" (ngSubmit)="enviarRespuesta()">
-      <div class="pregunta">
-        <label>1. Nombre del Cliente <span class="required">*</span></label>
-        <input type="text" [value]="encuesta.clienteNombre" disabled>
-      </div>
+    <div *ngIf="encuesta?.estado === 'RESPONDIDA'" class="status-box respondida">
+      <i class="fas fa-check-circle status-icon"></i>
+      <h3>Esta encuesta ya ha sido respondida</h3>
+      <p>Agradecemos enormemente su tiempo y valiosos comentarios.</p>
+    </div>
 
-      <div class="pregunta">
-        <label>2. Asesor de Servicio <span class="required">*</span></label>
-        <input type="text" [value]="encuesta.asesor || 'Asesor de Servicio'" disabled>
-      </div>
+    <div *ngIf="encuesta?.estado === 'EXPIRADA'" class="status-box expirada">
+      <i class="fas fa-exclamation-circle status-icon"></i>
+      <h3>Esta encuesta ha expirado</h3>
+      <p>El enlace de acceso ya no se encuentra disponible.</p>
+    </div>
 
-      <div class="pregunta">
-        <label>3. ¿Cómo evaluaría su experiencia con la agencia? <span class="required">*</span></label>
-        <div class="rango">
-          <div class="rango-labels">
-            <span>Deficiente</span>
-            <span>Excelente</span>
+    <!-- TARJETA DEL CLIENTE -->
+    <div *ngIf="encuesta && encuesta.estado === 'ENVIADA'" class="encuesta-content glass-panel shadow-toyota" style="padding: 2rem;">
+      <div class="cliente-card mb-4 p-3 rounded" style="background: rgba(248, 249, 250, 0.7); border: 1px solid rgba(233, 236, 239, 0.8);">
+        <div class="row g-2">
+          <div class="col-md-3">
+            <small class="text-muted d-block">Cliente:</small>
+            <strong class="text-dark">{{ encuesta.clienteNombre }}</strong>
           </div>
-          <div class="stars">
-            <span *ngFor="let star of [1,2,3,4,5]" 
-                  (click)="setCalificacion(0, star)"
-                  [class.active]="getCalificacion(0) >= star">
-              ★
-            </span>
+          <div class="col-md-3">
+            <small class="text-muted d-block">Área:</small>
+            <strong class="text-dark">{{ encuesta.tipo || 'POSTVENTA' }}</strong>
           </div>
-        </div>
-        <input type="hidden" [formControl]="getRespuestaControl(0, 'valorNumerico')">
-      </div>
-
-      <div class="pregunta">
-        <label>4. ¿Cómo calificaría su experiencia con el asesor de servicio? <span class="required">*</span></label>
-        <div class="rango">
-          <div class="rango-labels">
-            <span>Deficiente</span>
-            <span>Excelente</span>
+          <div class="col-md-3">
+            <small class="text-muted d-block">Asesor:</small>
+            <strong class="text-dark">{{ encuesta.asesor || 'Atención a Clientes' }}</strong>
           </div>
-          <div class="stars">
-            <span *ngFor="let star of [1,2,3,4,5]" 
-                  (click)="setCalificacion(1, star)"
-                  [class.active]="getCalificacion(1) >= star">
-              ★
-            </span>
+          <div class="col-md-3">
+            <small class="text-muted d-block">Unidad:</small>
+            <strong class="text-dark">{{ encuesta.unidad || 'Vehículo' }}</strong>
           </div>
         </div>
-        <input type="hidden" [formControl]="getRespuestaControl(1, 'valorNumerico')">
       </div>
 
-      <div class="pregunta">
-        <label>5. ¿Recomendaría nuestro servicio? <span class="required">*</span></label>
-        <div class="si-no">
-          <button type="button" 
-                  [class.selected]="getOpcionSeleccionada(2) === 1"
-                  (click)="setOpcion(2, 1)">
-            SI
-          </button>
-          <button type="button"
-                  [class.selected]="getOpcionSeleccionada(2) === 2"
-                  (click)="setOpcion(2, 2)">
-            NO
-          </button>
+      <form [formGroup]="encuestaForm" (ngSubmit)="enviarRespuesta()">
+        
+        <!-- PREGUNTA 1 DINÁMICA -->
+        <div class="pregunta">
+          <label>
+            1. {{ getPregunta1Texto() }} <span class="required">*</span>
+          </label>
+          <div class="rango">
+            <div class="rango-labels">
+              <span>Deficiente</span>
+              <span>Excelente</span>
+            </div>
+            <div class="stars">
+              <span *ngFor="let star of [1,2,3,4,5]" 
+                    (click)="setCalificacion(1, star)"
+                    [class.active]="getCalificacion(1) >= star">
+                ★
+              </span>
+            </div>
+          </div>
         </div>
-        <input type="hidden" [formControl]="getRespuestaControl(2, 'opcionId')">
-      </div>
 
-      <div class="pregunta">
-        <label>6. ¿Qué podríamos mejorar durante su estancia?</label>
-        <textarea [formControl]="getRespuestaControl(3, 'valorTexto')" 
-                  placeholder="Escriba su respuesta..." 
-                  rows="3"></textarea>
-      </div>
+        <!-- PREGUNTA 2 DINÁMICA -->
+        <div class="pregunta">
+          <label>
+            2. {{ getPregunta2Texto() }} <span class="required">*</span>
+          </label>
+          <div class="rango">
+            <div class="rango-labels">
+              <span>Deficiente</span>
+              <span>Excelente</span>
+            </div>
+            <div class="stars">
+              <span *ngFor="let star of [1,2,3,4,5]" 
+                    (click)="setCalificacion(2, star)"
+                    [class.active]="getCalificacion(2) >= star">
+                ★
+              </span>
+            </div>
+          </div>
+        </div>
 
-      <button type="submit" class="btn-enviar" [disabled]="enviando || encuestaForm.invalid">
-        {{ enviando ? 'Enviando...' : 'Enviar Respuesta' }}
-      </button>
-    </form>
+        <!-- PREGUNTA 3 DINÁMICA -->
+        <div class="pregunta">
+          <label>
+            3. {{ getPregunta3Texto() }} <span class="required">*</span>
+          </label>
+          <div class="si-no">
+            <button type="button" 
+                    [class.selected]="getTiempoAdecuado() === 'SI'"
+                    (click)="setTiempoAdecuado('SI')">
+              SÍ
+            </button>
+            <button type="button"
+                    [class.selected]="getTiempoAdecuado() === 'NO'"
+                    (click)="setTiempoAdecuado('NO')">
+              NO
+            </button>
+          </div>
+        </div>
+
+        <!-- PREGUNTA 4 DINÁMICA -->
+        <div class="pregunta">
+          <label>
+            4. {{ getPregunta4Texto() }} <span class="required">*</span>
+          </label>
+          <div class="si-no">
+            <button type="button" 
+                    [class.selected]="getOpcionRecomienda() === 'SI'"
+                    (click)="setOpcionRecomienda('SI')">
+              SÍ
+            </button>
+            <button type="button"
+                    [class.selected]="getOpcionRecomienda() === 'NO'"
+                    (click)="setOpcionRecomienda('NO')">
+              NO
+            </button>
+          </div>
+        </div>
+
+        <!-- PREGUNTA 5: COMENTARIOS -->
+        <div class="pregunta">
+          <label>5. ¿Tiene algún comentario adicional o sugerencia de mejora?</label>
+          <textarea formControlName="comentarios" 
+                    placeholder="Escriba sus comentarios aquí..." 
+                    rows="4"></textarea>
+        </div>
+
+        <button type="submit" class="btn-enviar" [disabled]="enviando || encuestaForm.invalid">
+          <span *ngIf="!enviando">Enviar Encuesta</span>
+          <span *ngIf="enviando"><i class="fas fa-spinner fa-spin me-2"></i>Enviando...</span>
+        </button>
+      </form>
+    </div>
   </div>
 </div>

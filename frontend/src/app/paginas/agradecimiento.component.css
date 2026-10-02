@@ -1,0 +1,87 @@
+.layout-gracias-clima {
+  min-height: 100vh;
+  background-color: #0F141C !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
+}
+
+.tarjeta-gracias-card {
+  background-color: #182232 !important;
+  border: 1px solid #283548 !important;
+  border-radius: 16px;
+  padding: 44px 36px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+.logo-contenedor {
+  margin-bottom: 20px;
+}
+
+.logo-empresa {
+  height: 38px;
+  width: auto;
+  filter: brightness(1.2);
+}
+
+.icono-exito-circulo {
+  width: 64px;
+  height: 64px;
+  background-color: rgba(14, 165, 233, 0.15) !important;
+  border: 2px solid #38BDF8 !important;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: #38BDF8 !important;
+  margin: 0 auto 20px auto;
+}
+
+.titulo-gracias {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #FFFFFF !important;
+  margin: 0 0 12px 0;
+}
+
+.descripcion-gracias {
+  color: #94A3B8 !important;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+}
+
+.caja-recordatorio {
+  background-color: #111827 !important;
+  border: 1px solid #283548 !important;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  color: #E2E8F0 !important;
+  margin-bottom: 24px;
+}
+
+.text-cyan {
+  color: #38BDF8 !important;
+}
+
+.separador-linea {
+  height: 1px;
+  background-color: #283548 !important;
+  margin-bottom: 20px;
+}
+
+.pie-comite {
+  font-size: 0.78rem;
+  color: #64748B !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}

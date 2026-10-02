@@ -1,0 +1,230 @@
+.facturacion-container {
+  padding: 20px;
+  max-width: 100%;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #212529;
+}
+
+/* HEADER OSCURO CON BORDE DORADO */
+.facturacion-header {
+  background: #1F1F1F !important;
+  padding: 20px 26px !important;
+  border-radius: 10px;
+  border-left: 5px solid #C5A059 !important;
+  border-top: 1px solid #333333;
+  border-right: 1px solid #333333;
+  border-bottom: 1px solid #333333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+/* TÍTULO EN BLANCO BRILLANTE */
+.header-title {
+  font-size: 1.35rem !important;
+  margin: 0 !important;
+  color: #FFFFFF !important;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.header-subtitle {
+  color: #D0D0D0 !important;
+  font-size: 0.82rem !important;
+}
+
+/* BOTÓN NUEVA FACTURACIÓN DORADO */
+.btn-nueva-facturacion {
+  background: #C5A059;
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.25s ease;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.btn-nueva-facturacion:hover {
+  background: #9A7B3E;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.35);
+}
+
+/* MÉTRICAS */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: white;
+  padding: 18px 20px;
+  border-radius: 10px;
+  border: 1px solid #E9ECEF;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  font-size: 1.6rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F8F9FA;
+  color: #C5A059;
+  border: 1px solid #E9ECEF;
+}
+
+.stat-card h3 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: #6C757D;
+  margin: 0 0 4px 0;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.stat-number {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0;
+  color: #212529;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* FILTROS */
+.filtros-container {
+  background: white;
+  padding: 16px 20px;
+  border-radius: 10px;
+  border: 1px solid #E9ECEF;
+  border-top: 3px solid #C5A059;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.filtro-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filtro-item label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6C757D;
+}
+
+.filtro-item select, 
+.filtro-item input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #CED4DA;
+  font-size: 0.85rem;
+  background-color: #FFFFFF;
+  color: #212529;
+}
+
+.filtro-item select:focus, 
+.filtro-item input:focus {
+  outline: none;
+  border-color: #C5A059;
+}
+
+.search-item {
+  flex: 1;
+  min-width: 250px;
+}
+
+/* TABLA */
+.tabla-card {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #E9ECEF;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.table th {
+  background: #F8F9FA;
+  padding: 12px 16px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: #6C757D;
+  font-weight: 700;
+  border-bottom: 2px solid #E9ECEF;
+}
+
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #E9ECEF;
+}
+
+.folio-tag {
+  background: #F8F9FA;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid #E9ECEF;
+  color: #9A7B3E;
+  font-weight: 600;
+}
+
+.badge-unidad {
+  background: #E9ECEF;
+  color: #495057;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+.badge-tipo {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge-tipo.venta { background: #D1E7DD; color: #0F5132; }
+.badge-tipo.postventa { background: #CFF4FC; color: #055160; }
+
+@media (max-width: 768px) {
+  .facturacion-header { flex-direction: column; align-items: flex-start; }
+  .btn-nueva-facturacion { width: 100%; justify-content: center; }
+  .filtros-container { flex-direction: column; }
+  .filtro-item, .search-item { width: 100%; }
+}

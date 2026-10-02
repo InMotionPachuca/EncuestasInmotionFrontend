@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EncuestaService } from '../../services/encuesta.service';
-import { Encuesta, EncuestaRequestDTO, Pregunta } from '../../models/encuesta.model';
+import { Encuesta, EncuestaRequestDTO, EncuestaRespuestaDTO } from '../../models/encuesta.model';
 
 @Component({
   selector: 'app-responder-encuesta',
@@ -11,13 +11,11 @@ import { Encuesta, EncuestaRequestDTO, Pregunta } from '../../models/encuesta.mo
 })
 export class ResponderEncuestaComponent implements OnInit {
   token: string = '';
-  encuesta: (Encuesta & { asesor?: string }) | null = null;
-  preguntas: Pregunta[] = [];
-  loading: boolean = true;
-  error: string = '';
-  enviando: boolean = false;
-  exito: boolean = false;
+  encuesta: Encuesta | null = null;
   encuestaForm: FormGroup;
+  loading: boolean = true;
+  enviando: boolean = false;
+  error: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -25,165 +23,166 @@ export class ResponderEncuestaComponent implements OnInit {
     private fb: FormBuilder,
     private encuestaService: EncuestaService
   ) {
-    this.preguntas = this.encuestaService.obtenerPreguntas();
     this.encuestaForm = this.fb.group({
-      respuestas: this.fb.array([])
+      experiencia: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
+      atencion: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
+      tiempoAdecuado: ['', [Validators.required]],
+      recomienda: ['', [Validators.required]],
+      comentarios: ['']
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.token = this.route.snapshot.paramMap.get('token') || '';
     if (this.token) {
       this.cargarEncuesta();
     } else {
-      this.error = 'Token no válido';
+      this.error = 'Token de encuesta no válido';
       this.loading = false;
     }
   }
 
-  get respuestasFormArray(): FormArray {
-    return this.encuestaForm.get('respuestas') as FormArray;
-  }
-
-  getRespuestaControl(index: number, field: string): FormControl {
-    const control = this.respuestasFormArray.at(index);
-    return control.get(field) as FormControl;
-  }
-
-  setCalificacion(index: number, valor: number) {
-    const control = this.respuestasFormArray.at(index);
-    control.get('valorNumerico')?.setValue(valor);
-    control.get('valorNumerico')?.markAsTouched();
-  }
-
-  getCalificacion(index: number): number {
-    const control = this.respuestasFormArray.at(index);
-    return control.get('valorNumerico')?.value || 0;
-  }
-
-  setOpcion(index: number, valor: number) {
-    const control = this.respuestasFormArray.at(index);
-    control.get('opcionId')?.setValue(valor);
-    control.get('opcionId')?.markAsTouched();
-  }
-
-  getOpcionSeleccionada(index: number): number {
-    const control = this.respuestasFormArray.at(index);
-    return control.get('opcionId')?.value || 0;
-  }
-
-  cargarEncuesta() {
+  cargarEncuesta(): void {
     this.loading = true;
     this.encuestaService.obtenerEncuestaPorToken(this.token).subscribe({
-      next: (data: Encuesta & { asesor?: string }) => {
+      next: (data: Encuesta) => {
         this.encuesta = data;
-        this.inicializarFormulario();
         this.loading = false;
       },
-      error: (error: any) => {
-        this.error = 'Encuesta no encontrada o expirada';
+      error: (err: any) => {
+        console.error('Error al cargar la encuesta:', err);
+        this.error = 'No se encontró la encuesta o el enlace ha expirado.';
         this.loading = false;
-        console.error('Error:', error);
       }
     });
   }
 
-  inicializarFormulario() {
-    const respuestasArray = this.encuestaForm.get('respuestas') as FormArray;
-    while (respuestasArray.length) {
-      respuestasArray.removeAt(0);
-    }
-
-    respuestasArray.push(this.fb.group({
-      preguntaId: [2],
-      valorTexto: [''],
-      valorNumerico: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
-      opcionId: [null]
-    }));
-
-    respuestasArray.push(this.fb.group({
-      preguntaId: [3],
-      valorTexto: [''],
-      valorNumerico: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
-      opcionId: [null]
-    }));
-
-    respuestasArray.push(this.fb.group({
-      preguntaId: [4],
-      valorTexto: [''],
-      valorNumerico: [null],
-      opcionId: [null, Validators.required]
-    }));
-
-    respuestasArray.push(this.fb.group({
-      preguntaId: [5],
-      valorTexto: [''],
-      valorNumerico: [null],
-      opcionId: [null]
-    }));
+  get esVenta(): boolean {
+    return this.encuesta?.tipo === 'VENTA';
   }
 
-  volver() {
-    this.router.navigate(['/']);
+  getTituloEncuesta(): string {
+    if (this.esVenta) return 'Encuesta de Satisfacción en Ventas';
+    if (this.encuesta?.tipo === 'POSTVENTA') return 'Encuesta de Satisfacción en Postventa';
+    return 'Encuesta de Satisfacción en Servicio';
   }
 
-  enviarRespuesta() {
-    let invalid = false;
-    const respuestasArray = this.encuestaForm.get('respuestas') as FormArray;
-    
-    for (let i = 0; i < respuestasArray.length; i++) {
-      const control = respuestasArray.at(i);
-      const preguntaId = control.get('preguntaId')?.value;
-      
-      if (preguntaId === 2 || preguntaId === 3) {
-        const valor = control.get('valorNumerico')?.value;
-        if (!valor || valor < 1 || valor > 5) {
-          invalid = true;
-          break;
-        }
-      } else if (preguntaId === 4) {
-        if (!control.get('opcionId')?.value) {
-          invalid = true;
-          break;
-        }
-      }
+  getSubtituloEncuesta(): string {
+    if (this.esVenta) {
+      return 'Agradecemos su preferencia en la compra de su unidad, nos gustaría conocer su experiencia.';
     }
+    return 'Agradecemos su reciente visita, nos gustaría que nos compartiera su experiencia.';
+  }
 
-    if (invalid) {
-      alert('Por favor complete todas las preguntas obligatorias');
+  getPregunta1Texto(): string {
+    if (this.esVenta) {
+      return '¿Cómo evaluaría su experiencia general durante el proceso de compra de su vehículo?';
+    }
+    return '¿Cómo evaluaría su experiencia general con el servicio realizado a su vehículo?';
+  }
+
+  getPregunta2Texto(): string {
+    if (this.esVenta) {
+      return '¿Cómo califica la atención y asesoría brindada por su Asesor de Ventas?';
+    }
+    return '¿Cómo califica la atención y amabilidad brindada por su Asesor de Servicio?';
+  }
+
+  getPregunta3Texto(): string {
+    if (this.esVenta) {
+      return '¿La entrega de su vehículo se realizó en el tiempo y condiciones acordadas?';
+    }
+    return '¿El vehículo le fue entregado en el tiempo prometido?';
+  }
+
+  getPregunta4Texto(): string {
+    if (this.esVenta) {
+      return '¿Recomendaría nuestra agencia de ventas a sus familiares y amigos?';
+    }
+    return '¿Recomendaría nuestro taller de servicio a sus familiares y amigos?';
+  }
+
+  onLogoError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img && !img.src.includes('assets/inmo1.png')) {
+      img.src = 'assets/inmo1.png';
+    }
+  }
+
+  setCalificacion(preguntaId: number, valor: number): void {
+    if (preguntaId === 1 || preguntaId === 2) {
+      const controlName = preguntaId === 1 ? 'experiencia' : 'atencion';
+      this.encuestaForm.get(controlName)?.setValue(valor);
+      this.encuestaForm.get(controlName)?.markAsTouched();
+    }
+  }
+
+  getCalificacion(preguntaId: number): number {
+    const controlName = preguntaId === 1 ? 'experiencia' : 'atencion';
+    return this.encuestaForm.get(controlName)?.value || 0;
+  }
+
+  setTiempoAdecuado(valor: string): void {
+    this.encuestaForm.get('tiempoAdecuado')?.setValue(valor);
+    this.encuestaForm.get('tiempoAdecuado')?.markAsTouched();
+  }
+
+  getTiempoAdecuado(): string {
+    return this.encuestaForm.get('tiempoAdecuado')?.value || '';
+  }
+
+  setOpcionRecomienda(valor: string): void {
+    this.encuestaForm.get('recomienda')?.setValue(valor);
+    this.encuestaForm.get('recomienda')?.markAsTouched();
+  }
+
+  getOpcionRecomienda(): string {
+    return this.encuestaForm.get('recomienda')?.value || '';
+  }
+
+  enviarRespuesta(): void {
+    if (this.encuestaForm.invalid || !this.encuesta) {
+      alert('Por favor complete todos los campos obligatorios');
       return;
     }
 
     this.enviando = true;
     const formValue = this.encuestaForm.value;
 
-    const nombreCompleto = this.encuesta?.clienteNombre || '';
-    const partesNombre = nombreCompleto.split(' ');
-    const nombre = partesNombre[0] || '';
-    const apellido = partesNombre.slice(1).join(' ') || '';
+    const respuestasData: EncuestaRespuestaDTO[] = [
+      { preguntaId: 2, valorTexto: '', valorNumerico: Number(formValue.experiencia) },
+      { preguntaId: 3, valorTexto: '', valorNumerico: Number(formValue.atencion) },
+      { preguntaId: 4, valorTexto: '', opcionId: formValue.tiempoAdecuado === 'SI' ? 1 : 2 },
+      { preguntaId: 5, valorTexto: '', opcionId: formValue.recomienda === 'SI' ? 1 : 2 },
+      { preguntaId: 6, valorTexto: formValue.comentarios || '' }
+    ];
 
-    const data: EncuestaRequestDTO = {
-      nombre: nombre,
-      apellido: apellido,
-      email: this.encuesta?.clienteEmail || '',
-      telefono: '',
-      marcaId: this.encuesta?.marcaId || 1,
-      tipo: this.encuesta?.tipo || 'SERVICIO',
-      respuestas: formValue.respuestas
+    const nombreCompleto = this.encuesta.clienteNombre || 'Cliente General';
+    const partesNombre = nombreCompleto.trim().split(' ');
+    const primerNombre = partesNombre[0] || 'Cliente';
+    const apellidos = partesNombre.slice(1).join(' ') || 'General';
+
+    const payloadDTO: EncuestaRequestDTO = {
+      nombre: primerNombre,
+      apellido: apellidos,
+      email: this.encuesta.clienteEmail || 'cliente@inmotion.com',
+      telefono: this.encuesta.clienteTelefono || this.encuesta.telefono || '0000000000',
+      asesor: this.encuesta.asesor || 'Atención a Clientes',
+      unidad: this.encuesta.unidad || '',
+      marcaId: this.encuesta.marcaId || 1,
+      tipo: this.encuesta.tipo || 'POSTVENTA',
+      respuestas: respuestasData
     };
 
-    this.encuestaService.responderEncuesta(this.token, data).subscribe({
+    this.encuestaService.responderEncuesta(this.token, payloadDTO).subscribe({
       next: () => {
         this.enviando = false;
-        this.exito = true;
-        setTimeout(() => {
-          this.router.navigate(['/']);
-        }, 3000);
+        this.router.navigate(['/gracias']);
       },
-      error: (error) => {
+      error: (err: any) => {
         this.enviando = false;
-        alert('Error al enviar la encuesta: ' + error.message);
-        console.error('Error:', error);
+        console.error('Error al responder encuesta:', err);
+        alert('Ocurrió un error al enviar la encuesta. Intente nuevamente.');
       }
     });
   }

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.angular/
+.vercel/
+.vscode/
+.env.local
+package.json.bak

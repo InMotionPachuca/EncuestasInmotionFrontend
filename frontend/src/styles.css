@@ -109,7 +109,7 @@ table th, table td {
 }
 
 /* ============================================
-   UTILIDADES
+   UTILIDADES Y COMPONENTES MODERNOS
    ============================================ */
 .text-toyota-red {
   color: var(--toyota-red) !important;
@@ -127,12 +127,36 @@ table th, table td {
   border-color: var(--toyota-red) !important;
 }
 
+/* Glassmorphism y Sombras Mejoradas */
 .shadow-toyota {
   box-shadow: var(--shadow-soft) !important;
+  border-radius: 12px;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .shadow-toyota-hover:hover {
   box-shadow: var(--shadow-hover) !important;
+  transform: translateY(-2px);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: var(--shadow-medium);
+}
+
+/* Transiciones en botones */
+.btn {
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+.btn:active {
+  transform: scale(0.97);
 }
 
 /* ============================================
@@ -207,4 +231,144 @@ table th, table td {
     --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.06);
     --shadow-hover: 0 6px 20px rgba(197, 160, 89, 0.10);
   }
+}
+
+/* ============================================
+   FORZAR ESTILOS DEL LOGIN (OPCIÓN B: DESTELLOS EN ESQUINAS)
+   ============================================ */
+
+/* 1. Fondo de pantalla completa con doble luz en esquinas opuestas */
+.login-wrapper {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: #0A0B0E !important;
+  
+  /* LUZ 1: Superior Derecha (100% 0%) | LUZ 2: Inferior Izquierda (0% 100%) */
+  background-image: 
+    radial-gradient(circle at 100% 0%, rgba(197, 160, 89, 0.28) 0%, transparent 55%),
+    radial-gradient(circle at 0% 100%, rgba(138, 109, 59, 0.28) 0%, transparent 55%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px) !important;
+    
+  background-size: 100% 100%, 100% 100%, 35px 35px, 35px 35px !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 2. LOGO IZQUIERDO: Gigante en Blanco Puro */
+.img-logo-main {
+  height: 140px !important;
+  width: auto !important;
+  max-width: 90% !important;
+  filter: brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0,0,0,0.5)) !important;
+  display: block !important;
+  margin: 0 auto 20px 0 !important;
+}
+
+/* 3. FOOTER DERECHO: Texto ampliado y centrado */
+.card-right-footer {
+  margin-top: 32px !important;
+  padding-top: 20px !important;
+  border-top: 1px solid #E5E7EB !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.footer-title {
+  color: #9A7B3E !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.3px !important;
+  margin-bottom: 6px !important;
+  display: block !important;
+}
+
+.copyright {
+  font-size: 0.85rem !important;
+  color: #4B5563 !important;
+  font-weight: 600 !important;
+  margin: 4px 0 !important;
+  display: block !important;
+}
+
+.version {
+  font-size: 0.78rem !important;
+  color: #9A7B3E !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+  display: block !important;
+}
+
+/* ============================================
+   ESTILOS FORZADOS DEL LOGIN (DESTELLOS EN ESQUINAS + TEXTO GRANDE)
+   ============================================ */
+
+html body .login-wrapper {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: #0A0B0E !important;
+  
+  /* DESTELLO DERECHO Y DESTELLO IZQUIERDO EN DIAGONAL */
+  background-image: 
+    radial-gradient(circle at 100% 0%, rgba(197, 160, 89, 0.35) 0%, transparent 55%),
+    radial-gradient(circle at 0% 100%, rgba(138, 109, 59, 0.35) 0%, transparent 55%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px) !important;
+    
+  background-size: 100% 100%, 100% 100%, 35px 35px, 35px 35px !important;
+  z-index: 999999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* LOGO IZQUIERDO: Gigante en Blanco */
+html body .img-logo-main {
+  height: 130px !important;
+  width: auto !important;
+  filter: brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0,0,0,0.5)) !important;
+  display: block !important;
+  margin-bottom: 20px !important;
+}
+
+/* FOOTER DERECHO: Centrado y fuentes grandes */
+html body .card-right-footer {
+  margin-top: 32px !important;
+  padding-top: 20px !important;
+  border-top: 1px solid #E5E7EB !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+html body .footer-title {
+  color: #9A7B3E !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.3px !important;
+  margin-bottom: 6px !important;
+  display: block !important;
+}
+
+html body .copyright {
+  font-size: 0.85rem !important;
+  color: #4B5563 !important;
+  font-weight: 600 !important;
+  margin: 4px 0 !important;
+  display: block !important;
+}
+
+html body .version {
+  font-size: 0.78rem !important;
+  color: #9A7B3E !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+  display: block !important;
 }

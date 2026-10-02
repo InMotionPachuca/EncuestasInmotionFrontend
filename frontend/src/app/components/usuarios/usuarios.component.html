@@ -42,7 +42,7 @@
               <td>
                 <span class="badge-role" [ngClass]="{
                   'role-admin': u.rol === 'ADMIN',
-                  'role-gerente': u.rol === 'GERENTE',
+                  'role-facturas': u.rol === 'FACTURAS',
                   'role-user': u.rol === 'USER'
                 }">
                   {{ u.rol }}
@@ -136,7 +136,7 @@
             <label class="form-label small fw-semibold text-dark">Rol del Usuario</label>
             <select formControlName="rol" class="form-select form-select-custom">
               <option value="USER">USER (Operativo)</option>
-              <option value="GERENTE">GERENTE</option>
+              <option value="FACTURAS">FACTURAS</option>
               <option value="ADMIN">ADMIN (Administrador)</option>
             </select>
           </div>

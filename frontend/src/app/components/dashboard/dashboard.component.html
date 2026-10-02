@@ -1,17 +1,17 @@
 <div class="dashboard-container">
   <app-toast></app-toast>
 
-  <!-- HEADER -->
+  <!-- HEADER INSTITUCIONAL -->
   <div class="dashboard-header">
     <div>
       <div class="d-flex align-items-center gap-3 flex-wrap">
         <h1>CXI</h1>
         <span class="badge-periodo">
-          {{ periodo === 'todos' ? 'Todos los períodos' : periodo }}
+          {{ filtroMesSeleccionado ? ('Mes: ' + filtroMesSeleccionado) : (periodo === 'todos' ? 'Todos los períodos' : periodo) }}
         </span>
       </div>
-      <p class="header-subtitle mt-1 mb-0" style="font-size:0.9rem;">
-        Control de encuestas y estadísticas en tiempo real
+      <p class="header-subtitle mt-1 mb-0">
+        Control de encuestas y estadísticas segmentadas por Postventa, Ventas y Mes de Operación
       </p>
     </div>
     <div class="header-actions">
@@ -27,13 +27,76 @@
     </div>
   </div>
 
-  <!-- FILTROS -->
+  <!-- CALENDARIO Y SEGMENTACIÓN POR MES -->
+  <div class="calendario-meses-container mb-3">
+    <div class="calendario-header-bar">
+      <span class="calendario-label">
+        <i class="fas fa-calendar-alt text-gold me-2"></i>Filtrar por Mes:
+      </span>
+
+      <!-- Selector tipo Calendario HTML5 -->
+      <div class="input-calendario-wrapper">
+        <input 
+          type="month" 
+          class="input-calendario-mes" 
+          [(ngModel)]="filtroMesSeleccionado" 
+          (change)="aplicarFiltros()" 
+          title="Selecciona año y mes específico" />
+        <button 
+          *ngIf="filtroMesSeleccionado" 
+          type="button" 
+          class="btn-limpiar-mes" 
+          (click)="limpiarFiltroMes()" 
+          title="Ver todos los meses">
+          <i class="fas fa-times me-1"></i> Ver Todo
+        </button>
+      </div>
+    </div>
+
+    <!-- Píldoras de Acceso Rápido por Meses con Datos -->
+    <div class="pills-meses-grid" *ngIf="mesesDisponibles.length > 0">
+      <button 
+        type="button" 
+        class="pill-mes-item" 
+        [class.active]="filtroMesSeleccionado === ''" 
+        (click)="limpiarFiltroMes()">
+        Histórico General ({{ conteoTotal }})
+      </button>
+
+      <button 
+        type="button" 
+        *ngFor="let m of mesesDisponibles" 
+        class="pill-mes-item" 
+        [class.active]="filtroMesSeleccionado === m.valor" 
+        (click)="seleccionarMesRapido(m.valor)">
+        {{ m.etiqueta }} ({{ m.conteo }})
+      </button>
+    </div>
+  </div>
+
+  <!-- SEGMENTACIÓN OPERATIVA: POSTVENTA VS VENTAS -->
+  <div class="segmento-tipo-container mb-3 d-flex align-items-center gap-2 flex-wrap">
+    <span class="segmento-label"><i class="fas fa-filter me-1 text-gold"></i> Segmento Operativo:</span>
+
+    <button type="button" class="btn-segmento" [class.active]="filtroTipo === ''" (click)="cambiarFiltroTipo('')">
+      <i class="fas fa-layer-group me-1"></i> Todas las Áreas ({{ estadisticas.total }})
+    </button>
+
+    <button type="button" class="btn-segmento" [class.active]="filtroTipo === 'SERVICIO'" (click)="cambiarFiltroTipo('SERVICIO')">
+      <i class="fas fa-tools me-1"></i> Postventa / Servicio
+    </button>
+
+    <button type="button" class="btn-segmento" [class.active]="filtroTipo === 'VENTA'" (click)="cambiarFiltroTipo('VENTA')">
+      <i class="fas fa-car me-1"></i> Ventas / Nuevos
+    </button>
+  </div>
+
+  <!-- FILTROS SECUNDARIOS DE PERÍODO RELATIVO, MARCA Y ESTADO -->
   <div class="filtros-container">
     <div class="filtros-left">
-      <span class="filtros-label">Período:</span>
+      <span class="filtros-label">Rango Rápido:</span>
       <div class="filtros-buttons">
-        <button *ngFor="let p of periodos" (click)="filtrarPorPeriodo(p.value)" [class.active]="periodo === p.value"
-          class="btn-filtro">
+        <button *ngFor="let p of periodos" (click)="filtrarPorPeriodo(p.value)" [class.active]="periodo === p.value && !filtroMesSeleccionado" class="btn-filtro">
           {{ p.label }}
         </button>
       </div>
@@ -51,7 +114,7 @@
     </div>
   </div>
 
-  <!-- STATS -->
+  <!-- TARJETAS DE MÉTRICAS -->
   <div class="stats-grid">
     <div class="stat-card total">
       <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
@@ -83,12 +146,11 @@
     </div>
   </div>
 
-  <!-- NPS AJUSTADO A ESCALA DE 5 ESTRELLAS -->
+  <!-- NPS SCORE -->
   <div class="nps-container" *ngIf="npsData.total > 0">
     <div class="nps-card">
-      <h3><i class="fas fa-chart-bar me-1"></i> NPS Score</h3>
-      <div class="nps-score" [class.excellent]="npsData.score >= 50"
-        [class.good]="npsData.score >= 20 && npsData.score < 50" [class.bad]="npsData.score < 20">
+      <h3><i class="fas fa-chart-bar me-1"></i> NPS Score {{ filtroTipo ? '(' + filtroTipo + ')' : '' }}</h3>
+      <div class="nps-score" [class.excellent]="npsData.score >= 50" [class.good]="npsData.score >= 20 && npsData.score < 50" [class.bad]="npsData.score < 20">
         {{ npsData.score }}
       </div>
       <span class="nps-label">{{ npsData.label }}</span>
@@ -109,11 +171,11 @@
     </div>
   </div>
 
-  <!-- GRÁFICOS -->
+  <!-- GRÁFICOS SEGMENTADOS -->
   <div class="graficos-container">
     <div class="grafico-card">
       <h3 class="grafico-title">
-        <span class="title-icon"><i class="fas fa-chart-pie me-1"></i></span> Encuestas por Marca
+        <span class="title-icon"><i class="fas fa-chart-pie me-1"></i></span> Distribución por Marca y Segmento
       </h3>
       <div class="grafico-wrapper">
         <canvas #graficoMarcas></canvas>
@@ -121,7 +183,7 @@
     </div>
     <div class="grafico-card">
       <h3 class="grafico-title">
-        <span class="title-icon"><i class="fas fa-chart-area me-1"></i></span> Evolución (últimos 7 días)
+        <span class="title-icon"><i class="fas fa-chart-line me-1"></i></span> Evolución de Postventa vs. Ventas
       </h3>
       <div class="grafico-wrapper">
         <canvas #graficoEvolucion></canvas>
@@ -129,7 +191,7 @@
     </div>
   </div>
 
-  <!-- MARCAS STATS -->
+  <!-- ESTADÍSTICAS POR AGENCIA -->
   <div class="marcas-stats">
     <h2 class="marcas-title"><i class="fas fa-tags me-2"></i>Estadísticas por Marca</h2>
     <div class="marcas-grid">
@@ -150,8 +212,12 @@
             <span class="stat-value respondidas">{{ marca.respondidas }}</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label">Pendientes</span>
-            <span class="stat-value pendientes">{{ marca.pendientes }}</span>
+            <span class="stat-label">Ventas</span>
+            <span class="stat-value">{{ marca.totalVentas }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Postventa</span>
+            <span class="stat-value">{{ marca.totalServicio }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Promedio</span>
@@ -175,6 +241,7 @@
         <thead>
           <tr>
             <th>Cliente</th>
+            <th>Área</th>
             <th>Marca</th>
             <th>Estado</th>
             <th>Fecha</th>
@@ -189,6 +256,12 @@
                 <strong>{{ encuesta.clienteNombre }}</strong>
                 <span>{{ encuesta.clienteEmail }}</span>
               </div>
+            </td>
+            <td>
+              <span class="badge-tipo" [class.badge-venta]="encuesta.tipo === 'VENTA'" [class.badge-servicio]="encuesta.tipo !== 'VENTA'">
+                <i class="fas" [class.fa-car]="encuesta.tipo === 'VENTA'" [class.fa-tools]="encuesta.tipo !== 'VENTA'"></i>
+                {{ encuesta.tipo === 'VENTA' ? 'VENTA' : 'POSTVENTA' }}
+              </span>
             </td>
             <td>{{ encuesta.marcaNombre }}</td>
             <td>
@@ -215,7 +288,7 @@
             </td>
           </tr>
           <tr *ngIf="encuestasRecientes.length === 0">
-            <td colspan="6" class="sin-encuestas">No hay encuestas disponibles</td>
+            <td colspan="7" class="sin-encuestas">No hay encuestas disponibles en este período o segmento seleccionado</td>
           </tr>
         </tbody>
       </table>
@@ -233,6 +306,9 @@
     <div class="modal-body" *ngIf="encuestaSeleccionada">
       <div class="detail-row">
         <b>Cliente:</b> {{ encuestaSeleccionada.clienteNombre }}
+      </div>
+      <div class="detail-row">
+        <b>Área:</b> {{ encuestaSeleccionada.tipo === 'VENTA' ? 'Venta de Vehículo' : 'Postventa / Servicio' }}
       </div>
       <div class="detail-row">
         <b>Email:</b> {{ encuestaSeleccionada.clienteEmail }}

@@ -1,0 +1,81 @@
+<div class="qr-container">
+  <!-- HEADER INSTITUCIONAL -->
+  <div class="qr-header">
+    <div>
+      <h1>Generador de Códigos QR por Agencia</h1>
+      <p class="header-subtitle mt-1 mb-0">Seleccione la sucursal para generar y descargar su código QR exclusivo.</p>
+    </div>
+  </div>
+
+  <!-- GRID DE TARJETAS CON LOGOS DE MARCA -->
+  <div class="marcas-grid mb-4">
+    <div 
+      *ngFor="let marca of marcas" 
+      class="marca-card" 
+      [class.active]="marcaSeleccionada?.id === marca.id"
+      (click)="seleccionarMarca(marca)">
+      
+      <!-- CONTENEDOR DEL LOGO DE LA AGENCIA -->
+      <div class="marca-logo-wrapper">
+        <img 
+          [src]="marca.logo" 
+          [alt]="marca.nombre" 
+          class="marca-card-logo"
+          (error)="onLogoError($event)">
+      </div>
+      
+      <div class="marca-card-info">
+        <h3>{{ marca.nombre }}</h3>
+        <span class="marca-badge">ID: {{ marca.id }}</span>
+      </div>
+
+      <div class="marca-check" *ngIf="marcaSeleccionada?.id === marca.id">
+        <i class="fas fa-check-circle"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARJETA PRINCIPAL DEL QR AUTOGENERADO -->
+  <div class="qr-card" *ngIf="marcaSeleccionada">
+    <div class="qr-card-header mb-3">
+      <div class="d-flex align-items-center justify-content-center gap-3">
+        <img 
+          [src]="marcaSeleccionada.logo" 
+          [alt]="marcaSeleccionada.nombre" 
+          class="qr-header-logo"
+          (error)="onLogoError($event)">
+        <span class="agencia-pill">
+          <i class="fas fa-qrcode me-2"></i> {{ marcaSeleccionada.nombre }}
+        </span>
+      </div>
+    </div>
+
+    <p class="qr-instructions">
+      Este código QR dirigirá automáticamente a los clientes a responder la encuesta asignada a 
+      <strong>{{ marcaSeleccionada.nombre }}</strong>.
+    </p>
+
+    <!-- RENDERIZADOR DEL CÓDIGO QR -->
+    <div class="qrcode-wrapper">
+      <div class="qrcode-box qrcode-container">
+        <qrcode [qrdata]="qrUrl" [width]="240" [errorCorrectionLevel]="'M'" elementType="canvas"></qrcode>
+      </div>
+    </div>
+
+    <!-- PREVISUALIZACIÓN DEL ENLACE -->
+    <div class="link-preview">
+      <small>Enlace generado para el QR:</small>
+      <div class="link-code">{{ qrUrl }}</div>
+    </div>
+
+    <!-- ACCIONES -->
+    <div class="qr-actions">
+      <button type="button" class="btn-primary" (click)="descargarQR()">
+        <i class="fas fa-download me-2"></i> Descargar QR (PNG)
+      </button>
+      <a [href]="qrUrl" target="_blank" class="btn-secondary">
+        <i class="fas fa-external-link-alt me-2"></i> Probar Formulario
+      </a>
+    </div>
+  </div>
+</div>

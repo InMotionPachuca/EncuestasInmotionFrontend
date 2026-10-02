@@ -2,13 +2,17 @@ export interface Encuesta {
   id?: number;
   token: string;
   tipo: string;
+  serie?: string;
   estado: 'ENVIADA' | 'RESPONDIDA' | 'EXPIRADA';
   fechaEnvio: Date;
   fechaExpiracion?: Date;
   fechaRespuesta?: Date;
   clienteNombre: string;
   clienteEmail: string;
+  clienteTelefono?: string;
+  telefono?: string;
   asesor?: string;
+  unidad?: string;
   marcaNombre: string;
   marcaId?: number;
   respuestas: RespuestaDTO[];
@@ -29,6 +33,8 @@ export interface EncuestaRequestDTO {
   email: string;
   telefono?: string;
   asesor?: string;
+  unidad?: string;
+  fechaVisita?: string;
   marcaId: number;
   tipo?: string;
   respuestas: EncuestaRespuestaDTO[];

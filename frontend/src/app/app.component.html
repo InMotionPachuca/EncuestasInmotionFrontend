@@ -3,32 +3,39 @@
 </ng-container>
 
 <ng-container *ngIf="!isPublicRoute()">
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg shadow-sm" style="background: linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 60%, #2D0A0A 100%); border-bottom: 3px solid #080808; padding: 10px 28px;">
-    <div class="container-fluid">
-      <div class="navbar-brand d-flex align-items-center gap-3" style="cursor: default; padding: 0;">
-        <img 
-          src="assets/inmo1.webp" 
-          alt="Team InMotion" 
-          height="45" 
-          style="display: block; height: 45px; width: auto; filter: invert(68%) sepia(35%) saturate(542%) hue-rotate(6deg) brightness(93%) contrast(88%) drop-shadow(0 2px 4px rgba(0,0,0,0.1) ) !important;"
-          (error)="onLogoError($event)"
-        >
-        <span class="text-white fw-light" style="font-size: 0.85rem; opacity: 0.6; letter-spacing: 2px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 16px;">
-          CONTROL CLIENTES
-        </span>
-      </div>
-      
+  <!-- NAVBAR PRINCIPAL INSTITUCIONAL -->
+  <nav class="navbar navbar-expand-lg shadow-sm"
+    style="background: linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 60%, #1F1F1F 100%); border-bottom: 3px solid #C5A059; padding: 10px 28px;">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+
+      <!-- LADO IZQUIERDO: BOTÓN HAMBURGUESA + LOGO -->
       <div class="d-flex align-items-center gap-3">
-        <!-- ÁREA DEL USUARIO -->
+        <!-- BOTÓN DE TOGGLE PARA COLAPSAR LA BARRA LATERAL -->
+        <button type="button" class="btn-toggle-sidebar" (click)="toggleSidebar()" title="Ocultar/Mostrar menú">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="navbar-brand d-flex align-items-center gap-3" style="cursor: default; padding: 0; margin: 0;">
+          <img src="assets/inmo1.png" alt="Team InMotion" style="
+              display: block; 
+              height: 48px; 
+              width: auto; 
+              max-width: 200px; 
+              object-fit: contain;
+              filter: invert(68%) sepia(35%) saturate(542%) hue-rotate(6deg) brightness(93%) contrast(88%) drop-shadow(0 2px 6px rgba(197, 160, 89, 0.25)) !important;
+            " (error)="onLogoError($event)">
+          <span class="text-white fw-light d-none d-md-inline"
+            style="font-size: 0.85rem; opacity: 0.7; letter-spacing: 2.5px; border-left: 1px solid rgba(197, 160, 89, 0.3); padding-left: 16px; font-family: 'Montserrat', sans-serif;">
+            CONTROL CLIENTES
+          </span>
+        </div>
+      </div>
+
+      <!-- LADO DERECHO: USUARIO Y SALIR -->
+      <div class="d-flex align-items-center gap-3">
         <div class="user-dropdown-container">
-          <button 
-            type="button" 
-            class="user-profile-btn" 
-            (click)="toggleUserMenu()" 
-            title="Opciones de perfil"
-          >
-            <i class="fas fa-user-circle me-1" style="color: #C5A059; font-size: 1.1rem;"></i> 
+          <button type="button" class="user-profile-btn" (click)="toggleUserMenu()" title="Opciones de perfil">
+            <i class="fas fa-user-circle me-1" style="color: #C5A059; font-size: 1.1rem;"></i>
             <strong style="color: #9A7B3E;">{{ getUserName() }}</strong>
             <i class="fas fa-chevron-down ms-1" style="font-size: 0.7rem; color: #9A7B3E;"></i>
           </button>
@@ -39,51 +46,46 @@
               <small class="text-muted d-block" style="font-size: 0.75rem;">Sesión activa:</small>
               <span class="fw-bold text-dark small text-truncate d-block">{{ getUserEmail() }}</span>
             </div>
-            
+
             <button class="dropdown-item-custom" (click)="abrirModalPassword()">
               <i class="fas fa-key text-warning me-2"></i> Cambiar Contraseña
             </button>
           </div>
         </div>
 
-        <!-- Botón Salir Principal -->
-        <button class="btn-logout" (click)="logout()" style="border-color: #C5A059; color: #9A7B3E; background: #FDF8ED;">
+        <button class="btn-logout" (click)="logout()"
+          style="border-color: #C5A059; color: #9A7B3E; background: #FDF8ED;">
           <span class="logout-icon" style="color: #C5A059;">⏻</span>
-          <span class="logout-text">Salir</span>
+          <span class="logout-text d-none d-sm-inline">Salir</span>
         </button>
       </div>
+
     </div>
   </nav>
 
-  <!-- SIDEBAR + CONTENIDO PRINCIPAL -->
-  <div class="d-flex">
-    <div class="sidebar bg-white vh-100 p-3 shadow-sm" style="width: 240px; border-right: 1px solid #f0f0f0;">
-      <div class="sidebar-header mb-4 pb-3 border-bottom">
-        <span class="text-uppercase small text-muted fw-bold tracking-wide" style="letter-spacing: 1.5px; font-size: 0.65rem;">Menú Principal</span>
-      </div>
-      <ul class="nav flex-column gap-1">
-        <li class="nav-item" *ngFor="let item of menuItems">
-          <a class="nav-link d-flex align-items-center gap-3" 
-             [routerLink]="item.route" 
-             routerLinkActive="active">
-            <i [class]="item.icon" class="menu-icon" style="width: 20px; text-align: center;"></i>
-            <span>{{ item.label }}</span>
-            <span class="badge ms-auto" [class]="item.badgeClass" *ngIf="item.badge">{{ item.badge }}</span>
-          </a>
-        </li>
-      </ul>
-      
-      <div class="sidebar-footer mt-auto pt-3 border-top">
-        <div class="text-muted small" style="font-size: 0.7rem;">
-          <span class="d-block">v2.0</span>
-          <span class="d-block opacity-50">© 2026 InMotion</span>
-        </div>
-      </div>
-    </div>
+  <!-- CONTENEDOR PRINCIPAL SIDEBAR + VISTAS -->
+  <div class="app-body-container">
+    <!-- BARRA LATERAL DE NAVEGACIÓN -->
+    <aside class="sidebar-container" [class.sidebar-collapsed]="sidebarOculta">
+      <nav class="sidebar-menu">
+        <ul class="nav flex-column p-2 gap-1">
+          <li class="nav-item" *ngFor="let item of menuItems">
+            <a [routerLink]="item.route" routerLinkActive="active" class="nav-link-custom" [title]="item.label">
+              <i [class]="item.icon + ' icon-menu'"></i>
+              <span class="menu-text" *ngIf="!sidebarOculta">{{ item.label }}</span>
+              <span *ngIf="item.badge && !sidebarOculta" class="badge ms-auto" [ngClass]="item.badgeClass">
+                {{ item.badge }}
+              </span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
 
-    <div class="flex-grow-1 p-4" style="background: linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%); min-height: 100vh;">
+    <!-- ÁREA DE CONTENIDO DINÁMICO -->
+    <main class="main-content-container">
       <router-outlet></router-outlet>
-    </div>
+    </main>
   </div>
 </ng-container>
 
@@ -98,44 +100,23 @@
 
       <div class="modal-body-custom">
         <form [formGroup]="passwordForm" (ngSubmit)="cambiarPassword()">
-          
-          <!-- Contraseña Actual con Ojito -->
           <div class="mb-3">
             <label class="form-label small fw-semibold text-dark">Contraseña Actual</label>
             <div class="input-password-wrapper">
-              <input 
-                [type]="mostrarPasswordActual ? 'text' : 'password'" 
-                formControlName="passwordActual" 
-                class="form-control form-control-sm input-with-eye"
-                placeholder="Ingresa tu contraseña actual"
-              >
-              <button 
-                type="button" 
-                class="btn-eye" 
-                (click)="toggleVerPasswordActual()"
-                title="Mostrar/Ocultar contraseña"
-              >
+              <input [type]="mostrarPasswordActual ? 'text' : 'password'" formControlName="passwordActual"
+                class="form-control form-control-sm input-with-eye" placeholder="Ingresa tu contraseña actual">
+              <button type="button" class="btn-eye" (click)="toggleVerPasswordActual()" title="Mostrar/Ocultar">
                 <i [class]="mostrarPasswordActual ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
               </button>
             </div>
           </div>
 
-          <!-- Nueva Contraseña con Ojito -->
           <div class="mb-3">
             <label class="form-label small fw-semibold text-dark">Nueva Contraseña</label>
             <div class="input-password-wrapper">
-              <input 
-                [type]="mostrarNuevaPassword ? 'text' : 'password'" 
-                formControlName="nuevaPassword" 
-                class="form-control form-control-sm input-with-eye"
-                placeholder="Mínimo 8 caracteres"
-              >
-              <button 
-                type="button" 
-                class="btn-eye" 
-                (click)="toggleVerNuevaPassword()"
-                title="Mostrar/Ocultar contraseña"
-              >
+              <input [type]="mostrarNuevaPassword ? 'text' : 'password'" formControlName="nuevaPassword"
+                class="form-control form-control-sm input-with-eye" placeholder="Mínimo 8 caracteres">
+              <button type="button" class="btn-eye" (click)="toggleVerNuevaPassword()" title="Mostrar/Ocultar">
                 <i [class]="mostrarNuevaPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
               </button>
             </div>
@@ -151,7 +132,8 @@
 
           <div class="d-flex justify-content-end gap-2 mt-4">
             <button type="button" class="btn btn-light btn-sm" (click)="cerrarModalPassword()">Cancelar</button>
-            <button type="submit" class="btn btn-primary-custom btn-sm" [disabled]="loadingPassword || passwordForm.invalid">
+            <button type="submit" class="btn btn-primary-custom btn-sm"
+              [disabled]="loadingPassword || passwordForm.invalid">
               <span *ngIf="!loadingPassword">Guardar Contraseña</span>
               <span *ngIf="loadingPassword">Actualizando...</span>
             </button>

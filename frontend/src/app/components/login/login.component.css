@@ -1,162 +1,167 @@
-/* ============================================
-   LOGIN - TOYOTA STYLE
-   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-.login-container {
-  display: flex;
+/* ============================================
+   BACKGROUND GLOBAL
+   ============================================ */
+.login-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   min-height: 100vh;
-  background: #FFFFFF;
-}
-
-/* ============================================
-   LADO IZQUIERDO
-   ============================================ */
-.login-left {
-  flex: 1.2;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 50px 40px 70px;
-  background: linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 40%, #EB0A1E 100%);
+  background-color: #0A0B0E;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.16) 0%, transparent 65%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 35px 35px, 35px 35px;
+  z-index: 99999;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================
+   TARJETA CONTENEDORA
+   ============================================ */
+.main-card {
+  display: flex;
+  width: 100%;
+  max-width: 980px;
+  min-height: 560px;
+  background: #FFFFFF;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 45px rgba(197, 160, 89, 0.12);
+  margin: auto;
+}
+
+/* ============================================
+   LADO IZQUIERDO (BANNER)
+   ============================================ */
+.card-left {
+  flex: 1.15;
+  background: linear-gradient(145deg, #07080A 0%, #15171D 50%, #4D3A19 100%);
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 45px 50px;
   overflow: hidden;
 }
 
-.login-left::before {
-  content: '';
+.glow-top {
   position: absolute;
-  top: -30%;
-  right: -20%;
-  width: 60%;
-  height: 80%;
-  background: radial-gradient(ellipse, rgba(235, 10, 30, 0.15) 0%, transparent 70%);
-  border-radius: 50%;
+  top: -20%;
+  right: -10%;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(197, 160, 89, 0.22) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-.login-left::after {
-  content: '';
+.glow-bottom {
   position: absolute;
   bottom: -20%;
   left: -10%;
-  width: 40%;
-  height: 50%;
-  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-  border-radius: 50%;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-.login-left-content {
-  max-width: 560px;
-  width: 100%;
-  color: white;
+.card-left-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  color: #FFFFFF;
+  width: 100%;
 }
 
-.logo-container {
-  margin-bottom: 30px;
-  text-align: left;
-}
-
-.logo-team-inmotion {
-  height: 100px;
-  width: auto;
-  max-width: 100%;
-  display: block;
-  filter: brightness(0) invert(1);
-}
-
-.login-left h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 5px;
-  letter-spacing: 2px;
-}
-
-.subtitle {
-  font-size: 1.1rem;
-  color: #EB0A1E;
-  font-weight: 500;
+.logo-box {
   margin-bottom: 20px;
 }
 
-.description {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.7;
-  margin-bottom: 40px;
-}
-
-.brand-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 25px;
-}
-
-.brand-logos {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-
-.footer-toyota {
-  height: 30px;
+.img-logo-main {
+  height: 120px;
   width: auto;
-  filter: brightness(0) invert(1);
+  max-width: 100%;
+  filter: brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  display: block;
 }
 
-.brand-text {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 300;
-  letter-spacing: 1px;
+.portal-badge-container {
+  margin-bottom: 18px;
 }
 
-.copyright {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.3);
-  margin: 3px 0;
-}
-
-.version {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.2);
-}
-
-/* ============================================
-   LADO DERECHO
-   ============================================ */
-.login-right {
-  flex: 1;
-  display: flex;
+.portal-badge {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 40px 70px 40px 30px;
-  background: #FFFFFF;
-}
-
-.login-card {
-  max-width: 400px;
-  width: 100%;
-  background: white;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-}
-
-.login-card h2 {
-  font-size: 1.6rem;
-  color: #1A1A1A;
-  margin-bottom: 5px;
+  gap: 8px;
+  background: rgba(197, 160, 89, 0.15);
+  border: 1px solid rgba(197, 160, 89, 0.35);
+  color: #D4AF37;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.72rem;
   font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.main-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #FFFFFF;
+  margin-bottom: 10px;
   letter-spacing: -0.02em;
 }
 
-.login-subtitle {
-  color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 28px;
+.card-left .description {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ============================================
+   LADO DERECHO (FORMULARIO)
+   ============================================ */
+.card-right {
+  flex: 1;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 45px 50px;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 350px;
+}
+
+.form-header {
+  margin-bottom: 24px;
+}
+
+.card-right h2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.form-subtitle {
+  font-size: 0.85rem;
+  color: #6B7280;
+  margin: 0;
 }
 
 .form-group {
@@ -165,107 +170,105 @@
 
 .form-group label {
   display: block;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #1A1A1A;
-  margin-bottom: 5px;
-  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 6px;
 }
 
-.form-group input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1.5px solid #E0E0E0;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  background: #FAFAFA;
-  font-family: 'Inter', 'Montserrat', sans-serif;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #EB0A1E;
-  box-shadow: 0 0 0 3px rgba(235, 10, 30, 0.1);
-  background: white;
-}
-
-.form-group input.error {
-  border-color: #EB0A1E;
-}
-
-/* ============================================
-   ESTILOS PARA EL OJITO (TOGGLE PASSWORD)
-   ============================================ */
-.input-password-wrapper {
+.input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+}
+
+.input-custom {
   width: 100%;
+  padding: 12px 42px 12px 16px;
+  background: #F8F9FA;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  color: #111827;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
-.input-with-eye {
-  padding-right: 42px !important;
+.input-custom:focus {
+  background: #FFFFFF;
+  border-color: #9A7B3E;
+  box-shadow: 0 0 0 4px rgba(154, 123, 62, 0.14);
 }
 
-.btn-eye {
+.input-custom.error {
+  border-color: #EF4444;
+  background: #FEF2F2;
+}
+
+.btn-toggle-input {
   position: absolute;
   right: 12px;
   background: transparent;
   border: none;
-  color: #666666;
-  font-size: 1rem;
+  color: #9CA3AF;
+  font-size: 0.95rem;
   cursor: pointer;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  z-index: 2;
   transition: color 0.2s ease;
 }
 
-.btn-eye:hover {
-  color: #EB0A1E;
+.btn-toggle-input:hover {
+  color: #9A7B3E;
 }
 
 .error-text {
-  color: #EB0A1E;
+  color: #EF4444;
   font-size: 0.75rem;
   margin-top: 4px;
   display: block;
 }
 
 .error-message {
-  background: #FFEBEE;
-  color: #EB0A1E;
+  background: #FEF2F2;
+  color: #991B1B;
   padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  margin-bottom: 15px;
-  border-left: 4px solid #EB0A1E;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  margin-bottom: 16px;
+  border-left: 4px solid #EF4444;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.btn-login {
+.btn-submit {
   width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #EB0A1E 0%, #D4081A 100%);
-  color: white;
+  padding: 13px;
+  background: linear-gradient(135deg, #9A7B3E 0%, #7A5F29 100%);
+  color: #FFFFFF;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 5px;
-  font-family: 'Inter', 'Montserrat', sans-serif;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+  box-shadow: 0 4px 14px rgba(154, 123, 62, 0.28);
 }
 
-.btn-login:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(235, 10, 30, 0.35);
+.btn-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #876A31 0%, #634C1E 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(154, 123, 62, 0.38);
 }
 
-.btn-login:disabled {
-  opacity: 0.6;
+.btn-submit:disabled {
+  opacity: 0.65;
   cursor: not-allowed;
 }
 
@@ -273,14 +276,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .spinner {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border-top-color: #FFFFFF;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -289,109 +292,126 @@
   to { transform: rotate(360deg); }
 }
 
-.login-footer {
-  margin-top: 25px;
+/* ============================================
+   FOOTER DERECHO
+   ============================================ */
+.card-right-footer {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #E5E7EB;
   text-align: center;
-  padding-top: 18px;
-  border-top: 1px solid #F0F0F0;
+  width: 100%;
 }
 
-.footer-toyota-small {
-  height: 35px;
-  width: auto;
+.footer-title {
+  color: #9A7B3E;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.copyright {
+  font-size: 0.85rem;
+  color: #4B5563;
+  font-weight: 600;
+  margin: 4px 0;
+  display: block;
+}
+
+.version {
+  font-size: 0.78rem;
+  color: #9A7B3E;
+  font-weight: 500;
+  margin: 0;
+  display: block;
 }
 
 /* ============================================
-   RESPONSIVE
+   MEDIA QUERIES (RESPONSIVE)
    ============================================ */
-@media (max-width: 968px) {
-  .login-container {
+
+/* Tablets y pantallas medianas (máx. 880px) */
+@media (max-width: 880px) {
+  .login-wrapper {
+    position: relative;
+    height: auto;
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
+
+  .main-card {
     flex-direction: column;
+    max-width: 480px;
+    min-height: auto;
   }
 
-  .login-left {
-    flex: 1;
-    padding: 40px 30px;
-    min-height: 320px;
-  }
-
-  .login-left-content {
-    max-width: 100%;
-  }
-
-  .logo-container {
+  .card-left {
+    padding: 35px 25px;
     text-align: center;
   }
 
-  .logo-team-inmotion {
-    height: 80px;
+  .img-logo-main {
+    height: 90px;
     margin: 0 auto;
   }
 
-  .login-left h1 {
-    font-size: 2rem;
-    text-align: center;
+  .main-title {
+    font-size: 1.75rem;
   }
 
-  .subtitle, .description, .brand-footer {
-    text-align: center;
+  .card-left .description {
+    font-size: 0.88rem;
   }
 
-  .brand-logos {
-    justify-content: center;
-  }
-
-  .login-right {
-    flex: 1;
-    padding: 30px 20px 50px;
-  }
-
-  .login-card {
-    max-width: 100%;
-    padding: 30px;
+  .card-right {
+    padding: 35px 25px;
   }
 }
 
+/* Teléfonos móviles (máx. 480px) */
 @media (max-width: 480px) {
-  .login-left {
-    padding: 30px 20px;
-    min-height: 240px;
+  .login-wrapper {
+    padding: 12px;
   }
 
-  .logo-team-inmotion {
-    height: 60px;
+  .main-card {
+    border-radius: 20px;
   }
 
-  .login-left h1 {
-    font-size: 1.6rem;
+  .card-left, .card-right {
+    padding: 25px 20px;
   }
 
-  .subtitle {
-    font-size: 1rem;
+  .img-logo-main {
+    height: 75px;
   }
 
-  .description {
+  .main-title {
+    font-size: 1.5rem;
+  }
+
+  .card-right h2 {
+    font-size: 1.5rem;
+  }
+
+  .input-custom {
+    padding: 10px 38px 10px 14px;
     font-size: 0.85rem;
   }
 
-  .footer-toyota {
-    height: 25px;
+  .btn-submit {
+    padding: 11px;
+    font-size: 0.88rem;
   }
+}
 
-  .login-card {
-    padding: 24px 20px;
-  }
-
-  .login-card h2 {
-    font-size: 1.3rem;
-  }
-
-  .footer-toyota-small {
-    height: 28px;
-  }
-
-  .btn-login {
-    padding: 12px;
-    font-size: 0.95rem;
+/* Orientación horizontal reducida */
+@media (max-height: 620px) {
+  .login-wrapper {
+    position: relative;
+    height: auto;
+    min-height: 100vh;
   }
 }

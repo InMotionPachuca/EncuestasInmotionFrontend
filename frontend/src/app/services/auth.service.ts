@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface AuthResponse {
   token: string;
-  usuario: {
-    id: number;
-    email: string;
-    nombre: string;
-    rol: string;
-  };
+  usuario?: any;
+  rol?: string;
+  role?: string;
 }
 
 export interface UsuarioRegistro {
@@ -29,11 +27,15 @@ export interface CambioPassword {
   providedIn: 'root'
 })
 export class AuthService {
-  private authUrl = 'http://localhost:8080/api/auth';
-  private usuariosUrl = 'http://localhost:8080/api/usuarios';
+  private authUrl = `${environment.apiUrl}/auth`;
+  private usuariosUrl = `${environment.apiUrl}/usuarios`;
 
-  // Correo de Administrador Principal
-  private readonly ADMIN_EMAIL = 'oolguin@toyotapachuca.com.mx';
+  // LISTA DE ADMINISTRADORES INSTITUCIONALES POR CORREO
+  private readonly ADMIN_EMAILS = [
+    'oolguin@toyotapachuca.com.mx',
+    'cjuarez@toyotapachuca.com.mx',
+    'admin@inmotion.com'
+  ];
 
   constructor(private http: HttpClient) {}
 
@@ -45,11 +47,35 @@ export class AuthService {
     });
   }
 
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
+  }
+
+  logout(): void {
+    localStorage.clear();
+  }
+
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.authUrl}/login`, credentials);
+    return this.http.post<AuthResponse>(`${this.authUrl}/login`, credentials).pipe(
+      tap((res: AuthResponse) => {
+        const email = credentials.email.toLowerCase().trim();
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('userEmail', email);
+
+        // Si es uno de los administradores por correo, fijar rol de inmediato
+        if (this.ADMIN_EMAILS.includes(email)) {
+          localStorage.setItem('userRole', 'ADMIN');
+        } else if (res.usuario?.rol || res.usuario?.role) {
+          localStorage.setItem('userRole', (res.usuario.rol || res.usuario.role).toUpperCase().replace('ROLE_', '').trim());
+        }
+      })
+    );
   }
 
   getUserEmail(): string {
+    const emailDirecto = localStorage.getItem('userEmail');
+    if (emailDirecto) return emailDirecto.toLowerCase().trim();
+
     const userStr = localStorage.getItem('currentUser');
     if (userStr) {
       try {
@@ -57,13 +83,45 @@ export class AuthService {
         if (user && user.email) return user.email.toLowerCase().trim();
       } catch (e) {}
     }
-    return (localStorage.getItem('userEmail') || '').toLowerCase().trim();
+    return '';
   }
 
-  // Verifica si el usuario actual es oolguin@toyotapachuca.com.mx
+  getUserRole(): string {
+    const email = this.getUserEmail();
+    if (this.ADMIN_EMAILS.includes(email)) {
+      return 'ADMIN';
+    }
+
+    const directRole = localStorage.getItem('userRole');
+    if (directRole) {
+      return directRole.toUpperCase().replace('ROLE_', '').trim();
+    }
+
+    const userStr = localStorage.getItem('currentUser');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        const r = user.rol || user.role || user.perfil || '';
+        if (r) return r.toString().toUpperCase().replace('ROLE_', '').trim();
+      } catch (e) {}
+    }
+
+    return 'USER';
+  }
+
   isAdmin(): boolean {
     const email = this.getUserEmail();
-    return email === this.ADMIN_EMAIL;
+    const rol = this.getUserRole();
+    return this.ADMIN_EMAILS.includes(email) || rol === 'ADMIN' || rol === 'ROLE_ADMIN' || rol === 'ADMINISTRADOR';
+  }
+
+  isGerente(): boolean {
+    if (this.isAdmin()) {
+      return false;
+    }
+    const email = this.getUserEmail();
+    const rol = this.getUserRole();
+    return rol === 'GERENTE' || rol === 'ROLE_GERENTE' || rol === 'FACTURACION' || email.includes('facturacion');
   }
 
   cambiarPassword(datos: CambioPassword): Observable<any> {
@@ -84,7 +142,7 @@ export class AuthService {
   cambiarEstadoUsuario(id: number, activo: boolean): Observable<any> {
     return this.http.put(`${this.usuariosUrl}/${id}/estado?activo=${activo}`, {}, { headers: this.getAuthHeaders() });
   }
-  // Eliminar usuario permanentemente
+
   eliminarUsuario(id: number): Observable<any> {
     return this.http.delete(`${this.usuariosUrl}/${id}`, { headers: this.getAuthHeaders() });
   }

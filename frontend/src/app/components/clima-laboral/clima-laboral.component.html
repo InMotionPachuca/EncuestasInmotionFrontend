@@ -1,0 +1,187 @@
+<div class="clima-container-layout">
+  
+  <!-- BARRA DE PROGRESO SUPERIOR -->
+  <div class="progreso-linea-fija">
+    <div class="progreso-linea-relleno" [style.width.%]="porcentajeProgreso"></div>
+  </div>
+
+  <!-- ENCABEZADO SUPERIOR -->
+  <header class="header-clima">
+    <div class="logo-area">
+      <img src="assets/logos/inmotion.svg" alt="InMotion" class="logo-img" onerror="this.src='assets/logos/inmotion.png'">
+      <span class="logo-titulo">Evaluación Integral de Clima Laboral 2026</span>
+    </div>
+
+    <div class="header-chips">
+      <div class="badge-tiempo">
+        <i class="fas fa-stopwatch me-1"></i>
+        <span>{{ tiempoEstimadoRestante }}</span>
+      </div>
+
+      <div class="badge-privacidad">
+        <i class="fas fa-lock me-1"></i>
+        <span>100% Anónimo</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR CENTRAL DEL PASO -->
+  <main class="tarjeta-principal-paso" 
+        [class.animar-salida-next]="animando && direccionTransicion === 'next'" 
+        [class.animar-salida-prev]="animando && direccionTransicion === 'prev'"
+        [class.haptic-pulse]="seleccionEfecto">
+    
+    <div class="caja-contenido-paso">
+      
+      <!-- INDICADOR DE SECCIÓN -->
+      <div class="meta-paso-fila">
+        <span class="badge-categoria">
+          <i [class]="paso.icono + ' me-2'"></i> {{ paso.categoria }}
+        </span>
+        <span class="texto-contador">Paso {{ pasoActual + 1 }} de {{ pasos.length }}</span>
+      </div>
+
+      <!-- TÍTULO Y PREGUNTA -->
+      <h1 class="pregunta-titulo">{{ paso.pregunta }}</h1>
+      <p class="pregunta-subtitulo" *ngIf="paso.subtitulo">{{ paso.subtitulo }}</p>
+
+      <!-- 1. SELECCIÓN DE SUCURSAL CON SVGS DESDE ASSETS (PASO 1) -->
+      <div *ngIf="paso.tipo === 'agencias'" class="grid-agencias-cards">
+        <button 
+          type="button" 
+          *ngFor="let ag of agenciasVisuales; let i = index" 
+          class="card-agencia-item"
+          [class.seleccionada]="paso.valor === ag.nombre"
+          (click)="seleccionarAgencia(ag.nombre)">
+          
+          <div class="agencia-logo-box">
+            <img [src]="ag.logoSvg" [alt]="ag.nombre" class="logo-svg-item" />
+          </div>
+
+          <div class="agencia-info">
+            <span class="agencia-nombre">{{ ag.nombre }}</span>
+            <span class="agencia-subtitulo">{{ ag.subtitulo }}</span>
+          </div>
+
+          <div class="agencia-check">
+            <span class="num-atajo">[{{ i + 1 }}]</span>
+            <i class="fas fa-check-circle icono-check-agencia" *ngIf="paso.valor === ag.nombre"></i>
+          </div>
+        </button>
+      </div>
+
+      <!-- 2. OPCIONES DE SELECCIÓN SIMPLE -->
+      <div *ngIf="paso.tipo === 'select'" class="grid-opciones">
+        <button 
+          type="button" 
+          *ngFor="let opcion of paso.opciones; let i = index" 
+          class="btn-opcion-item"
+          [class.seleccionada]="paso.valor === opcion"
+          (click)="seleccionarOpcion(opcion)">
+          <span class="numero-orden">{{ i + 1 }}</span>
+          <span class="texto-opcion">{{ opcion }}</span>
+          <i class="fas fa-check icono-check" *ngIf="paso.valor === opcion"></i>
+        </button>
+      </div>
+
+      <!-- 3. ESCALA NUMÉRICA 1 A 5 -->
+      <div *ngIf="paso.tipo === 'rating'" class="contenedor-escala-calificacion">
+        <div class="fila-botones-escala">
+          <button 
+            type="button" 
+            *ngFor="let escala of ratingEscala" 
+            class="btn-escala-item"
+            [class.activo]="paso.valor === escala.num"
+            (click)="seleccionarCalificacion(escala.num)">
+            <span class="numero-escala">{{ escala.num }}</span>
+            <span class="texto-escala-etiqueta">{{ escala.label }}</span>
+            <span class="key-shortcut">[{{ escala.num }}]</span>
+          </button>
+        </div>
+
+        <div class="guia-escala-inferior">
+          <span><i class="fas fa-arrow-left me-1"></i> 1: Muy en desacuerdo</span>
+          <span class="teclado-hint"><i class="fas fa-keyboard me-1"></i> Puedes presionar números del 1 al 5</span>
+          <span>5: Totalmente de acuerdo <i class="fas fa-arrow-right ms-1"></i></span>
+        </div>
+      </div>
+
+      <!-- 4. CAMPO DE TEXTO ABIERTO -->
+      <div *ngIf="paso.tipo === 'textarea'" class="contenedor-textarea-paso">
+        <textarea 
+          [value]="paso.valor" 
+          (input)="paso.valor = $any($event.target).value"
+          rows="4" 
+          placeholder="Escribe tu respuesta con total sinceridad y libertad..."></textarea>
+        
+        <div class="acciones-textarea-fila">
+          <span class="texto-ayuda"><i class="fas fa-info-circle me-1"></i> Campo voluntario pero muy valioso</span>
+          <button type="button" class="btn-continuar-textarea" (click)="siguientePaso()">
+            <span>{{ pasoActual === pasos.length - 1 ? 'Finalizar Encuesta' : 'Continuar' }}</span>
+            <i class="fas fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 5. SELECCIÓN MÚLTIPLE DE PRIORIZACIÓN -->
+      <div *ngIf="paso.tipo === 'multiselect'" class="contenedor-multiselect-paso">
+        <div class="grid-prioridades">
+          <button 
+            type="button" 
+            *ngFor="let op of opcionesPriorizacion" 
+            class="btn-prioridad-chip"
+            [class.chip-activo]="priorizacionSeleccionadas.includes(op)"
+            [disabled]="priorizacionSeleccionadas.length >= 3 && !priorizacionSeleccionadas.includes(op)"
+            (click)="togglePriorizacion(op)">
+            <i class="fas fa-check-square me-2" *ngIf="priorizacionSeleccionadas.includes(op)"></i>
+            <i class="far fa-square me-2" *ngIf="!priorizacionSeleccionadas.includes(op)"></i>
+            {{ op }}
+          </button>
+        </div>
+
+        <div class="otro-campo-box mt-3">
+          <label class="label-otro">Otro aspecto (opcional):</label>
+          <input type="text" [(ngModel)]="otroPriorizacion" placeholder="Escribe otro aspecto relevante..." class="input-otro" />
+        </div>
+
+        <div class="acciones-textarea-fila mt-4">
+          <span class="texto-ayuda">Seleccionadas: {{ priorizacionSeleccionadas.length }} de 3</span>
+          <button type="button" class="btn-continuar-textarea" (click)="siguientePaso()">
+            <span>Finalizar y Enviar Respuestas</span>
+            <i class="fas fa-check-circle ms-2"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- BARRA DE PIE CON NAVEGACIÓN -->
+  <footer class="footer-clima">
+    <button 
+      type="button" 
+      class="btn-navegacion btn-retroceder" 
+      *ngIf="pasoActual > 0" 
+      (click)="pasoAnterior()">
+      <i class="fas fa-chevron-left me-2"></i> Anterior
+    </button>
+    <div *ngIf="pasoActual === 0"></div>
+
+    <div class="indicador-porcentaje">
+      <div class="barra-mini"><div class="barra-mini-relleno" [style.width.%]="porcentajeProgreso"></div></div>
+      <span>{{ porcentajeProgreso }}% completado</span>
+    </div>
+
+    <button 
+      type="button" 
+      class="btn-navegacion btn-avanzar" 
+      *ngIf="paso.tipo !== 'textarea' && paso.tipo !== 'multiselect'"
+      [disabled]="!paso.valor || loading" 
+      (click)="siguientePaso()">
+      <span>{{ pasoActual === pasos.length - 1 ? 'Enviar Respuestas' : 'Siguiente' }}</span>
+      <i class="fas ms-2" [class.fa-chevron-right]="!loading" [class.fa-spinner]="loading" [class.fa-spin]="loading"></i>
+    </button>
+  </footer>
+
+</div>

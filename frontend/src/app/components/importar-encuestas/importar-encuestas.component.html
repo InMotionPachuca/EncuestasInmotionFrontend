@@ -18,7 +18,7 @@
         <i class="fas fa-file-excel"></i>
       </div>
       <h3>Seleccione el archivo Excel</h3>
-      <p>El archivo debe contener las columnas: FECHA, NOMBRE CLIENTE, ASESOR, TELEFONO, UNIDAD, MARCA</p>
+      <p>El archivo debe contener las columnas: FECHA ORDEN, NOMBRE CLIENTE, ASESOR, TELEFONO 1, UNIDAD, MARCA</p>
       <input type="file" accept=".xlsx,.xls" (change)="onFileChange($event)" #fileInput>
     </div>
 
@@ -70,8 +70,14 @@
           (click)="cambiarPlantilla('VENTA')">
           <i class="fas fa-car me-1"></i> Venta
         </button>
+        <button 
+          class="btn-plantilla" 
+          [class.active]="tipoPlantilla === 'COMPRA_AUTO'"
+          (click)="cambiarPlantilla('COMPRA_AUTO')">
+          <i class="fas fa-key me-1"></i> Compra Auto
+        </button>
       </div>
-      <p class="plantilla-info">Plantilla actual: <strong>{{ tipoPlantilla === 'VENTA' ? 'Venta' : 'Post Venta' }}</strong></p>
+      <p class="plantilla-info">Plantilla actual: <strong>{{ tipoPlantilla === 'COMPRA_AUTO' ? 'Compra Auto' : (tipoPlantilla === 'VENTA' ? 'Venta' : 'Post Venta') }}</strong></p>
     </div>
 
     <div *ngIf="procesando" class="progress-status">
@@ -100,8 +106,8 @@
             <td><strong>{{ cliente.nombreCliente }}</strong></td>
             <td>{{ cliente.telefono }}</td>
             <td>{{ cliente.asesor }}</td>
-            <td>{{ cliente.unidad }}</td>
-            <td>{{ cliente.marcaNombre || 'Subaru' }}</td>
+            <td>{{ cliente.unidad }} {{ cliente.anio }}</td>
+            <td>{{ cliente.marcaNombre }}</td>
             <td>
               <span *ngIf="!cliente.procesado" class="badge badge-pending"><i class="fas fa-clock me-1"></i>Pendiente</span>
               <span *ngIf="cliente.procesado && cliente.exito" class="badge badge-success"><i class="fas fa-check me-1"></i>Éxito</span>
@@ -116,7 +122,7 @@
     <div *ngIf="encuestasGeneradas.length > 0" class="generated-section">
       <h4>Encuestas Generadas</h4>
       <div class="table-responsive">
-        <table class="table">
+        <table class="table align-middle">
           <thead>
             <tr>
               <th>Cliente</th>
@@ -129,9 +135,21 @@
           <tbody>
             <ng-container *ngFor="let item of encuestasGeneradas">
               <tr>
-                <td>{{ item.cliente }}</td>
+                <td><strong>{{ item.cliente }}</strong></td>
                 <td>{{ item.marca }}</td>
-                <td><code class="link-code">{{ item.link }}</code></td>
+                <td>
+                  <div class="d-flex align-items-center gap-1" style="max-width: 260px;">
+                    <input type="text" 
+                           class="form-control form-control-sm text-truncate bg-light border" 
+                           [value]="item.link" 
+                           readonly />
+                    <button class="btn btn-sm btn-outline-secondary" 
+                            (click)="copiarLink(item.token)" 
+                            title="Copiar enlace">
+                      <i class="fas fa-copy"></i>
+                    </button>
+                  </div>
+                </td>
                 <td>
                   <button class="btn-ver-plantilla" (click)="item.mostrarPlantilla = !item.mostrarPlantilla">
                     <i class="fas me-1" [class.fa-eye]="!item.mostrarPlantilla" [class.fa-eye-slash]="item.mostrarPlantilla"></i>
