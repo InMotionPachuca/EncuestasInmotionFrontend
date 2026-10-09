@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from './services/auth.service';
 
-interface MenuItem {
+export interface MenuItem {
   route: string;
   label: string;
   icon: string;
@@ -13,6 +13,11 @@ interface MenuItem {
   adminOnly?: boolean;
   gerenteOnly?: boolean;
   satisfaccionOnly?: boolean;
+}
+
+export interface MenuItemGroup {
+  groupName: string;
+  items: MenuItem[];
 }
 
 @Component({
@@ -24,27 +29,49 @@ export class AppComponent {
   title = 'encuestas-app';
   sidebarOculta = false;
 
-  private todosLosMenuItems: MenuItem[] = [
-    // --- VISTAS DE SATISFACCIÓN (ADMIN Y USER) ---
-    { route: '/dashboard', label: 'CXI', icon: 'fas fa-chart-pie', satisfaccionOnly: true },
-    { route: '/dashboard-qr', label: 'CXI QR', icon: 'fas fa-qrcode', badge: null, badgeClass: 'bg-warning text-dark', satisfaccionOnly: true },
-    { route: '/listar', label: 'Encuestas', icon: 'fas fa-list-alt', satisfaccionOnly: true },
-    { route: '/encuestas-qr', label: 'Respuestas QR', icon: 'fas fa-mobile-alt', satisfaccionOnly: true },
-    { route: '/contestar-manual', label: 'Contestar Manual', icon: 'fas fa-edit', satisfaccionOnly: true },
+  // Variables para la caché del menú (evitan el bucle infinito)
+  private roleActual: string = '';
+  private menuAgrupadoCache: MenuItemGroup[] = [];
 
-    // --- MÓDULO DE CLIMA LABORAL ---
-    { route: '/clima-laboral', label: 'Encuesta Clima', icon: 'fas fa-clipboard-check', satisfaccionOnly: true },
-    { route: '/dashboard-clima', label: 'Tablero Clima', icon: 'fas fa-chart-pie', badge: null, badgeClass: 'bg-primary', adminOnly: true },
-
-    // --- MÓDULOS DE FACTURACIÓN (GERENTE Y ADMIN) ---
-    { route: '/dashboard-facturacion', label: 'Tablero Facturación', icon: 'fas fa-chart-line', gerenteOnly: true },
-    { route: '/crear', label: 'Facturación', icon: 'fas fa-file-invoice-dollar', gerenteOnly: true },
-
-    // --- MÓDULOS EXCLUSIVOS DE ADMINISTRADOR ---
-    { route: '/usuarios', label: 'Usuarios', icon: 'fas fa-users-cog', adminOnly: true },
-    { route: '/asesores', label: 'Asesores', icon: 'fas fa-user-tie', adminOnly: true },
-    { route: '/importar', label: 'Importar Datos', icon: 'fas fa-file-upload', adminOnly: true },
-    { route: '/generar-qr', label: 'Generar QR', icon: 'fas fa-qrcode', adminOnly: true }
+  private menuGroups: MenuItemGroup[] = [
+    {
+      groupName: 'CXI',
+      items: [
+        { route: '/dashboard', label: 'CXI', icon: 'fas fa-chart-pie', satisfaccionOnly: true },
+        { route: '/importar', label: 'Importar Datos', icon: 'fas fa-file-upload', adminOnly: true },
+        { route: '/listar', label: 'Encuestas', icon: 'fas fa-list-alt', satisfaccionOnly: true },
+        { route: '/contestar-manual', label: 'Encuesta Manual', icon: 'fas fa-edit', satisfaccionOnly: true }
+      ]
+    },
+    {
+      groupName: 'Facturación',
+      items: [
+        { route: '/dashboard-facturacion', label: 'Facturación', icon: 'fas fa-chart-line', gerenteOnly: true },
+        { route: '/crear', label: 'Crear Factura', icon: 'fas fa-file-invoice-dollar', gerenteOnly: true }
+      ]
+    },
+    {
+      groupName: 'QR',
+      items: [
+        { route: '/dashboard-qr', label: 'CXI QR', icon: 'fas fa-qrcode', badge: null, badgeClass: 'bg-warning text-dark', satisfaccionOnly: true },
+        { route: '/encuestas-qr', label: 'Respuestas QR', icon: 'fas fa-mobile-alt', satisfaccionOnly: true },
+        { route: '/generar-qr', label: 'Generar QR', icon: 'fas fa-qrcode', adminOnly: true }
+      ]
+    },
+    {
+      groupName: 'Clima Laboral',
+      items: [
+        { route: '/dashboard-clima', label: 'Clima', icon: 'fas fa-chart-pie', badge: null, badgeClass: 'bg-primary', adminOnly: true },
+        { route: '/clima-laboral', label: 'Encuesta Clima', icon: 'fas fa-clipboard-check', satisfaccionOnly: true }
+      ]
+    },
+    {
+      groupName: 'Configuración',
+      items: [
+        { route: '/usuarios', label: 'Usuarios', icon: 'fas fa-users-cog', adminOnly: true },
+        { route: '/asesores', label: 'Asesores', icon: 'fas fa-user-tie', adminOnly: true }
+      ]
+    }
   ];
 
   mostrarMenuUsuario = false;
@@ -72,24 +99,46 @@ export class AppComponent {
     this.sidebarOculta = !this.sidebarOculta;
   }
 
-  get menuItems(): MenuItem[] {
+  get filteredMenuGroups(): MenuItemGroup[] {
+    let rolEvaluado = 'satisfaccion';
     if (this.authService.isAdmin()) {
-      return this.todosLosMenuItems;
+      rolEvaluado = 'admin';
+    } else if (this.authService.isGerente()) {
+      rolEvaluado = 'gerente';
     }
-    if (this.authService.isGerente()) {
-      return this.todosLosMenuItems.filter(item => item.gerenteOnly);
+
+    // Si el rol no ha cambiado y ya tenemos caché, devolvemos la caché
+    if (this.roleActual === rolEvaluado && this.menuAgrupadoCache.length > 0) {
+      return this.menuAgrupadoCache;
     }
-    return this.todosLosMenuItems.filter(item => item.satisfaccionOnly);
+
+    // Si es la primera vez o cambió el rol, calculamos el menú
+    this.roleActual = rolEvaluado;
+    this.menuAgrupadoCache = this.menuGroups.map(group => {
+      let itemsFiltrados: MenuItem[] = [];
+
+      if (rolEvaluado === 'admin') {
+        itemsFiltrados = group.items;
+      } else if (rolEvaluado === 'gerente') {
+        itemsFiltrados = group.items.filter(item => item.gerenteOnly);
+      } else {
+        itemsFiltrados = group.items.filter(item => item.satisfaccionOnly);
+      }
+
+      return { ...group, items: itemsFiltrados };
+    }).filter(group => group.items.length > 0);
+
+    return this.menuAgrupadoCache;
   }
 
   isPublicRoute(): boolean {
     const url = this.router.url;
-    return url.includes('/login') || 
-           url.includes('/responder') || 
-           url.includes('/evaluar') || 
-           url.includes('/gracias') ||
-           url.includes('/clima-laboral') ||
-           url.includes('/gracias-clima');
+    return url.includes('/login') ||
+      url.includes('/responder') ||
+      url.includes('/evaluar') ||
+      url.includes('/gracias') ||
+      url.includes('/clima-laboral') ||
+      url.includes('/gracias-clima');
   }
 
   toggleUserMenu(): void {
@@ -105,16 +154,12 @@ export class AppComponent {
   }
 
   getUserName(): string {
-    const name = this.authService.getUserName();
-    if (name && name !== 'Usuario') {
-      return `Hola, ${name}`;
-    }
     const email = this.authService.getUserEmail();
     if (email && email.includes('@')) {
       const usuarioLimpio = email.split('@')[0];
       return `Hola, ${usuarioLimpio}`;
     }
-    return 'Hola, Administrador';
+    return 'Hola, usuario';
   }
 
   getUserEmail(): string {
@@ -160,8 +205,8 @@ export class AppComponent {
       },
       error: (err: HttpErrorResponse) => {
         this.loadingPassword = false;
-        this.mensajePasswordError = typeof err.error === 'string' 
-          ? err.error 
+        this.mensajePasswordError = typeof err.error === 'string'
+          ? err.error
           : (err.error?.message || 'Error al cambiar la contraseña.');
       }
     });

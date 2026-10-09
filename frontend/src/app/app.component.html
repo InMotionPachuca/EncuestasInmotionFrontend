@@ -45,24 +45,10 @@
             <div class="dropdown-header border-bottom pb-2 mb-2">
               <small class="text-muted d-block" style="font-size: 0.75rem;">Sesión activa:</small>
               <span class="fw-bold text-dark small text-truncate d-block">{{ getUserEmail() }}</span>
-              <div class="mt-2">
-                <span *ngIf="authService.isAdmin()" class="badge bg-warning text-dark px-2 py-1" style="font-size: 0.72rem; font-weight: 700; border-radius: 4px;">
-                  <i class="fas fa-shield-alt me-1"></i> ROL: ADMINISTRADOR
-                </span>
-                <span *ngIf="authService.isGerente() && !authService.isAdmin()" class="badge bg-info text-white px-2 py-1" style="font-size: 0.72rem; font-weight: 700; border-radius: 4px;">
-                  <i class="fas fa-file-invoice me-1"></i> ROL: GERENTE
-                </span>
-                <span *ngIf="!authService.isAdmin() && !authService.isGerente()" class="badge bg-secondary text-white px-2 py-1" style="font-size: 0.72rem; font-weight: 600; border-radius: 4px;">
-                  <i class="fas fa-user me-1"></i> ROL: OPERATIVO
-                </span>
-              </div>
             </div>
 
             <button class="dropdown-item-custom" (click)="abrirModalPassword()">
               <i class="fas fa-key text-warning me-2"></i> Cambiar Contraseña
-            </button>
-            <button class="dropdown-item-custom text-danger" (click)="logout()">
-              <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión / Cambiar Usuario
             </button>
           </div>
         </div>
@@ -83,15 +69,27 @@
     <aside class="sidebar-container" [class.sidebar-collapsed]="sidebarOculta">
       <nav class="sidebar-menu">
         <ul class="nav flex-column p-2 gap-1">
-          <li class="nav-item" *ngFor="let item of menuItems">
-            <a [routerLink]="item.route" routerLinkActive="active" class="nav-link-custom" [title]="item.label">
-              <i [class]="item.icon + ' icon-menu'"></i>
-              <span class="menu-text" *ngIf="!sidebarOculta">{{ item.label }}</span>
-              <span *ngIf="item.badge && !sidebarOculta" class="badge ms-auto" [ngClass]="item.badgeClass">
-                {{ item.badge }}
-              </span>
-            </a>
-          </li>
+          <ng-container *ngFor="let group of filteredMenuGroups">
+            
+            <!-- Título del grupo (oculto si la sidebar está colapsada) -->
+            <li class="nav-item mt-3 mb-1 px-2" *ngIf="!sidebarOculta">
+              <small class="text-muted fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">
+                {{ group.groupName }}
+              </small>
+            </li>
+
+            <!-- Elementos del menú en el grupo -->
+            <li class="nav-item" *ngFor="let item of group.items">
+              <a [routerLink]="item.route" routerLinkActive="active" class="nav-link-custom" [title]="item.label">
+                <i [class]="item.icon + ' icon-menu'"></i>
+                <span class="menu-text" *ngIf="!sidebarOculta">{{ item.label }}</span>
+                <span *ngIf="item.badge && !sidebarOculta" class="badge ms-auto" [ngClass]="item.badgeClass">
+                  {{ item.badge }}
+                </span>
+              </a>
+            </li>
+
+          </ng-container>
         </ul>
       </nav>
     </aside>
