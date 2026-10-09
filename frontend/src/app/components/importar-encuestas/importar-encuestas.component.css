@@ -53,20 +53,37 @@
   border-radius: 8px;
   background: #FAFAFA;
   text-align: center;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   cursor: pointer;
 }
 
-.upload-box:hover {
+.upload-box:hover, .upload-box.drag-over {
   border-color: #C5A059;
   background: #FDFBF7;
+}
+
+.upload-box.drag-over {
+  border-color: #C5A059;
+  background: #FDF8ED;
+  box-shadow: 0 0 24px rgba(197, 160, 89, 0.22);
+  transform: scale(1.01);
 }
 
 .upload-icon {
   font-size: 1.8rem !important;
   color: #C5A059;
   margin-bottom: 6px;
+  transition: transform 0.2s ease;
+}
+
+.upload-icon.bounce {
+  animation: iconBounce 0.45s infinite alternate ease-in-out;
+}
+
+@keyframes iconBounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-8px); }
 }
 
 .upload-box h3 {
@@ -434,4 +451,278 @@
   .results-header { flex-direction: column; align-items: flex-start; }
   .results-actions { width: 100%; }
   .btn-generate, .btn-secondary { flex: 1; text-align: center; }
+  .controls-toolbar { flex-direction: column; align-items: flex-start; }
+}
+
+/* NUEVOS ESTILOS PARA COMPROCARS, CHECKBOXES Y EDICIÓN EN LÍNEA */
+.badge-comprocars-detectado {
+  background: #E8DAEF;
+  color: #6C3483;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid #D2B4DE;
+  display: inline-flex;
+  align-items: center;
+}
+
+.counters-badge-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.badge-counter {
+  background: #E9ECEF;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #495057;
+}
+
+.badge-counter-selected {
+  background: #FFF3CD;
+  color: #856404;
+  border: 1px solid #FFEEBA;
+}
+
+.controls-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  background: #F8F9FA;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #E9ECEF;
+  margin-top: 14px;
+}
+
+.toolbar-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #495057;
+  margin-right: 8px;
+}
+
+.btn-plantilla-compras {
+  position: relative;
+}
+
+.badge-sub-pill {
+  background: #6C3483;
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+.bulk-selection-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.btn-bulk-action {
+  background: #FFFFFF;
+  border: 1px solid #CED4DA;
+  color: #495057;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-bulk-action:hover {
+  background: #E9ECEF;
+  color: #212529;
+}
+
+.btn-bulk-warning {
+  border-color: #FFC107;
+  color: #856404;
+}
+
+.btn-bulk-warning:hover {
+  background: #FFF3CD;
+}
+
+.progress-status-box {
+  background: #EBF5FB;
+  border: 1px solid #AED6F1;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 14px;
+  font-size: 0.84rem;
+  color: #1B4F72;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: #D4E6F1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #2980B9;
+  transition: width 0.3s ease;
+}
+
+.table-responsive-box {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #E9ECEF;
+  background: white;
+}
+
+.table-preview, .table-generated {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.table-preview th, .table-generated th {
+  background: #2B2D42;
+  color: #FFFFFF;
+  padding: 10px 12px;
+  font-weight: 600;
+  text-align: left;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+.table-preview td, .table-generated td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #E9ECEF;
+}
+
+.row-deseleccionada {
+  opacity: 0.45;
+  background: #F8F9FA;
+}
+
+.form-check-input-master, .form-check-input-row {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: #C5A059;
+}
+
+.table-inline-input {
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: #212529;
+  transition: all 0.2s;
+}
+
+.table-inline-input:hover {
+  border-color: #CED4DA;
+  background: #FFFFFF;
+}
+
+.table-inline-input:focus {
+  outline: none;
+  border-color: #C5A059;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 2px rgba(197, 160, 89, 0.2);
+}
+
+.actions-buttons-group {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.btn-direct-whatsapp {
+  background: #25D366;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-direct-whatsapp:hover {
+  background: #1EBE5D;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-copied-pulse {
+  background: #198754 !important;
+  color: white !important;
+  animation: copyPulse 0.4s ease;
+}
+
+@keyframes copyPulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #C5A059 0%, #E0C283 50%, #C5A059 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+  transition: width 0.3s ease;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.badge-marca-tag {
+  background: #EAECEE;
+  color: #2C3E50;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.plantilla-preview-card {
+  background: #F8F9FA;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #DEE2E6;
+}
+
+/* CONTENEDOR DE LOGO NEUTRAL CON FONDO BLANCO Y OBJECT-FIT CONTAIN (AGENT.md 3.3) */
+.brand-logo-neutral-container {
+  background: #FFFFFF !important;
+  border: 1px solid #E9ECEF;
+  border-radius: 8px;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.brand-logo-img {
+  max-height: 55px;
+  max-width: 140px;
+  width: auto;
+  height: auto;
+  object-fit: contain !important;
+  filter: none !important;
 }

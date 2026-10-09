@@ -115,17 +115,26 @@ export class LoginComponent implements OnInit {
       next: (res: AuthResponse) => {
         this.loading = false;
         
-        // Guardar token y usuario
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('userEmail', email);
+        // Guardar token, email y rol
+        const emailLimpio = (res.email || email).toLowerCase().trim();
+        const rawRole = res.rol || res.role || res.usuario?.rol || res.usuario?.role || '';
+        let role = rawRole.toString().toUpperCase().replace('ROLE_', '').trim();
+        const userName = res.nombre || res.usuario?.nombre || emailLimpio.split('@')[0];
 
-        if (res.usuario) {
-          localStorage.setItem('currentUser', JSON.stringify(res.usuario));
-          const rolDetectado = res.usuario.rol || res.usuario.role || res.rol || res.role || '';
-          if (rolDetectado) {
-            localStorage.setItem('userRole', rolDetectado.toString().toUpperCase().replace('ROLE_', '').trim());
-          }
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('userEmail', emailLimpio);
+        localStorage.setItem('userName', userName);
+
+        if (this.authService.isAdmin() || role === 'ADMIN' || role === 'ADMINISTRADOR' || emailLimpio.startsWith('admin')) {
+          role = 'ADMIN';
         }
+
+        localStorage.setItem('userRole', role || 'USER');
+        localStorage.setItem('currentUser', JSON.stringify({
+          email: emailLimpio,
+          nombre: userName,
+          rol: role || 'USER'
+        }));
 
         // Redirección según rol
         if (this.authService.isGerente() && !this.authService.isAdmin()) {

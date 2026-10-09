@@ -41,20 +41,20 @@
 }
 
 .custom-input:focus, .custom-textarea:focus {
-  border-color: #3b82f6;
+  border-color: #C5A059;
   background-color: white;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.15);
   outline: none;
 }
 
 .pregunta-box {
   background-color: #ffffff;
-  border: 2px solid #f1f5f9;
+  border: 1.5px solid #f1f5f9;
   transition: all 0.3s ease;
 }
 
 .pregunta-box:hover {
-  border-color: #e2e8f0;
+  border-color: rgba(197, 160, 89, 0.4);
   transform: translateY(-2px);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
 }
@@ -79,23 +79,28 @@
 
 .star-icon:hover {
   transform: scale(1.2);
+  color: #9A7B3E;
 }
 
 .star-icon.active {
-  color: #fbbf24;
-  text-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+  color: #C5A059;
+  text-shadow: 0 0 15px rgba(197, 160, 89, 0.5);
+  filter: drop-shadow(0 2px 6px rgba(197, 160, 89, 0.3));
 }
 
 .btn-submit {
-  background: linear-gradient(to right, #2563eb, #3b82f6);
+  background: linear-gradient(135deg, #C5A059 0%, #9A7B3E 100%);
   border: none;
+  color: white;
+  font-weight: 600;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(154, 123, 62, 0.25);
 }
 
-.btn-submit:hover {
-  background: linear-gradient(to right, #1d4ed8, #2563eb);
+.btn-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #9A7B3E 0%, #755B29 100%);
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 8px 22px rgba(154, 123, 62, 0.35);
 }
 
 .btn-submit:disabled {

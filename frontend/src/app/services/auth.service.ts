@@ -5,6 +5,8 @@ import { environment } from '../../environments/environment';
 
 export interface AuthResponse {
   token: string;
+  email?: string;
+  nombre?: string;
   usuario?: any;
   rol?: string;
   role?: string;
@@ -32,9 +34,10 @@ export class AuthService {
 
   // LISTA DE ADMINISTRADORES INSTITUCIONALES POR CORREO
   private readonly ADMIN_EMAILS = [
-    'oolguin@toyotapachuca.com.mx',
+    'admin@toyotapachuca.com.mx',
+    'admin@inmotion.com',
     'cjuarez@toyotapachuca.com.mx',
-    'admin@inmotion.com'
+    'oolguin@toyotapachuca.com.mx'
   ];
 
   constructor(private http: HttpClient) {}
@@ -58,16 +61,21 @@ export class AuthService {
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.authUrl}/login`, credentials).pipe(
       tap((res: AuthResponse) => {
-        const email = credentials.email.toLowerCase().trim();
+        const email = (res.email || credentials.email).toLowerCase().trim();
+        const rawRole = res.rol || res.role || res.usuario?.rol || res.usuario?.role || '';
+        let role = rawRole.toString().toUpperCase().replace('ROLE_', '').trim();
+        const userName = res.nombre || res.usuario?.nombre || email.split('@')[0];
+
         localStorage.setItem('token', res.token);
         localStorage.setItem('userEmail', email);
+        localStorage.setItem('userName', userName);
 
-        // Si es uno de los administradores por correo, fijar rol de inmediato
-        if (this.ADMIN_EMAILS.includes(email)) {
-          localStorage.setItem('userRole', 'ADMIN');
-        } else if (res.usuario?.rol || res.usuario?.role) {
-          localStorage.setItem('userRole', (res.usuario.rol || res.usuario.role).toUpperCase().replace('ROLE_', '').trim());
+        // Si es admin por lista, prefijo admin o rol del backend
+        if (this.ADMIN_EMAILS.includes(email) || email.startsWith('admin') || role === 'ADMIN' || role === 'ADMINISTRADOR') {
+          role = 'ADMIN';
         }
+
+        localStorage.setItem('userRole', role || 'USER');
       })
     );
   }
@@ -83,12 +91,50 @@ export class AuthService {
         if (user && user.email) return user.email.toLowerCase().trim();
       } catch (e) {}
     }
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const payload = JSON.parse(atob(parts[1]));
+          const email = payload.sub || payload.email || payload.username;
+          if (email) {
+            const clean = email.toLowerCase().trim();
+            localStorage.setItem('userEmail', clean);
+            return clean;
+          }
+        }
+      } catch (e) {}
+    }
+
     return '';
+  }
+
+  getUserName(): string {
+    const nameDirecto = localStorage.getItem('userName');
+    if (nameDirecto) return nameDirecto;
+    const userStr = localStorage.getItem('currentUser');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user && user.nombre) return user.nombre;
+      } catch (e) {}
+    }
+    const email = this.getUserEmail();
+    if (email === 'admin@toyotapachuca.com.mx') return 'Administrador General';
+    if (email === 'cjuarez@toyotapachuca.com.mx') return 'Cecilia Juárez';
+    if (email === 'oolguin@toyotapachuca.com.mx') return 'Oscar Olguín';
+    if (email === 'admin@inmotion.com') return 'Administrador InMotion';
+    return email ? email.split('@')[0] : 'Usuario';
   }
 
   getUserRole(): string {
     const email = this.getUserEmail();
-    if (this.ADMIN_EMAILS.includes(email)) {
+    if (this.ADMIN_EMAILS.includes(email) || email.startsWith('admin')) {
+      if (localStorage.getItem('userRole') !== 'ADMIN') {
+        localStorage.setItem('userRole', 'ADMIN');
+      }
       return 'ADMIN';
     }
 
@@ -112,7 +158,11 @@ export class AuthService {
   isAdmin(): boolean {
     const email = this.getUserEmail();
     const rol = this.getUserRole();
-    return this.ADMIN_EMAILS.includes(email) || rol === 'ADMIN' || rol === 'ROLE_ADMIN' || rol === 'ADMINISTRADOR';
+    return this.ADMIN_EMAILS.includes(email) || 
+           email.startsWith('admin') || 
+           rol === 'ADMIN' || 
+           rol === 'ROLE_ADMIN' || 
+           rol === 'ADMINISTRADOR';
   }
 
   isGerente(): boolean {

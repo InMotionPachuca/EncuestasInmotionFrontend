@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import * as XLSX from 'xlsx';
+import { firstValueFrom } from 'rxjs';
 import { EncuestaService } from '../../services/encuesta.service';
+import { PlantillaService } from '../../services/plantilla.service';
+import { ClienteImportacionExcel } from '../../models/encuesta.model';
 
 @Component({
   selector: 'app-importar-encuestas',
@@ -9,7 +12,7 @@ import { EncuestaService } from '../../services/encuesta.service';
 })
 export class ImportarEncuestasComponent {
   archivoSeleccionado: File | null = null;
-  datosExcel: any[] = [];
+  datosExcel: ClienteImportacionExcel[] = [];
   loading = false;
   procesando = false;
   encuestasGeneradas: any[] = [];
@@ -20,30 +23,39 @@ export class ImportarEncuestasComponent {
   fallidos = 0;
   mensajeToast = '';
   tipoToast = '';
-  tipoPlantilla: 'POSTVENTA' | 'VENTA' | 'COMPRA_AUTO' = 'POSTVENTA';
+  tipoPlantilla: 'POSTVENTA' | 'VENTA' | 'COMPRA' = 'POSTVENTA';
   mostrarSelectorPlantilla = false;
+  esSegmentoComprasDetectado = false;
+  isDragging = false;
+  copiadoTokens: { [key: string]: boolean } = {};
+  copiadoPlantillaIdx: number | null = null;
 
-  imagenesMarca: { [key: string]: string } = {
-    'Toyota Pachuca': 'assets/whatsapp/toyotaPachuca.jpeg',
-    'Toyota Tulancingo': 'assets/whatsapp/toyotaTulancingo.jpeg',
-    'Carsline Pachuca': 'assets/whatsapp/carsline.png',
-    'Carsline Querétaro': 'assets/whatsapp/carsline.png',
-    'GWM': 'assets/whatsapp/gwm.png',
-    'Subaru': 'assets/whatsapp/subaruPachuca.png',
-    'ComproCars Querétaro': 'assets/whatsapp/comproCars.png',
-    'ComproCars Pachuca': 'assets/whatsapp/comproCars.png'
-  };
+  constructor(
+    private encuestaService: EncuestaService,
+    public plantillaService: PlantillaService
+  ) {}
 
-  emojis = {
-    manosArriba: '🙌🏽',
-    auto: '🚗',
-    herramienta: '🧰',
-    gracias: '☺️',
-    bienvenida: '🙌🏽',
-    punto: '👉'
-  };
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
 
-  constructor(private encuestaService: EncuestaService) {}
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+  }
+
+  onFileDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+    if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
+      this.archivoSeleccionado = event.dataTransfer.files[0];
+      this.procesarArchivo();
+    }
+  }
 
   onFileChange(event: any) {
     const target = event.target as HTMLInputElement;
@@ -59,37 +71,83 @@ export class ImportarEncuestasComponent {
     setTimeout(() => { this.mensajeToast = ''; }, 4000);
   }
 
-  normalizarTexto(texto: string): string {
-    return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
+  get totalSeleccionados(): number {
+    return this.datosExcel.filter(d => d.seleccionado).length;
   }
 
-  obtenerMarcaId(nombreMarca: string): number {
-    if (!nombreMarca) return 2;
-    const limpio = this.normalizarTexto(nombreMarca);
+  get todosSeleccionados(): boolean {
+    return this.datosExcel.length > 0 && this.datosExcel.every(d => d.seleccionado);
+  }
+
+  toggleSeleccionarTodos() {
+    const nuevoEstado = !this.todosSeleccionados;
+    this.datosExcel.forEach(d => {
+      if (!d.procesado) {
+        d.seleccionado = nuevoEstado;
+      }
+    });
+  }
+
+  seleccionarTodos() {
+    this.datosExcel.forEach(d => {
+      if (!d.procesado) d.seleccionado = true;
+    });
+  }
+
+  invertirSeleccion() {
+    this.datosExcel.forEach(d => {
+      if (!d.procesado) d.seleccionado = !d.seleccionado;
+    });
+  }
+
+  deseleccionarSinTelefono() {
+    let descartados = 0;
+    this.datosExcel.forEach(d => {
+      const tel = (d.telefono || '').replace(/\D/g, '');
+      if (tel.length < 10) {
+        d.seleccionado = false;
+        descartados++;
+      }
+    });
+    this.mostrarMensaje(`Se desmarcaron ${descartados} registros sin teléfono válido de 10 dígitos`, 'info');
+  }
+
+  obtenerMarcaId(nombreMarca: string, esCompras: boolean = false): number {
+    if (!nombreMarca) return esCompras ? 7 : 2;
+    const limpio = this.plantillaService.normalizarTexto(nombreMarca);
+
+    if (esCompras) {
+      if (limpio.includes('queretaro') || limpio.includes('qro')) return 6; // ComproCars Querétaro
+      return 7; // ComproCars Pachuca por defecto
+    }
 
     if (limpio.includes('toyota') && limpio.includes('tulancingo')) return 8;
     if (limpio.includes('toyota')) return 1;
-    if (limpio.includes('carsline') && limpio.includes('queretaro')) return 3;
+    if (limpio.includes('carsline') && (limpio.includes('queretaro') || limpio.includes('qro'))) return 3;
     if (limpio.includes('carsline')) return 2;
     if (limpio.includes('gwm')) return 4;
     if (limpio.includes('subaru')) return 5;
-    if (limpio.includes('compro') && limpio.includes('queretaro')) return 6;
+    if (limpio.includes('compro') && (limpio.includes('queretaro') || limpio.includes('qro'))) return 6;
     if (limpio.includes('compro')) return 7;
 
     return 2;
   }
 
-  normalizarNombreMarcaOficial(nombreMarcaRaw: string): string {
-    if (!nombreMarcaRaw) return 'Carsline Pachuca';
-    const limpio = this.normalizarTexto(nombreMarcaRaw);
+  normalizarNombreMarcaOficial(nombreMarcaRaw: string, esCompras: boolean = false): string {
+    const limpio = this.plantillaService.normalizarTexto(nombreMarcaRaw);
+
+    if (esCompras) {
+      if (limpio.includes('queretaro') || limpio.includes('qro')) return 'ComproCars Querétaro';
+      return 'ComproCars Pachuca';
+    }
 
     if (limpio.includes('toyota') && limpio.includes('tulancingo')) return 'Toyota Tulancingo';
     if (limpio.includes('toyota')) return 'Toyota Pachuca';
-    if (limpio.includes('carsline') && limpio.includes('queretaro')) return 'Carsline Querétaro';
+    if (limpio.includes('carsline') && (limpio.includes('queretaro') || limpio.includes('qro'))) return 'Carsline Querétaro';
     if (limpio.includes('carsline')) return 'Carsline Pachuca';
     if (limpio.includes('gwm')) return 'GWM';
     if (limpio.includes('subaru')) return 'Subaru';
-    if (limpio.includes('compro') && limpio.includes('queretaro')) return 'ComproCars Querétaro';
+    if (limpio.includes('compro') && (limpio.includes('queretaro') || limpio.includes('qro'))) return 'ComproCars Querétaro';
     if (limpio.includes('compro')) return 'ComproCars Pachuca';
 
     return 'Carsline Pachuca';
@@ -97,13 +155,17 @@ export class ImportarEncuestasComponent {
 
   procesarArchivo() {
     if (!this.archivoSeleccionado) {
-      this.mostrarMensaje('Seleccione un archivo', 'warning');
+      this.mostrarMensaje('Seleccione un archivo Excel', 'warning');
       return;
     }
 
     this.loading = true;
     this.errores = [];
     this.datosExcel = [];
+    this.encuestasGeneradas = [];
+
+    const nombreArchivo = this.archivoSeleccionado.name.toLowerCase();
+    const esComprasPorNombre = nombreArchivo.includes('comprocars') || nombreArchivo.includes('compro');
 
     const reader = new FileReader();
     reader.onload = (e: any) => {
@@ -113,66 +175,111 @@ export class ImportarEncuestasComponent {
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
+        if (jsonData.length === 0) {
+          this.loading = false;
+          this.mostrarMensaje('El archivo cargado está vacío', 'warning');
+          return;
+        }
+
+        // Detectar si alguna columna corresponde a COMPRA
+        let tieneColumnaCompras = false;
+        const primerFila: any = jsonData[0] || {};
+        for (const k in primerFila) {
+          const kNorm = this.plantillaService.normalizarTexto(k);
+          if (kNorm.includes('fecha de compra') || kNorm.includes('asesor compra') || kNorm.includes('comprocars')) {
+            tieneColumnaCompras = true;
+            break;
+          }
+        }
+
+        this.esSegmentoComprasDetectado = esComprasPorNombre || tieneColumnaCompras;
+        if (this.esSegmentoComprasDetectado) {
+          this.tipoPlantilla = 'COMPRA';
+        } else {
+          this.tipoPlantilla = 'POSTVENTA';
+        }
+
         jsonData.forEach((rowRaw: any, index: number) => {
-          // Normalizar las claves (headers) para evitar problemas con espacios (ej. "SUCURSAL ")
+          // Normalizar las claves eliminando espacios residuales, tildes y a mayúsculas
           const row: any = {};
           for (const key in rowRaw) {
             if (Object.prototype.hasOwnProperty.call(rowRaw, key)) {
-              row[key.trim().toUpperCase()] = rowRaw[key];
+              const cleanKey = key.trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+              row[cleanKey] = rowRaw[key];
             }
           }
 
-          let fecha = '';
-          const posiblesNombresFecha = ['FECHA ORDEN', 'FECHA DE FACTURACIÓN', 'FECHA DE FACTURACION', 'FECHA', 'FECHA VENTA', 'FECHA DE COMPRA'];
+          // 1. FECHA DE OPERACIÓN
+          let fechaRaw = '';
+          const posiblesNombresFecha = [
+            'FECHA DE COMPRA',
+            'FECHA DE FACTURACION',
+            'FECHA DE FACTURACIÓN',
+            'FECHA ORDEN',
+            'FECHA',
+            'FECHA ENTREGA',
+            'FECHA VENTA',
+            'A'
+          ];
           for (const nombre of posiblesNombresFecha) {
-            if (row[nombre] !== undefined && row[nombre] !== null && row[nombre] !== '') {
-              fecha = row[nombre];
+            if (row[nombre] !== undefined && row[nombre] !== null && String(row[nombre]).trim() !== '') {
+              fechaRaw = row[nombre];
               break;
             }
           }
-
-          if (!fecha) {
+          if (!fechaRaw) {
             const values = Object.values(row);
-            if (values.length > 0 && values[0]) {
-              fecha = String(values[0]);
-            }
+            if (values.length > 0 && values[0]) fechaRaw = String(values[0]);
           }
+          const fechaFormateada = this.plantillaService.normalizarFecha(fechaRaw);
 
-          const noFactura = row['NO. FACTURA'] || row['# ORDEN'] || row['NO FACTURA'] || row['B'] || '';
+          // 2. NÚMERO DE ORDEN / FACTURA
+          const noFactura = row['NO. FACTURA'] || row['# ORDEN'] || row['NO FACTURA'] || row['ORDEN'] || row['B'] || '';
           const tipo = row['ALTA/BAJA'] || row['TIPO'] || row['C'] || '';
           const serie = row['SERIE'] || row['D'] || '';
-          
-          // Buscar Sucursal o Marca en mayúsculas
-          const marcaNombreRaw = row['MARCA'] || row['SUCURSAL'] || row['AGENCIA'] || '';
-          const marcaNombreOficial = this.normalizarNombreMarcaOficial(marcaNombreRaw ? marcaNombreRaw.toString().trim() : '');
-          
-          const unidad = row['UNIDAD'] || row['E'] || '';
-          const anio = row['AÑO'] || row['ANIO'] || row['F'] || '';
 
-          const asesorRaw = row['ASESOR'] || row['ADV'] || row['G'] || row['ASESOR COMPRAS'] || row['ASESOR VENTAS'] || '';
-          const asesor = asesorRaw ? asesorRaw.toString().trim() : 'Asesor de Servicio';
+          // 3. SUCURSAL / MARCA
+          const marcaNombreRaw = row['SUCURSAL'] || row['MARCA'] || row['AGENCIA'] || '';
+          const marcaNombreOficial = this.normalizarNombreMarcaOficial(
+            marcaNombreRaw ? String(marcaNombreRaw).trim() : '',
+            this.esSegmentoComprasDetectado
+          );
+          const marcaId = this.obtenerMarcaId(marcaNombreOficial, this.esSegmentoComprasDetectado);
 
-          const nombreCliente = row['NOMBRE CLIENTE'] || row['CLIENTE'] || row['H'] || '';
-          const telefono = row['TELEFONO'] || row['TELEFONO 1'] || row['CELULAR'] || row['I'] || '';
+          // 4. UNIDAD Y AÑO
+          const unidad = row['UNIDAD'] || row['VEHICULO'] || row['MODELO'] || row['AUTO'] || row['E'] || '';
+          const anio = row['ANO'] || row['ANIO'] || row['AÑO'] || row['F'] || '';
+
+          // 5. ASESOR
+          let asesor = '';
+          if (this.esSegmentoComprasDetectado && (row['ASESOR COMPRAS'] || row['ASESOR COMPRA'])) {
+            asesor = row['ASESOR COMPRAS'] || row['ASESOR COMPRA'];
+          } else {
+            asesor = row['ASESOR COMPRAS'] || row['ASESOR'] || row['ADV'] || row['ASESOR DE SERVICIO'] || row['EJECUTIVO'] || row['VENDEDOR'] || row['G'] || '';
+          }
+          const asesorFinal = asesor ? String(asesor).trim() : (this.esSegmentoComprasDetectado ? 'Asesor de Compras' : 'Asesor de Servicio');
+
+          // 6. CLIENTE, TELÉFONO Y CORREO
+          const nombreCliente = row['NOMBRE CLIENTE'] || row['CLIENTE'] || row['NOMBRE'] || row['TITULAR'] || row['PROPIETARIO'] || row['H'] || '';
+          const telefonoRaw = row['TELEFONO 1'] || row['TELEFONO'] || row['TELEFONO2'] || row['CELULAR'] || row['MOVIL'] || row['TEL'] || row['I'] || '';
           const email = row['CORREO ELECTRONICO'] || row['CORREO'] || row['EMAIL'] || '';
 
-          if (nombreCliente && nombreCliente.toString().trim()) {
-            const marcaId = this.obtenerMarcaId(marcaNombreOficial);
-
+          if (nombreCliente && String(nombreCliente).trim()) {
             this.datosExcel.push({
               index: index + 1,
-              fecha: this.convertirFecha(fecha),
-              noFactura: noFactura ? noFactura.toString().trim() : '',
-              tipo: tipo ? tipo.toString().trim() : '',
-              serie: serie ? serie.toString().trim() : '',
-              unidad: unidad ? unidad.toString().trim() : '',
-              anio: anio ? anio.toString().trim() : '',
-              asesor: asesor,
+              seleccionado: true,
+              fecha: fechaFormateada,
+              noFactura: noFactura ? String(noFactura).trim() : '',
+              tipoOperativo: tipo ? String(tipo).trim() : '',
+              serie: serie ? String(serie).trim() : '',
+              unidad: unidad ? String(unidad).trim() : '',
+              anio: anio ? String(anio).trim() : '',
+              asesor: asesorFinal,
               marcaNombre: marcaNombreOficial,
               marcaId: marcaId,
-              nombreCliente: nombreCliente.toString().trim(),
-              telefono: telefono ? telefono.toString().trim() : '',
-              email: email ? email.toString().trim() : 'sin_correo@inmotion.com',
+              nombreCliente: String(nombreCliente).trim(),
+              telefono: telefonoRaw ? String(telefonoRaw).trim() : '',
+              email: email ? String(email).trim() : 'sin_correo@inmotion.com',
               procesado: false,
               exito: false,
               error: ''
@@ -185,161 +292,128 @@ export class ImportarEncuestasComponent {
         this.loading = false;
         if (this.totalRegistros > 0) this.mostrarSelectorPlantilla = true;
 
-        this.mostrarMensaje(`Se encontraron ${this.totalRegistros} clientes para generar encuestas`, 'info');
+        const infoSegmento = this.esSegmentoComprasDetectado ? ' (Detectado Segmento Compras / ComproCars)' : '';
+        this.mostrarMensaje(`Se cargaron ${this.totalRegistros} clientes listos para verificar${infoSegmento}`, 'info');
       } catch (error) {
         this.loading = false;
+        console.error('Error al procesar archivo:', error);
         this.mostrarMensaje('Error al leer el archivo Excel', 'error');
       }
     };
     reader.readAsArrayBuffer(this.archivoSeleccionado);
   }
 
-  obtenerImagenMarca(nombreMarca: string): string {
-    if (!nombreMarca) return 'assets/whatsapp/carsline.png';
-    const limpio = this.normalizarTexto(nombreMarca);
-
-    if (limpio.includes('toyota') && limpio.includes('tulancingo')) return 'assets/whatsapp/toyotaTulancingo.jpeg';
-    if (limpio.includes('toyota')) return 'assets/whatsapp/toyotaPachuca.jpeg';
-    if (limpio.includes('carsline')) return 'assets/whatsapp/carsline.png';
-    if (limpio.includes('gwm')) return 'assets/whatsapp/gwm.png';
-    if (limpio.includes('subaru')) return 'assets/whatsapp/subaruPachuca.png';
-    if (limpio.includes('compro')) return 'assets/whatsapp/comproCars.png';
-
-    return 'assets/whatsapp/carsline.png';
+  cambiarPlantilla(tipo: 'POSTVENTA' | 'VENTA' | 'COMPRA') {
+    this.tipoPlantilla = tipo;
   }
 
-  convertirFecha(valor: any): string {
-    if (!valor) return '';
-    if (typeof valor === 'number') {
-      const fecha = new Date(1899, 11, 30);
-      fecha.setDate(fecha.getDate() + valor);
-      return fecha.toISOString().split('T')[0];
-    }
-    const fecha = new Date(valor);
-    return !isNaN(fecha.getTime()) ? fecha.toISOString().split('T')[0] : '';
-  }
-
-  formatearFecha(fechaStr: string): string {
-    if (!fechaStr) return 'fecha de visita';
-    const fecha = new Date(fechaStr);
-    if (!isNaN(fecha.getTime())) {
-      return fecha.toLocaleDateString('es-MX', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    }
-    return fechaStr || 'fecha de visita';
-  }
-
-  generarPlantilla(cliente: any, link: string): string {
-    const nombreCliente = cliente.nombreCliente || 'Cliente';
-    const nombreAsesor = cliente.asesor || 'Asesor de Servicio';
-    const nombreMarca = cliente.marcaNombre || 'Agencia';
-    
-    const modelo = (cliente.unidad && cliente.unidad.toString().trim() !== '') ? cliente.unidad.toString().trim() : 'vehículo';
-    const anio = cliente.anio ? ` ${cliente.anio}` : '';
-    const vehiculoCompleto = (modelo === 'vehículo') ? 'vehículo' : `${modelo}${anio}`.trim();
-    const fechaVisita = cliente.fecha ? this.formatearFecha(cliente.fecha) : 'fecha de visita';
-
-    let plantilla = '';
-
-    if (this.tipoPlantilla === 'VENTA' || this.tipoPlantilla === 'COMPRA_AUTO') {
-      plantilla += `Buen día, Sr./Srita. *${nombreCliente}*.\n`;
-      plantilla += `Mi nombre es *Cecilia Juárez* y formo parte del área de Satisfacción a Clientes de *${nombreMarca}*. ${this.emojis.manosArriba}\n`;
-      plantilla += `Agradecemos sinceramente el tiempo que nos brindó al visitarnos. Fue un placer atenderle y acompañarle durante la adquisición de su *${vehiculoCompleto}*.\n`;
-      plantilla += `Nos gustaría conocer su opinión sobre la atención recibida tanto por parte de nuestra agencia como de su asesor *${nombreAsesor}*. Por ello, le invitamos a responder nuestra encuesta de satisfacción, la cual le tomará solo unos minutos.\n`;
-      plantilla += `Para participar, por favor haga click en el siguiente enlace:\n`;
-      plantilla += `${this.emojis.punto} ${link}\n`;
-      plantilla += `Muchas gracias por su tiempo y confianza.\n`;
-      plantilla += `¡Le damos la más cordial bienvenida a la familia *${nombreMarca}*! ${this.emojis.gracias}${this.emojis.auto}`;
-    } else {
-      plantilla += `Buen día, Sr./Srita. *${nombreCliente}* Mi nombre es *Cecilia Juárez* de Satisfacción a Clientes de *${nombreMarca}* ${this.emojis.manosArriba}\n`;
-      plantilla += `Agradecemos sinceramente el tiempo que nos brindó al visitarnos en nuestra agencia, fue un gusto atenderle y acompañarle durante su estancia.\n`;
-      plantilla += `Nos gustaría conocer su opinión respecto al servicio realizado a su *${vehiculoCompleto}* el día *${fechaVisita}*.${this.emojis.auto}${this.emojis.herramienta}\n`;
-      plantilla += `Lo invitamos a responder nuestra encuesta de satisfacción; le tomará solo unos minutos.\n`;
-      plantilla += `Por favor, haz clic en el siguiente enlace para participar:\n`;
-      plantilla += `${this.emojis.punto} ${link}\n`;
-      plantilla += `  ¡Muchas gracias por su tiempo! ${this.emojis.gracias}${this.emojis.auto}`;
+  /**
+   * PROCESAMIENTO ASÍNCRONO EN LOTES (Chunks de 15 registros en paralelo)
+   */
+  async generarEncuestas() {
+    const pendientes = this.datosExcel.filter(d => d.seleccionado && !d.procesado);
+    if (pendientes.length === 0) {
+      this.mostrarMensaje('No hay registros seleccionados pendientes por procesar', 'warning');
+      return;
     }
 
-    return plantilla;
-  }
-
-  generarEncuestas() {
-    if (this.datosExcel.length === 0) return;
     this.procesando = true;
     this.exitosos = 0;
     this.fallidos = 0;
-    this.encuestasGeneradas = [];
+    const chunkSize = 15;
 
-    const pendientes = this.datosExcel.filter(d => !d.procesado);
-    let completados = 0;
+    for (let i = 0; i < pendientes.length; i += chunkSize) {
+      const chunk = pendientes.slice(i, i + chunkSize);
+      await Promise.all(chunk.map(cliente => this.procesarUnCliente(cliente)));
+    }
 
-    pendientes.forEach((cliente, index) => {
-      setTimeout(() => {
-        const partes = (cliente.nombreCliente || 'Cliente').trim().split(' ');
-        const nombre = partes[0] || 'Cliente';
-        const apellido = partes.slice(1).join(' ') || 'General';
+    this.procesando = false;
+    this.mostrarMensaje(`Proceso completado. ${this.exitosos} encuestas generadas con éxito, ${this.fallidos} con error`, 'success');
+  }
 
-        // CONCATENA UNIDAD Y AÑO PARA GUARDAR EL NOMBRE COMPLETO EN LA BD (ej. POER COMERCIAL 2026)
-        const modelo = (cliente.unidad && cliente.unidad.toString().trim() !== '') ? cliente.unidad.toString().trim() : '';
-        const anio = cliente.anio ? ` ${cliente.anio}`.trim() : '';
-        const unidadCompleta = `${modelo} ${anio}`.trim();
+  private async procesarUnCliente(cliente: ClienteImportacionExcel): Promise<void> {
+    const partes = (cliente.nombreCliente || 'Cliente').trim().split(' ');
+    const nombre = partes[0] || 'Cliente';
+    const apellido = partes.slice(1).join(' ') || 'General';
 
-        const data = {
-          nombre: nombre,
-          apellido: apellido,
-          email: cliente.email || 'sin_correo@inmotion.com',
-          telefono: cliente.telefono ? cliente.telefono.toString().replace(/\D/g, '') : '7710000000',
-          serie: cliente.serie || 'SN',
-          asesor: cliente.asesor || 'Atención a Clientes',
-          unidad: unidadCompleta,
-          marcaId: cliente.marcaId,
-          tipo: this.tipoPlantilla,
-          respuestas: []
-        };
+    const modelo = (cliente.unidad && cliente.unidad.trim() !== '') ? cliente.unidad.trim() : '';
+    const anio = cliente.anio ? ` ${cliente.anio}`.trim() : '';
+    const unidadCompleta = `${modelo} ${anio}`.trim();
 
-        this.encuestaService.crearEncuesta(data).subscribe({
-          next: (response) => {
-            cliente.procesado = true;
-            cliente.exito = true;
-            const link = this.encuestaService.generarLinkEncuesta(response.token);
-            this.exitosos++;
-            this.encuestasGeneradas.push({
-              cliente: cliente.nombreCliente,
-              marca: cliente.marcaNombre,
-              unidad: cliente.unidad,
-              anio: cliente.anio,
-              token: response.token,
-              link: link,
-              plantilla: this.generarPlantilla(cliente, link),
-              mostrarPlantilla: false,
-              imagenUrl: this.obtenerImagenMarca(cliente.marcaNombre)
-            });
-            completados++;
-            if (completados === pendientes.length) this.procesando = false;
-          },
-          error: () => {
-            cliente.procesado = true;
-            cliente.exito = false;
-            this.fallidos++;
-            completados++;
-            if (completados === pendientes.length) this.procesando = false;
-          }
-        });
-      }, index * 300);
-    });
+    const dataPayload = {
+      nombre: nombre,
+      apellido: apellido,
+      email: cliente.email || 'sin_correo@inmotion.com',
+      telefono: this.plantillaService.limpiarTelefono(cliente.telefono),
+      serie: cliente.serie || 'SN',
+      asesor: cliente.asesor || 'Atención a Clientes',
+      unidad: unidadCompleta,
+      marcaId: cliente.marcaId,
+      tipo: this.tipoPlantilla,
+      fechaVisita: cliente.fecha,
+      respuestas: []
+    };
+
+    try {
+      const response: any = await firstValueFrom(this.encuestaService.crearEncuesta(dataPayload));
+      cliente.procesado = true;
+      cliente.exito = true;
+      this.exitosos++;
+
+      const link = this.encuestaService.generarLinkEncuesta(response.token);
+      const plantillaTexto = this.plantillaService.generarPlantilla(cliente, link, this.tipoPlantilla);
+      const imagenUrl = this.plantillaService.obtenerImagenMarca(cliente.marcaNombre);
+
+      this.encuestasGeneradas.push({
+        id: response.id,
+        cliente: cliente.nombreCliente,
+        telefono: cliente.telefono,
+        marca: cliente.marcaNombre,
+        unidad: cliente.unidad,
+        anio: cliente.anio,
+        token: response.token,
+        link: link,
+        plantilla: plantillaTexto,
+        mostrarPlantilla: false,
+        imagenUrl: imagenUrl
+      });
+    } catch (err) {
+      cliente.procesado = true;
+      cliente.exito = false;
+      cliente.error = 'Error en servidor';
+      this.fallidos++;
+    }
+  }
+
+  abrirWhatsAppDirecto(item: any) {
+    const url = this.plantillaService.sanitizarUrlWhatsApp(item.telefono, item.plantilla);
+    window.open(url, '_blank');
+    if (item.id) {
+      this.encuestaService.registrarEnvioWhatsapp(item.id).subscribe({
+        next: () => {},
+        error: () => {}
+      });
+    }
   }
 
   copiarLink(token: string) {
     navigator.clipboard.writeText(this.encuestaService.generarLinkEncuesta(token));
-    this.mostrarMensaje('Link copiado al portapapeles', 'success');
+    this.copiadoTokens[token] = true;
+    this.mostrarMensaje('Enlace copiado al portapapeles', 'success');
+    setTimeout(() => {
+      this.copiadoTokens[token] = false;
+    }, 2000);
   }
 
-  copiarPlantilla(plantilla: string) {
+  copiarPlantilla(plantilla: string, index?: number) {
     navigator.clipboard.writeText(plantilla);
-    this.mostrarMensaje('Plantilla de texto copiada', 'success');
+    if (index !== undefined) {
+      this.copiadoPlantillaIdx = index;
+      setTimeout(() => {
+        this.copiadoPlantillaIdx = null;
+      }, 2000);
+    }
+    this.mostrarMensaje('Plantilla copiada. Lista para enviar en WhatsApp', 'success');
   }
 
   async copiarImagen(imagenUrl: string) {
@@ -363,7 +437,7 @@ export class ImportarEncuestasComponent {
       await navigator.clipboard.write([new ClipboardItem({ 'image/png': imageBlob })]);
       this.mostrarMensaje('Imagen copiada. Lista para pegar en WhatsApp', 'success');
     } catch {
-      this.mostrarMensaje('No se pudo copiar la imagen', 'error');
+      this.mostrarMensaje('No se pudo copiar la imagen al portapapeles', 'error');
     }
   }
 
@@ -378,16 +452,15 @@ export class ImportarEncuestasComponent {
     this.encuestasGeneradas = [];
     this.mostrarResultados = false;
     this.totalRegistros = 0;
-  }
-
-  cambiarPlantilla(tipo: 'POSTVENTA' | 'VENTA' | 'COMPRA_AUTO') {
-    this.tipoPlantilla = tipo;
+    this.exitosos = 0;
+    this.fallidos = 0;
   }
 
   descargarReporte() {
     if (this.encuestasGeneradas.length === 0) return;
     const ws = XLSX.utils.json_to_sheet(this.encuestasGeneradas.map(e => ({
       'Cliente': e.cliente,
+      'Teléfono': e.telefono,
       'Marca': e.marca,
       'Unidad': e.unidad,
       'Año': e.anio,

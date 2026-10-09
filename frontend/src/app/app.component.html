@@ -45,10 +45,24 @@
             <div class="dropdown-header border-bottom pb-2 mb-2">
               <small class="text-muted d-block" style="font-size: 0.75rem;">Sesión activa:</small>
               <span class="fw-bold text-dark small text-truncate d-block">{{ getUserEmail() }}</span>
+              <div class="mt-2">
+                <span *ngIf="authService.isAdmin()" class="badge bg-warning text-dark px-2 py-1" style="font-size: 0.72rem; font-weight: 700; border-radius: 4px;">
+                  <i class="fas fa-shield-alt me-1"></i> ROL: ADMINISTRADOR
+                </span>
+                <span *ngIf="authService.isGerente() && !authService.isAdmin()" class="badge bg-info text-white px-2 py-1" style="font-size: 0.72rem; font-weight: 700; border-radius: 4px;">
+                  <i class="fas fa-file-invoice me-1"></i> ROL: GERENTE
+                </span>
+                <span *ngIf="!authService.isAdmin() && !authService.isGerente()" class="badge bg-secondary text-white px-2 py-1" style="font-size: 0.72rem; font-weight: 600; border-radius: 4px;">
+                  <i class="fas fa-user me-1"></i> ROL: OPERATIVO
+                </span>
+              </div>
             </div>
 
             <button class="dropdown-item-custom" (click)="abrirModalPassword()">
               <i class="fas fa-key text-warning me-2"></i> Cambiar Contraseña
+            </button>
+            <button class="dropdown-item-custom text-danger" (click)="logout()">
+              <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión / Cambiar Usuario
             </button>
           </div>
         </div>

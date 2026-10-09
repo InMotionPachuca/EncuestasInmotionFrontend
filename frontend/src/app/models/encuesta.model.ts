@@ -1,8 +1,17 @@
+export type SegmentoOperativo = 'POSTVENTA' | 'VENTA' | 'COMPRA' | 'SERVICIO' | 'QR' | 'CLIMA_LABORAL' | 'COMPRA_AUTO';
+
 export interface Encuesta {
   id?: number;
   token: string;
-  tipo: string;
+  tipo: SegmentoOperativo | string;
+  segmento?: SegmentoOperativo | string;
   serie?: string;
+  placas?: string;
+  ordenServicio?: string;
+  asesorCompraVenta?: string;
+  fechaOperacion?: string;
+  fechaWhatsapp?: Date | string;
+  enviosWhatsapp?: number;
   estado: 'ENVIADA' | 'RESPONDIDA' | 'EXPIRADA';
   fechaEnvio: Date;
   fechaExpiracion?: Date;
@@ -34,10 +43,35 @@ export interface EncuestaRequestDTO {
   telefono?: string;
   asesor?: string;
   unidad?: string;
+  placas?: string;
+  ordenServicio?: string;
+  asesorCompraVenta?: string;
+  fechaOperacion?: string;
   fechaVisita?: string;
   marcaId: number;
-  tipo?: string;
+  tipo?: SegmentoOperativo | string;
   respuestas: EncuestaRespuestaDTO[];
+}
+
+export interface ClienteImportacionExcel {
+  index: number;
+  seleccionado: boolean;
+  fecha: string;
+  noFactura?: string;
+  tipoOperativo?: string;
+  serie?: string;
+  placas?: string;
+  unidad: string;
+  anio: string;
+  asesor: string;
+  marcaNombre: string;
+  marcaId: number;
+  nombreCliente: string;
+  telefono: string;
+  email: string;
+  procesado: boolean;
+  exito: boolean;
+  error?: string;
 }
 
 export interface EncuestaRespuestaDTO {

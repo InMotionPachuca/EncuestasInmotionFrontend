@@ -45,24 +45,49 @@
     </div>
 
     <!-- TARJETA DEL CLIENTE -->
-    <div *ngIf="encuesta && encuesta.estado === 'ENVIADA'" class="encuesta-content glass-panel shadow-toyota" style="padding: 2rem;">
-      <div class="cliente-card mb-4 p-3 rounded" style="background: rgba(248, 249, 250, 0.7); border: 1px solid rgba(233, 236, 239, 0.8);">
-        <div class="row g-2">
-          <div class="col-md-3">
-            <small class="text-muted d-block">Cliente:</small>
-            <strong class="text-dark">{{ encuesta.clienteNombre }}</strong>
+    <div *ngIf="encuesta && encuesta.estado === 'ENVIADA'" class="encuesta-content glass-panel shadow-toyota" style="padding: 2.2rem;">
+      
+      <!-- BARRA DE PROGRESO DE LA ENCUESTA -->
+      <div class="progreso-encuesta-wrapper mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="progreso-encuesta-texto">
+            <i class="fas fa-tasks text-gold me-1"></i> Progreso de respuesta: <strong>{{ totalCompletadas }} de 4 completadas</strong>
+          </span>
+          <span class="progreso-porcentaje-badge" [class.completo]="porcentajeCompletado === 100">
+            {{ porcentajeCompletado }}%
+          </span>
+        </div>
+        <div class="progreso-track">
+          <div class="progreso-fill" [style.width.%]="porcentajeCompletado"></div>
+        </div>
+      </div>
+
+      <!-- FICHA DE DATOS DEL CLIENTE -->
+      <div class="cliente-card mb-4 p-3 rounded">
+        <div class="row g-3">
+          <div class="col-6 col-md-3">
+            <div class="cliente-field">
+              <span class="field-label"><i class="fas fa-user me-1 text-gold"></i> Cliente:</span>
+              <strong class="field-val">{{ encuesta.clienteNombre }}</strong>
+            </div>
           </div>
-          <div class="col-md-3">
-            <small class="text-muted d-block">Área:</small>
-            <strong class="text-dark">{{ encuesta.tipo || 'POSTVENTA' }}</strong>
+          <div class="col-6 col-md-3">
+            <div class="cliente-field">
+              <span class="field-label"><i class="fas fa-briefcase me-1 text-gold"></i> Área:</span>
+              <span class="badge-area-pill">{{ encuesta.tipo || 'POSTVENTA' }}</span>
+            </div>
           </div>
-          <div class="col-md-3">
-            <small class="text-muted d-block">Asesor:</small>
-            <strong class="text-dark">{{ encuesta.asesor || 'Atención a Clientes' }}</strong>
+          <div class="col-6 col-md-3">
+            <div class="cliente-field">
+              <span class="field-label"><i class="fas fa-user-tie me-1 text-gold"></i> Asesor:</span>
+              <strong class="field-val">{{ encuesta.asesor || 'Atención a Clientes' }}</strong>
+            </div>
           </div>
-          <div class="col-md-3">
-            <small class="text-muted d-block">Unidad:</small>
-            <strong class="text-dark">{{ encuesta.unidad || 'Vehículo' }}</strong>
+          <div class="col-6 col-md-3">
+            <div class="cliente-field">
+              <span class="field-label"><i class="fas fa-car me-1 text-gold"></i> Unidad:</span>
+              <strong class="field-val">{{ encuesta.unidad || 'Vehículo' }}</strong>
+            </div>
           </div>
         </div>
       </div>
@@ -70,95 +95,138 @@
       <form [formGroup]="encuestaForm" (ngSubmit)="enviarRespuesta()">
         
         <!-- PREGUNTA 1 DINÁMICA -->
-        <div class="pregunta">
+        <div class="pregunta" [class.respondida]="getCalificacion(1) > 0">
           <label>
             1. {{ getPregunta1Texto() }} <span class="required">*</span>
           </label>
           <div class="rango">
             <div class="rango-labels">
-              <span>Deficiente</span>
-              <span>Excelente</span>
+              <span><i class="fas fa-frown me-1"></i> Deficiente</span>
+              <span>Excelente <i class="fas fa-smile-beam ms-1"></i></span>
             </div>
-            <div class="stars">
+            <div class="stars" (mouseleave)="hoverRating1 = 0">
               <span *ngFor="let star of [1,2,3,4,5]" 
                     (click)="setCalificacion(1, star)"
-                    [class.active]="getCalificacion(1) >= star">
+                    (mouseenter)="hoverRating1 = star"
+                    [class.active]="(hoverRating1 > 0 ? hoverRating1 : getCalificacion(1)) >= star"
+                    [class.hover-preview]="hoverRating1 >= star && getCalificacion(1) < star"
+                    role="button"
+                    [attr.aria-label]="star + ' estrellas'">
                 ★
+              </span>
+            </div>
+            <div class="rating-feedback text-center">
+              <span class="badge-calificacion-texto" [class.visible]="getCalificacion(1) > 0 || hoverRating1 > 0">
+                {{ getRatingLabel(hoverRating1 > 0 ? hoverRating1 : getCalificacion(1)) }}
               </span>
             </div>
           </div>
         </div>
 
         <!-- PREGUNTA 2 DINÁMICA -->
-        <div class="pregunta">
+        <div class="pregunta" [class.respondida]="getCalificacion(2) > 0">
           <label>
             2. {{ getPregunta2Texto() }} <span class="required">*</span>
           </label>
           <div class="rango">
             <div class="rango-labels">
-              <span>Deficiente</span>
-              <span>Excelente</span>
+              <span><i class="fas fa-frown me-1"></i> Deficiente</span>
+              <span>Excelente <i class="fas fa-smile-beam ms-1"></i></span>
             </div>
-            <div class="stars">
+            <div class="stars" (mouseleave)="hoverRating2 = 0">
               <span *ngFor="let star of [1,2,3,4,5]" 
                     (click)="setCalificacion(2, star)"
-                    [class.active]="getCalificacion(2) >= star">
+                    (mouseenter)="hoverRating2 = star"
+                    [class.active]="(hoverRating2 > 0 ? hoverRating2 : getCalificacion(2)) >= star"
+                    [class.hover-preview]="hoverRating2 >= star && getCalificacion(2) < star"
+                    role="button"
+                    [attr.aria-label]="star + ' estrellas'">
                 ★
+              </span>
+            </div>
+            <div class="rating-feedback text-center">
+              <span class="badge-calificacion-texto" [class.visible]="getCalificacion(2) > 0 || hoverRating2 > 0">
+                {{ getRatingLabel(hoverRating2 > 0 ? hoverRating2 : getCalificacion(2)) }}
               </span>
             </div>
           </div>
         </div>
 
         <!-- PREGUNTA 3 DINÁMICA -->
-        <div class="pregunta">
+        <div class="pregunta" [class.respondida]="getTiempoAdecuado() !== ''">
           <label>
             3. {{ getPregunta3Texto() }} <span class="required">*</span>
           </label>
-          <div class="si-no">
+          <div class="si-no-cards">
             <button type="button" 
+                    class="btn-sino-card btn-si"
                     [class.selected]="getTiempoAdecuado() === 'SI'"
                     (click)="setTiempoAdecuado('SI')">
-              SÍ
+              <i class="fas fa-check-circle icono-sino"></i>
+              <span class="texto-sino">SÍ</span>
             </button>
             <button type="button"
+                    class="btn-sino-card btn-no"
                     [class.selected]="getTiempoAdecuado() === 'NO'"
                     (click)="setTiempoAdecuado('NO')">
-              NO
+              <i class="fas fa-times-circle icono-sino"></i>
+              <span class="texto-sino">NO</span>
             </button>
           </div>
         </div>
 
         <!-- PREGUNTA 4 DINÁMICA -->
-        <div class="pregunta">
+        <div class="pregunta" [class.respondida]="getOpcionRecomienda() !== ''">
           <label>
             4. {{ getPregunta4Texto() }} <span class="required">*</span>
           </label>
-          <div class="si-no">
+          <div class="si-no-cards">
             <button type="button" 
+                    class="btn-sino-card btn-si"
                     [class.selected]="getOpcionRecomienda() === 'SI'"
                     (click)="setOpcionRecomienda('SI')">
-              SÍ
+              <i class="fas fa-check-circle icono-sino"></i>
+              <span class="texto-sino">SÍ</span>
             </button>
             <button type="button"
+                    class="btn-sino-card btn-no"
                     [class.selected]="getOpcionRecomienda() === 'NO'"
                     (click)="setOpcionRecomienda('NO')">
-              NO
+              <i class="fas fa-times-circle icono-sino"></i>
+              <span class="texto-sino">NO</span>
             </button>
           </div>
         </div>
 
         <!-- PREGUNTA 5: COMENTARIOS -->
         <div class="pregunta">
-          <label>5. ¿Tiene algún comentario adicional o sugerencia de mejora?</label>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <label class="mb-0">5. ¿Tiene algún comentario adicional o sugerencia de mejora?</label>
+            <span class="text-muted small">Opcional</span>
+          </div>
           <textarea formControlName="comentarios" 
-                    placeholder="Escriba sus comentarios aquí..." 
-                    rows="4"></textarea>
+                    placeholder="Escriba sus comentarios o sugerencias aquí..." 
+                    rows="4"
+                    maxlength="500"></textarea>
+          <div class="text-end text-muted small mt-1">
+            {{ (encuestaForm.get('comentarios')?.value?.length || 0) }} / 500 caracteres
+          </div>
         </div>
 
-        <button type="submit" class="btn-enviar" [disabled]="enviando || encuestaForm.invalid">
-          <span *ngIf="!enviando">Enviar Encuesta</span>
-          <span *ngIf="enviando"><i class="fas fa-spinner fa-spin me-2"></i>Enviando...</span>
-        </button>
+        <!-- BOTÓN DE ENVÍO -->
+        <div class="submit-container mt-4">
+          <button type="submit" class="btn-enviar-moderno" [disabled]="enviando || encuestaForm.invalid">
+            <span *ngIf="!enviando">
+              <i class="fas fa-paper-plane me-2"></i> Enviar Encuesta
+            </span>
+            <span *ngIf="enviando">
+              <i class="fas fa-circle-notch fa-spin me-2"></i> Procesando envío...
+            </span>
+          </button>
+          <p *ngIf="encuestaForm.invalid" class="text-center text-muted small mt-2">
+            <i class="fas fa-info-circle me-1 text-gold"></i> Por favor responda las 4 preguntas obligatorias para habilitar el envío.
+          </p>
+        </div>
       </form>
     </div>
   </div>

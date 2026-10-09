@@ -26,7 +26,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   marcasFiltradas: any[] = [];
 
   // FILTROS OPERATIVOS
-  filtroTipo: 'SERVICIO' | 'VENTA' | '' = '';
+  filtroTipo: 'SERVICIO' | 'VENTA' | 'COMPRA' | '' = '';
   filtroMarca = '';
   filtroEstado = '';
   periodo: 'hoy' | 'semana' | 'mes' | 'todos' = 'todos';
@@ -82,11 +82,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   get conteoServicio(): number {
-    return this.encuestas.filter(e => e.tipo !== 'VENTA').length;
+    return this.encuestas.filter(e => e.tipo !== 'VENTA' && e.tipo !== 'COMPRA' && e.tipo !== 'COMPRA_AUTO' && e.segmento !== 'COMPRA').length;
   }
 
   get conteoVenta(): number {
-    return this.encuestas.filter(e => e.tipo === 'VENTA').length;
+    return this.encuestas.filter(e => (e.tipo === 'VENTA' || e.segmento === 'VENTA') && e.tipo !== 'COMPRA').length;
+  }
+
+  get conteoCompra(): number {
+    return this.encuestas.filter(e => e.tipo === 'COMPRA' || e.tipo === 'COMPRA_AUTO' || e.segmento === 'COMPRA').length;
   }
 
   logos: { [key: number]: string } = {
@@ -96,7 +100,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     4: 'gwm.png',
     5: 'subaru.webp',
     6: 'comprocars.png',
-    7: 'comprocars.png'
+    7: 'comprocars.png',
+    8: 'Toyota.png'
   };
 
   private grafico: Chart | null = null;
@@ -197,7 +202,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.aplicarFiltros();
   }
 
-  cambiarFiltroTipo(tipo: 'SERVICIO' | 'VENTA' | ''): void {
+  cambiarFiltroTipo(tipo: 'SERVICIO' | 'VENTA' | 'COMPRA' | ''): void {
     this.filtroTipo = tipo;
     this.aplicarFiltros();
   }
@@ -218,6 +223,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           pendientes: 0,
           totalVentas: 0,
           totalServicio: 0,
+          totalCompras: 0,
           promedio: 0,
           tasaRespuesta: 0,
           sumaPromedios: 0
@@ -226,8 +232,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
       const item = mapaMarcas.get(marcaId);
       item.total++;
-      if (enc.tipo === 'VENTA') {
+      if (enc.tipo === 'VENTA' || enc.segmento === 'VENTA') {
         item.totalVentas++;
+      } else if (enc.tipo === 'COMPRA' || enc.tipo === 'COMPRA_AUTO' || enc.segmento === 'COMPRA') {
+        item.totalCompras = (item.totalCompras || 0) + 1;
       } else {
         item.totalServicio++;
       }
@@ -281,9 +289,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.encuestasFiltradas = this.encuestas.filter(enc => {
       let matchTipo = true;
       if (this.filtroTipo === 'VENTA') {
-        matchTipo = enc.tipo === 'VENTA';
+        matchTipo = enc.tipo === 'VENTA' || enc.segmento === 'VENTA';
+      } else if (this.filtroTipo === 'COMPRA') {
+        matchTipo = enc.tipo === 'COMPRA' || enc.tipo === 'COMPRA_AUTO' || enc.segmento === 'COMPRA';
       } else if (this.filtroTipo === 'SERVICIO') {
-        matchTipo = enc.tipo !== 'VENTA';
+        matchTipo = enc.tipo !== 'VENTA' && enc.tipo !== 'COMPRA' && enc.tipo !== 'COMPRA_AUTO' && enc.segmento !== 'COMPRA';
       }
 
       const matchMarca = !this.filtroMarca || enc.marcaId?.toString() === this.filtroMarca;
@@ -373,12 +383,19 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             data: marcasMostrar.map(m => m.totalVentas),
             backgroundColor: 'rgba(197, 160, 89, 0.90)',
             borderRadius: 6
+          },
+          {
+            label: 'Compras / ComproCars',
+            data: marcasMostrar.map(m => m.totalCompras || 0),
+            backgroundColor: 'rgba(13, 110, 253, 0.85)',
+            borderRadius: 6
           }
         ];
       } else {
+        const labelTipo = this.filtroTipo === 'VENTA' ? 'Ventas' : this.filtroTipo === 'COMPRA' ? 'Compras' : 'Postventa';
         datasets = [
           {
-            label: 'Total ' + (this.filtroTipo === 'VENTA' ? 'Ventas' : 'Postventa'),
+            label: 'Total ' + labelTipo,
             data: marcasMostrar.map(m => m.total),
             backgroundColor: 'rgba(197, 160, 89, 0.85)',
             borderRadius: 6

@@ -4,7 +4,7 @@
   <div class="tabs-navigation mb-4">
     <button class="tab-btn" [class.active]="pestanaActiva === 'tradicionales'"
       (click)="cambiarPestana('tradicionales')">
-      <i class="fas fa-file-excel me-2"></i> Encuestas Servicio / Venta ({{ encuestasTradicionales.length }})
+      <i class="fas fa-file-excel me-2"></i> Encuestas Servicio / Venta / Compras ({{ encuestasTradicionales.length }})
     </button>
     <button class="tab-btn" [class.active]="pestanaActiva === 'qr'" (click)="cambiarPestana('qr')">
       <i class="fas fa-qrcode me-2"></i> Encuestas QR ({{ encuestasQr.length }})
@@ -15,8 +15,8 @@
   <div *ngIf="pestanaActiva === 'tradicionales'">
     <div class="listar-header">
       <div>
-        <h1>Encuestas de Servicio / Venta</h1>
-        <p class="header-subtitle mt-1 mb-0">Gestión y control de encuestas enviadas por WhatsApp / Email</p>
+        <h1>Encuestas de Servicio, Ventas y Compras</h1>
+        <p class="header-subtitle mt-1 mb-0">Gestión y control de encuestas CXI y Adquisición ComproCars enviadas por WhatsApp</p>
       </div>
       <div class="header-actions">
         <button class="btn-refresh" (click)="cargarEncuestas()">
@@ -28,8 +28,8 @@
       </div>
     </div>
 
-    <!-- SEGMENTACIÓN OPERATIVA: POSTVENTA (SERVICIO) VS VENTA -->
-    <div class="segmento-tipo-container mb-3 d-flex align-items-center gap-2">
+    <!-- SEGMENTACIÓN OPERATIVA: POSTVENTA VS VENTA VS COMPRA (COMPROCARS) -->
+    <div class="segmento-tipo-container mb-3 d-flex align-items-center gap-2 flex-wrap">
       <span class="segmento-label fw-bold text-muted small me-2"><i class="fas fa-filter me-1"></i> Área:</span>
 
       <button type="button" class="btn-segmento" [class.active]="filtroTipo === ''" (click)="cambiarFiltroTipo('')">
@@ -44,6 +44,11 @@
       <button type="button" class="btn-segmento" [class.active]="filtroTipo === 'VENTA'"
         (click)="cambiarFiltroTipo('VENTA')">
         <i class="fas fa-car me-1"></i> Ventas / Nuevos ({{ conteoVenta }})
+      </button>
+
+      <button type="button" class="btn-segmento btn-segmento-compras" [class.active]="filtroTipo === 'COMPRA'"
+        (click)="cambiarFiltroTipo('COMPRA')">
+        <i class="fas fa-handshake me-1"></i> Compras / ComproCars ({{ conteoCompra }})
       </button>
     </div>
 
@@ -105,17 +110,26 @@
                 </div>
               </td>
               <td>
-                <span class="badge-tipo" [class.badge-venta]="encuesta.tipo === 'VENTA'"
-                  [class.badge-servicio]="encuesta.tipo !== 'VENTA'">
-                  <i class="fas" [class.fa-car]="encuesta.tipo === 'VENTA'"
-                    [class.fa-tools]="encuesta.tipo !== 'VENTA'"></i>
-                  {{ encuesta.tipo === 'VENTA' ? 'VENTA' : 'SERVICIO' }}
+                <span class="badge-tipo" 
+                  [class.badge-venta]="encuesta.tipo === 'VENTA'"
+                  [class.badge-compra]="encuesta.tipo === 'COMPRA' || encuesta.tipo === 'COMPRA_AUTO'"
+                  [class.badge-servicio]="encuesta.tipo !== 'VENTA' && encuesta.tipo !== 'COMPRA' && encuesta.tipo !== 'COMPRA_AUTO'">
+                  <i class="fas" 
+                    [class.fa-car]="encuesta.tipo === 'VENTA'"
+                    [class.fa-handshake]="encuesta.tipo === 'COMPRA' || encuesta.tipo === 'COMPRA_AUTO'"
+                    [class.fa-tools]="encuesta.tipo !== 'VENTA' && encuesta.tipo !== 'COMPRA' && encuesta.tipo !== 'COMPRA_AUTO'"></i>
+                  {{ (encuesta.tipo === 'COMPRA' || encuesta.tipo === 'COMPRA_AUTO') ? 'COMPRA' : (encuesta.tipo === 'VENTA' ? 'VENTA' : 'POSTVENTA') }}
                 </span>
               </td>
               <td>
-                <span style="color: #495057; font-weight: 500;">
-                  {{ encuesta.clienteTelefono || encuesta.telefono || 'Sin teléfono' }}
-                </span>
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                  <span style="color: #495057; font-weight: 500;">
+                    {{ encuesta.clienteTelefono || encuesta.telefono || 'Sin teléfono' }}
+                  </span>
+                  <span *ngIf="encuesta.enviosWhatsapp && encuesta.enviosWhatsapp > 0" class="badge-wa-rastreo">
+                    <i class="fab fa-whatsapp me-1"></i>Enviado ({{ encuesta.enviosWhatsapp }})
+                  </span>
+                </div>
               </td>
               <td>{{ encuesta.marcaNombre }}</td>
               <td>
@@ -143,8 +157,12 @@
                     <i class="fas fa-poll me-1"></i> Respuestas
                   </button>
 
-                  <button class="btn-sm btn-copiar" (click)="copiarLink(encuesta.token, encuesta.clienteNombre)" title="Copiar link de encuesta">
-                    <i class="fas fa-copy me-1"></i> Link
+                  <button class="btn-sm btn-copiar" 
+                          [class.btn-copiado-success]="copiadoToken === encuesta.token"
+                          (click)="copiarLink(encuesta.token, encuesta.clienteNombre)" 
+                          title="Copiar enlace de encuesta">
+                    <i class="fas" [class.fa-check]="copiadoToken === encuesta.token" [class.fa-copy]="copiadoToken !== encuesta.token" class="me-1"></i>
+                    {{ copiadoToken === encuesta.token ? 'Copiado' : 'Link' }}
                   </button>
                   <button class="btn-sm btn-eliminar" (click)="eliminarEncuesta(encuesta)" title="Eliminar">
                     <i class="fas fa-trash-alt me-1"></i>
@@ -350,8 +368,10 @@
             <input type="text" [value]="generarLink(encuestaSeleccionada.token)" readonly
               style="flex: 1; padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc;">
             <button class="btn-copy-modal"
+              [class.btn-copied-modal-success]="copiadoToken === encuestaSeleccionada.token"
               (click)="copiarLink(encuestaSeleccionada.token, encuestaSeleccionada.clienteNombre)">
-              <i class="fas fa-copy me-1"></i> Copiar Link
+              <i class="fas" [class.fa-check]="copiadoToken === encuestaSeleccionada.token" [class.fa-copy]="copiadoToken !== encuestaSeleccionada.token" class="me-1"></i>
+              {{ copiadoToken === encuestaSeleccionada.token ? '¡Copiado!' : 'Copiar Link' }}
             </button>
           </div>
         </div>

@@ -105,12 +105,16 @@ export class AppComponent {
   }
 
   getUserName(): string {
+    const name = this.authService.getUserName();
+    if (name && name !== 'Usuario') {
+      return `Hola, ${name}`;
+    }
     const email = this.authService.getUserEmail();
     if (email && email.includes('@')) {
       const usuarioLimpio = email.split('@')[0];
       return `Hola, ${usuarioLimpio}`;
     }
-    return 'Hola, usuario';
+    return 'Hola, Administrador';
   }
 
   getUserEmail(): string {

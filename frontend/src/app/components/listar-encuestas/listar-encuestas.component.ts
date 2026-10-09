@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { EncuestaService } from '../../services/encuesta.service';
+import { PlantillaService } from '../../services/plantilla.service';
 import { Encuesta } from '../../models/encuesta.model';
 import { NotificationService } from '../../services/notification.service';
 import * as XLSX from 'xlsx';
@@ -21,7 +22,7 @@ export class ListarEncuestasComponent implements OnInit {
   encuestasPaginadas: Encuesta[] = [];
 
   // FILTROS
-  filtroTipo: 'SERVICIO' | 'VENTA' | '' = '';
+  filtroTipo: 'SERVICIO' | 'VENTA' | 'COMPRA' | '' = '';
   filtroTexto: string = '';
   filtroMarca: string = '';
   filtroEstado: string = '';
@@ -53,26 +54,9 @@ export class ListarEncuestasComponent implements OnInit {
   // Modal Respuestas del Cliente
   mostrarModalRespuestas: boolean = false;
 
-  imagenesMarca: { [key: string]: string } = {
-    'subaru': 'assets/whatsapp/subaruPachuca.png',
-    'toyota pachuca': 'assets/whatsapp/toyotaPachuca.jpeg',
-    'toyota tulancingo': 'assets/whatsapp/toyotaTulancingo.jpeg',
-    'carsline': 'assets/whatsapp/carsline.png',
-    'gwm': 'assets/whatsapp/gwm.png',
-    'comprocars': 'assets/whatsapp/comproCars.png'
-  };
-
-  emojis = {
-    manosArriba: '🙌🏽',
-    auto: '🚗',
-    herramienta: '🧰',
-    gracias: '☺️',
-    bienvenida: '🙌🏽',
-    punto: '👉'
-  };
-
   constructor(
     private encuestaService: EncuestaService,
+    public plantillaService: PlantillaService,
     private router: Router,
     private notificationService: NotificationService
   ) {
@@ -99,11 +83,15 @@ export class ListarEncuestasComponent implements OnInit {
   }
 
   get conteoServicio(): number {
-    return this.encuestasTradicionales.filter(e => e.tipo !== 'VENTA').length;
+    return this.encuestasTradicionales.filter(e => e.tipo !== 'VENTA' && e.tipo !== 'COMPRA' && e.tipo !== 'COMPRA_AUTO').length;
   }
 
   get conteoVenta(): number {
     return this.encuestasTradicionales.filter(e => e.tipo === 'VENTA').length;
+  }
+
+  get conteoCompra(): number {
+    return this.encuestasTradicionales.filter(e => e.tipo === 'COMPRA' || e.tipo === 'COMPRA_AUTO').length;
   }
 
   get encuestasSegunTipo(): Encuesta[] {
@@ -111,7 +99,10 @@ export class ListarEncuestasComponent implements OnInit {
     if (this.filtroTipo === 'VENTA') {
       return this.encuestasTradicionales.filter(e => e.tipo === 'VENTA');
     }
-    return this.encuestasTradicionales.filter(e => e.tipo !== 'VENTA');
+    if (this.filtroTipo === 'COMPRA') {
+      return this.encuestasTradicionales.filter(e => e.tipo === 'COMPRA' || e.tipo === 'COMPRA_AUTO');
+    }
+    return this.encuestasTradicionales.filter(e => e.tipo !== 'VENTA' && e.tipo !== 'COMPRA' && e.tipo !== 'COMPRA_AUTO');
   }
 
   cargarEncuestas() {
@@ -168,7 +159,7 @@ export class ListarEncuestasComponent implements OnInit {
     return false;
   }
 
-  cambiarFiltroTipo(tipo: 'SERVICIO' | 'VENTA' | '') {
+  cambiarFiltroTipo(tipo: 'SERVICIO' | 'VENTA' | 'COMPRA' | '') {
     this.filtroTipo = tipo;
     this.filtrarEncuestas();
   }
@@ -188,8 +179,10 @@ export class ListarEncuestasComponent implements OnInit {
       let tipoMatch = true;
       if (this.filtroTipo === 'VENTA') {
         tipoMatch = encuesta.tipo === 'VENTA';
+      } else if (this.filtroTipo === 'COMPRA') {
+        tipoMatch = encuesta.tipo === 'COMPRA' || encuesta.tipo === 'COMPRA_AUTO';
       } else if (this.filtroTipo === 'SERVICIO') {
-        tipoMatch = encuesta.tipo !== 'VENTA';
+        tipoMatch = encuesta.tipo !== 'VENTA' && encuesta.tipo !== 'COMPRA' && encuesta.tipo !== 'COMPRA_AUTO';
       }
 
       const textoSearch = this.normalizarTexto(this.filtroTexto);
@@ -299,15 +292,7 @@ export class ListarEncuestasComponent implements OnInit {
   }
 
   obtenerImagenMarca(nombreMarca: string): string {
-    if (!nombreMarca) return 'assets/whatsapp/subaruPachuca.png';
-    const nombreLimpio = this.normalizarTexto(nombreMarca);
-    
-    for (const key of Object.keys(this.imagenesMarca)) {
-      if (nombreLimpio.includes(key)) {
-        return this.imagenesMarca[key];
-      }
-    }
-    return 'assets/whatsapp/subaruPachuca.png';
+    return this.plantillaService.obtenerImagenMarca(nombreMarca);
   }
 
   formatearFecha(fechaStr: Date | string): string {
@@ -320,53 +305,35 @@ export class ListarEncuestasComponent implements OnInit {
   }
 
   generarPlantilla(encuesta: any): string {
-    const nombreCliente = encuesta.clienteNombre || 'Cliente';
-    const nombreAsesor = encuesta.asesor || 'Asesor de Servicio';
-    const nombreMarca = this.obtenerNombreMarcaMostrar(encuesta.marcaNombre);
-
-    const unidadReal = (encuesta.unidad && encuesta.unidad.toString().trim() !== '') 
-      ? encuesta.unidad.toString().trim() 
-      : 'vehículo';
-
-    const fechaVisita = encuesta.fechaEnvio ? this.formatearFecha(encuesta.fechaEnvio) : 'fecha de visita';
     const link = this.generarLink(encuesta.token);
-
-    let plantilla = '';
-
-    if (encuesta.tipo === 'VENTA') {
-      plantilla += 'Buen día, Sr./Srita. *' + nombreCliente + '*.\n';
-      plantilla += 'Mi nombre es *Cecilia Juárez* y formo parte del área de Satisfacción a Clientes de *' + nombreMarca + '* ' + this.emojis.manosArriba + '.\n';
-      plantilla += 'Agradecemos sinceramente el tiempo que nos brindó al visitarnos. Fue un placer atenderle y acompañarle durante la adquisición de su *' + unidadReal + '*.\n';
-      plantilla += 'Nos gustaría conocer su opinión sobre la atención recibida tanto por parte de nuestra agencia como de su asesor *' + nombreAsesor + '*. Por ello, le invitamos a responder nuestra encuesta de satisfacción, la cual le tomará solo unos minutos.\n';
-      plantilla += 'Para participar, por favor haga clic en el siguiente enlace:\n';
-      plantilla += this.emojis.punto + ' ' + link + '\n';
-      plantilla += 'Muchas gracias por su tiempo y confianza.\n';
-      plantilla += '¡Le damos la más cordial bienvenida a la familia *' + nombreMarca + '*! ' + this.emojis.bienvenida + ' ' + this.emojis.auto;
-    } else {
-      plantilla += 'Buen día, Sr./Srita. *' + nombreCliente + '*.\n';
-      plantilla += 'Mi nombre es *Cecilia Juárez* de Satisfacción a Clientes de *' + nombreMarca + '* ' + this.emojis.manosArriba + '.\n';
-      plantilla += 'Agradecemos sinceramente el tiempo que nos brindó al visitarnos en nuestra agencia, fue un gusto atenderle y acompañarle durante su estancia.\n';
-      plantilla += 'Nos gustaría conocer su opinión respecto al servicio realizado a su *' + unidadReal + '* el día *' + fechaVisita + '* ' + this.emojis.auto + this.emojis.herramienta + '.\n';
-      plantilla += 'Lo invitamos a responder nuestra encuesta de satisfacción; le tomará solo unos minutos.\n\n';
-      plantilla += 'Por favor, haz clic en el siguiente enlace para participar:\n';
-      plantilla += this.emojis.punto + ' ' + link + '\n';
-      plantilla += '¡Muchas gracias por su tiempo! ' + this.emojis.gracias + ' ' + this.emojis.auto;
-    }
-
-    return plantilla;
+    return this.plantillaService.generarPlantilla(encuesta, link, encuesta.tipo);
   }
 
-  // ENVÍO DIRECTO A WHATSAPP WEB
+  // ENVÍO DIRECTO A WHATSAPP WEB CON TRAZABILIDAD (AGENT.md 2.1)
   enviarWhatsApp(encuesta: any) {
-    const telefono = this.limpiarNumeroTelefono(this.obtenerTelefono(encuesta));
-    if (!telefono || telefono === '0000000000') {
-      this.notificationService.show('El cliente no tiene un número telefónico válido', 'warning');
+    const telefono = this.plantillaService.limpiarTelefono(this.obtenerTelefono(encuesta));
+    if (!telefono || telefono === '0000000000' || telefono.length < 10) {
+      this.notificationService.show('El cliente no tiene un número telefónico válido (mínimo 10 dígitos)', 'warning');
       return;
     }
 
-    const mensaje = encodeURIComponent(this.generarPlantilla(encuesta));
-    const url = `https://api.whatsapp.com/send?phone=${telefono}&text=${mensaje}`;
+    const mensaje = this.generarPlantilla(encuesta);
+    const url = this.plantillaService.sanitizarUrlWhatsApp(telefono, mensaje);
     window.open(url, '_blank');
+
+    if (encuesta.id) {
+      this.encuestaService.registrarEnvioWhatsapp(encuesta.id).subscribe({
+        next: (resp: any) => {
+          encuesta.fechaWhatsapp = resp.fechaWhatsapp || new Date();
+          encuesta.enviosWhatsapp = resp.enviosWhatsapp || ((encuesta.enviosWhatsapp || 0) + 1);
+          this.notificationService.show('Envío a WhatsApp registrado en sistema', 'success');
+        },
+        error: () => {
+          encuesta.fechaWhatsapp = new Date();
+          encuesta.enviosWhatsapp = (encuesta.enviosWhatsapp || 0) + 1;
+        }
+      });
+    }
   }
 
   verDetallesYPlantilla(encuesta: Encuesta) {
@@ -525,6 +492,8 @@ export class ListarEncuestasComponent implements OnInit {
     return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   }
 
+  copiadoToken: string = '';
+
   generarLink(token: string): string {
     return this.encuestaService.generarLinkEncuesta(token);
   }
@@ -532,7 +501,11 @@ export class ListarEncuestasComponent implements OnInit {
   copiarLink(token: string, clienteNombre: string) {
     const link = this.generarLink(token);
     navigator.clipboard.writeText(link).then(() => {
-      this.notificationService.show('Link copiado para ' + clienteNombre, 'success');
+      this.copiadoToken = token;
+      this.notificationService.show('Enlace copiado para ' + (clienteNombre || 'el cliente'), 'success');
+      setTimeout(() => {
+        if (this.copiadoToken === token) this.copiadoToken = '';
+      }, 2000);
     });
   }
 }

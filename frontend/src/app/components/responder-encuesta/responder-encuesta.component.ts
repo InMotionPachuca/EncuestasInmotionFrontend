@@ -17,6 +17,9 @@ export class ResponderEncuestaComponent implements OnInit {
   enviando: boolean = false;
   error: string = '';
 
+  hoverRating1: number = 0;
+  hoverRating2: number = 0;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -30,6 +33,30 @@ export class ResponderEncuestaComponent implements OnInit {
       recomienda: ['', [Validators.required]],
       comentarios: ['']
     });
+  }
+
+  get totalCompletadas(): number {
+    let count = 0;
+    if (this.encuestaForm.get('experiencia')?.value > 0) count++;
+    if (this.encuestaForm.get('atencion')?.value > 0) count++;
+    if (this.encuestaForm.get('tiempoAdecuado')?.value) count++;
+    if (this.encuestaForm.get('recomienda')?.value) count++;
+    return count;
+  }
+
+  get porcentajeCompletado(): number {
+    return Math.round((this.totalCompletadas / 4) * 100);
+  }
+
+  getRatingLabel(valor: number): string {
+    switch (valor) {
+      case 5: return 'Excelente (5 de 5)';
+      case 4: return 'Muy Bueno (4 de 5)';
+      case 3: return 'Aceptable (3 de 5)';
+      case 2: return 'Regular (2 de 5)';
+      case 1: return 'Deficiente (1 de 5)';
+      default: return 'Seleccione una calificación';
+    }
   }
 
   ngOnInit(): void {
@@ -61,13 +88,21 @@ export class ResponderEncuestaComponent implements OnInit {
     return this.encuesta?.tipo === 'VENTA';
   }
 
+  get esCompra(): boolean {
+    return this.encuesta?.tipo === 'COMPRA' || this.encuesta?.tipo === 'COMPRA_AUTO';
+  }
+
   getTituloEncuesta(): string {
+    if (this.esCompra) return 'Encuesta de Satisfacción en Compras (ComproCars)';
     if (this.esVenta) return 'Encuesta de Satisfacción en Ventas';
     if (this.encuesta?.tipo === 'POSTVENTA') return 'Encuesta de Satisfacción en Postventa';
     return 'Encuesta de Satisfacción en Servicio';
   }
 
   getSubtituloEncuesta(): string {
+    if (this.esCompra) {
+      return 'Agradecemos su confianza durante el proceso de compra/toma de su vehículo, nos gustaría conocer su experiencia.';
+    }
     if (this.esVenta) {
       return 'Agradecemos su preferencia en la compra de su unidad, nos gustaría conocer su experiencia.';
     }
@@ -75,6 +110,9 @@ export class ResponderEncuestaComponent implements OnInit {
   }
 
   getPregunta1Texto(): string {
+    if (this.esCompra) {
+      return '¿Cómo califica la rapidez y transparencia en la valuación de su vehículo?';
+    }
     if (this.esVenta) {
       return '¿Cómo evaluaría su experiencia general durante el proceso de compra de su vehículo?';
     }
@@ -82,6 +120,9 @@ export class ResponderEncuestaComponent implements OnInit {
   }
 
   getPregunta2Texto(): string {
+    if (this.esCompra) {
+      return '¿Cómo califica la atención y profesionalismo brindado por su Asesor de Compras?';
+    }
     if (this.esVenta) {
       return '¿Cómo califica la atención y asesoría brindada por su Asesor de Ventas?';
     }
@@ -89,6 +130,9 @@ export class ResponderEncuestaComponent implements OnInit {
   }
 
   getPregunta3Texto(): string {
+    if (this.esCompra) {
+      return '¿El trámite administrativo y pago se realizó en el tiempo y condiciones acordadas?';
+    }
     if (this.esVenta) {
       return '¿La entrega de su vehículo se realizó en el tiempo y condiciones acordadas?';
     }
@@ -96,6 +140,9 @@ export class ResponderEncuestaComponent implements OnInit {
   }
 
   getPregunta4Texto(): string {
+    if (this.esCompra) {
+      return '¿Recomendaría nuestro servicio de compra/toma de vehículos a sus familiares y amigos?';
+    }
     if (this.esVenta) {
       return '¿Recomendaría nuestra agencia de ventas a sus familiares y amigos?';
     }

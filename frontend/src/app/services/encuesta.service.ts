@@ -87,4 +87,8 @@ export class EncuestaService {
   eliminarEncuesta(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/eliminar/${id}`);
   }
+
+  registrarEnvioWhatsapp(id: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/whatsapp`, {});
+  }
 }

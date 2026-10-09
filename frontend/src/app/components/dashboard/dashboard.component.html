@@ -74,20 +74,24 @@
     </div>
   </div>
 
-  <!-- SEGMENTACIÓN OPERATIVA: POSTVENTA VS VENTAS -->
+  <!-- SEGMENTACIÓN OPERATIVA: POSTVENTA VS VENTAS VS COMPRAS -->
   <div class="segmento-tipo-container mb-3 d-flex align-items-center gap-2 flex-wrap">
     <span class="segmento-label"><i class="fas fa-filter me-1 text-gold"></i> Segmento Operativo:</span>
 
     <button type="button" class="btn-segmento" [class.active]="filtroTipo === ''" (click)="cambiarFiltroTipo('')">
-      <i class="fas fa-layer-group me-1"></i> Todas las Áreas ({{ estadisticas.total }})
+      <i class="fas fa-layer-group me-1"></i> Todas las Áreas ({{ conteoTotal }})
     </button>
 
     <button type="button" class="btn-segmento" [class.active]="filtroTipo === 'SERVICIO'" (click)="cambiarFiltroTipo('SERVICIO')">
-      <i class="fas fa-tools me-1"></i> Postventa / Servicio
+      <i class="fas fa-tools me-1"></i> Postventa / Servicio ({{ conteoServicio }})
     </button>
 
     <button type="button" class="btn-segmento" [class.active]="filtroTipo === 'VENTA'" (click)="cambiarFiltroTipo('VENTA')">
-      <i class="fas fa-car me-1"></i> Ventas / Nuevos
+      <i class="fas fa-car me-1"></i> Ventas / Nuevos ({{ conteoVenta }})
+    </button>
+
+    <button type="button" class="btn-segmento" [class.active]="filtroTipo === 'COMPRA'" (click)="cambiarFiltroTipo('COMPRA')">
+      <i class="fas fa-handshake me-1"></i> Compras / ComproCars ({{ conteoCompra }})
     </button>
   </div>
 
@@ -219,6 +223,10 @@
             <span class="stat-label">Postventa</span>
             <span class="stat-value">{{ marca.totalServicio }}</span>
           </div>
+          <div class="stat-item" *ngIf="marca.totalCompras > 0">
+            <span class="stat-label">Compras</span>
+            <span class="stat-value text-primary fw-bold">{{ marca.totalCompras }}</span>
+          </div>
           <div class="stat-item">
             <span class="stat-label">Promedio</span>
             <span class="stat-value promedio">{{ marca.promedio }} / 5</span>
@@ -258,9 +266,15 @@
               </div>
             </td>
             <td>
-              <span class="badge-tipo" [class.badge-venta]="encuesta.tipo === 'VENTA'" [class.badge-servicio]="encuesta.tipo !== 'VENTA'">
-                <i class="fas" [class.fa-car]="encuesta.tipo === 'VENTA'" [class.fa-tools]="encuesta.tipo !== 'VENTA'"></i>
-                {{ encuesta.tipo === 'VENTA' ? 'VENTA' : 'POSTVENTA' }}
+              <span class="badge-tipo" 
+                    [class.badge-venta]="encuesta.tipo === 'VENTA'" 
+                    [class.badge-compra]="encuesta.tipo === 'COMPRA' || encuesta.tipo === 'COMPRA_AUTO' || encuesta.segmento === 'COMPRA'"
+                    [class.badge-servicio]="encuesta.tipo !== 'VENTA' && encuesta.tipo !== 'COMPRA' && encuesta.tipo !== 'COMPRA_AUTO' && encuesta.segmento !== 'COMPRA'">
+                <i class="fas" 
+                   [class.fa-car]="encuesta.tipo === 'VENTA'" 
+                   [class.fa-handshake]="encuesta.tipo === 'COMPRA' || encuesta.tipo === 'COMPRA_AUTO' || encuesta.segmento === 'COMPRA'"
+                   [class.fa-tools]="encuesta.tipo !== 'VENTA' && encuesta.tipo !== 'COMPRA' && encuesta.tipo !== 'COMPRA_AUTO' && encuesta.segmento !== 'COMPRA'"></i>
+                {{ (encuesta.tipo === 'COMPRA' || encuesta.tipo === 'COMPRA_AUTO' || encuesta.segmento === 'COMPRA') ? 'COMPRA' : (encuesta.tipo === 'VENTA' ? 'VENTA' : 'POSTVENTA') }}
               </span>
             </td>
             <td>{{ encuesta.marcaNombre }}</td>

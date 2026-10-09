@@ -661,6 +661,12 @@
   border: 1px solid #D6D8DB;
 }
 
+.badge-compra {
+  background: #CFE2FF;
+  color: #084298;
+  border: 1px solid #B6D4FE;
+}
+
 .badge {
   padding: 3px 12px;
   border-radius: 20px;

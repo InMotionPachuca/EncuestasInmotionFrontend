@@ -3,22 +3,26 @@
     {{ mensajeToast }}
   </div>
 
-  <!-- HEADER NEGRO Y DORADO COMPACTO -->
+  <!-- HEADER CORPORATIVO -->
   <div class="importar-header">
     <div>
-      <h1>Importar Datos de Clientes para Encuestas</h1>
-      <p class="header-subtitle mt-1 mb-0">Cargue el archivo Excel con los clientes para generar encuestas automáticamente.</p>
+      <h1>Importar Datos de Clientes para Encuestas (CXI & Compras)</h1>
+      <p class="header-subtitle mt-1 mb-0">Carga masiva inteligente para Postventa, Ventas y ComproCars (Seminuevos y Adquisición)</p>
     </div>
   </div>
 
-  <!-- SECCIÓN DE CARGA COMPACTA -->
+  <!-- SECCIÓN DE CARGA DE ARCHIVO -->
   <div class="upload-section">
-    <div class="upload-box" (dragover)="$event.preventDefault()" (drop)="onFileChange($event)">
-      <div class="upload-icon">
+    <div class="upload-box" 
+         [class.drag-over]="isDragging"
+         (dragover)="onDragOver($event)" 
+         (dragleave)="onDragLeave($event)"
+         (drop)="onFileDrop($event)">
+      <div class="upload-icon" [class.bounce]="isDragging">
         <i class="fas fa-file-excel"></i>
       </div>
-      <h3>Seleccione el archivo Excel</h3>
-      <p>El archivo debe contener las columnas: FECHA ORDEN, NOMBRE CLIENTE, ASESOR, TELEFONO 1, UNIDAD, MARCA</p>
+      <h3>{{ isDragging ? '¡Suelte el archivo aquí!' : 'Seleccione o arrastre el archivo Excel' }}</h3>
+      <p>Compatible con archivos de Taller, Facturación y ComproCars Pachuca / Querétaro (ej. <em>Comprocars Pachuca (1).xlsx</em>)</p>
       <input type="file" accept=".xlsx,.xls" (change)="onFileChange($event)" #fileInput>
     </div>
 
@@ -26,92 +30,186 @@
       <i class="fas fa-file-alt me-2 text-gold"></i>
       <span class="file-name">{{ archivoSeleccionado.name }}</span>
       <span class="file-size">{{ (archivoSeleccionado.size / 1024).toFixed(2) }} KB</span>
-      <button class="btn-remove" (click)="limpiar()">
+      <span *ngIf="esSegmentoComprasDetectado" class="badge-comprocars-detectado ms-2">
+        <i class="fas fa-magic me-1"></i> Segmento ComproCars Detectado
+      </span>
+      <button class="btn-remove" (click)="limpiar()" title="Eliminar archivo">
         <i class="fas fa-times"></i>
       </button>
     </div>
   </div>
 
-  <!-- LOADING -->
+  <!-- SPINNER DE CARGA -->
   <div *ngIf="loading" class="loading-spinner">
     <div class="spinner"></div>
-    <p><i class="fas fa-spinner fa-spin me-2"></i> Procesando archivo...</p>
+    <p><i class="fas fa-spinner fa-spin me-2"></i> Procesando archivo y normalizando columnas...</p>
   </div>
 
   <!-- SECCIÓN DE RESULTADOS -->
   <div *ngIf="mostrarResultados && !loading" class="results-section">
     <div class="results-header">
-      <h3>Clientes encontrados</h3>
-      <span class="total-count">Total: {{ totalRegistros }}</span>
+      <div>
+        <h3>Registros Detectados en Archivo</h3>
+        <div class="counters-badge-group mt-1">
+          <span class="badge-counter">Total: <strong>{{ totalRegistros }}</strong></span>
+          <span class="badge-counter badge-counter-selected">Seleccionados para procesar: <strong>{{ totalSeleccionados }}</strong></span>
+        </div>
+      </div>
       <div class="results-actions">
-        <button class="btn-generate" (click)="generarEncuestas()" [disabled]="procesando || totalRegistros === 0">
+        <button class="btn-generate" (click)="generarEncuestas()" [disabled]="procesando || totalSeleccionados === 0">
           <i class="fas fa-cogs me-1" *ngIf="!procesando"></i>
           <i class="fas fa-spinner fa-spin me-1" *ngIf="procesando"></i>
-          {{ procesando ? 'Generando...' : 'Generar Encuestas' }}
+          {{ procesando ? 'Procesando en lotes...' : 'Generar Encuestas (' + totalSeleccionados + ')' }}
         </button>
-        <button class="btn-secondary" (click)="limpiar()">
+        <button class="btn-secondary" (click)="limpiar()" [disabled]="procesando">
           <i class="fas fa-broom me-1"></i> Limpiar
         </button>
       </div>
     </div>
 
-    <div *ngIf="mostrarResultados && !procesando && totalRegistros > 0" class="plantilla-selector">
-      <h4>Selecciona el tipo de plantilla:</h4>
-      <div class="selector-buttons">
-        <button 
-          class="btn-plantilla" 
-          [class.active]="tipoPlantilla === 'POSTVENTA'"
-          (click)="cambiarPlantilla('POSTVENTA')">
-          <i class="fas fa-tools me-1"></i> Post Venta
+    <!-- SELECTOR DE PLANTILLA Y CONTROLES GLOBALES DE SELECCIÓN -->
+    <div class="controls-toolbar" *ngIf="datosExcel.length > 0">
+      <div class="plantilla-selection-group">
+        <span class="toolbar-label"><i class="fas fa-tag me-1"></i> Plantilla a Aplicar:</span>
+        <div class="selector-buttons">
+          <button 
+            class="btn-plantilla" 
+            [class.active]="tipoPlantilla === 'POSTVENTA'"
+            (click)="cambiarPlantilla('POSTVENTA')">
+            <i class="fas fa-tools me-1"></i> Postventa (Servicio)
+          </button>
+          <button 
+            class="btn-plantilla" 
+            [class.active]="tipoPlantilla === 'VENTA'"
+            (click)="cambiarPlantilla('VENTA')">
+            <i class="fas fa-car me-1"></i> Venta (Nuevos)
+          </button>
+          <button 
+            class="btn-plantilla btn-plantilla-compras" 
+            [class.active]="tipoPlantilla === 'COMPRA'"
+            (click)="cambiarPlantilla('COMPRA')">
+            <i class="fas fa-handshake me-1"></i> Compras (ComproCars)
+            <span *ngIf="esSegmentoComprasDetectado" class="badge-sub-pill">Auto</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- CONTROLES MASIVOS DE SELECCIÓN -->
+      <div class="bulk-selection-group">
+        <span class="toolbar-label"><i class="fas fa-check-double me-1"></i> Selección rápida:</span>
+        <button class="btn-bulk-action" (click)="seleccionarTodos()" [disabled]="procesando">
+          <i class="fas fa-check-square me-1"></i> Todos
         </button>
-        <button 
-          class="btn-plantilla" 
-          [class.active]="tipoPlantilla === 'VENTA'"
-          (click)="cambiarPlantilla('VENTA')">
-          <i class="fas fa-car me-1"></i> Venta
+        <button class="btn-bulk-action" (click)="invertirSeleccion()" [disabled]="procesando">
+          <i class="fas fa-random me-1"></i> Invertir
         </button>
-        <button 
-          class="btn-plantilla" 
-          [class.active]="tipoPlantilla === 'COMPRA_AUTO'"
-          (click)="cambiarPlantilla('COMPRA_AUTO')">
-          <i class="fas fa-key me-1"></i> Compra Auto
+        <button class="btn-bulk-action btn-bulk-warning" (click)="deseleccionarSinTelefono()" [disabled]="procesando" title="Desmarcar filas sin teléfono válido">
+          <i class="fas fa-phone-slash me-1"></i> Sin Teléfono
         </button>
       </div>
-      <p class="plantilla-info">Plantilla actual: <strong>{{ tipoPlantilla === 'COMPRA_AUTO' ? 'Compra Auto' : (tipoPlantilla === 'VENTA' ? 'Venta' : 'Post Venta') }}</strong></p>
     </div>
 
-    <div *ngIf="procesando" class="progress-status">
-      <span>Procesando: {{ (exitosos + fallidos) }} / {{ totalRegistros }}</span>
-      <span>Exitosos: {{ exitosos }} | Fallidos: {{ fallidos }}</span>
-      <span>Plantilla: {{ tipoPlantilla === 'VENTA' ? 'Venta' : 'Post Venta' }}</span>
+    <!-- ESTADO DE PROCESO ASÍNCRONO EN LOTES -->
+    <div *ngIf="procesando" class="progress-status-box">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <span><strong>Procesando por lotes (Chunks de 15 peticiones en paralelo)...</strong></span>
+        <span>Progreso: {{ (exitosos + fallidos) }} / {{ totalSeleccionados }}</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" [style.width.%]="totalSeleccionados > 0 ? ((exitosos + fallidos) / totalSeleccionados) * 100 : 0"></div>
+      </div>
+      <div class="progress-metrics mt-1">
+        <span class="text-success"><i class="fas fa-check-circle me-1"></i> Exitosos: {{ exitosos }}</span>
+        <span class="text-danger ms-3"><i class="fas fa-times-circle me-1"></i> Fallidos: {{ fallidos }}</span>
+      </div>
     </div>
 
-    <!-- TABLA DE PREVISTO -->
-    <div class="table-responsive" *ngIf="datosExcel.length > 0">
-      <table class="table">
+    <!-- TABLA DE PREVISUALIZACIÓN CON CHECKBOXES Y EDICIÓN EN LÍNEA -->
+    <div class="table-responsive-box mt-3" *ngIf="datosExcel.length > 0">
+      <table class="table-preview align-middle">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Cliente</th>
+            <th style="width: 44px; text-align: center;">
+              <input 
+                type="checkbox" 
+                class="form-check-input-master" 
+                [checked]="todosSeleccionados" 
+                (change)="toggleSeleccionarTodos()"
+                title="Seleccionar / Deseleccionar todos">
+            </th>
+            <th style="width: 40px;">#</th>
+            <th>Nombre del Cliente</th>
             <th>Teléfono</th>
             <th>Asesor</th>
-            <th>Unidad</th>
-            <th>Marca</th>
-            <th>Estado</th>
+            <th>Vehículo / Unidad</th>
+            <th>Agencia Asignada</th>
+            <th>Fecha Op.</th>
+            <th style="width: 100px;">Estado</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let cliente of datosExcel">
-            <td>{{ cliente.index }}</td>
-            <td><strong>{{ cliente.nombreCliente }}</strong></td>
-            <td>{{ cliente.telefono }}</td>
-            <td>{{ cliente.asesor }}</td>
-            <td>{{ cliente.unidad }} {{ cliente.anio }}</td>
-            <td>{{ cliente.marcaNombre }}</td>
+          <tr *ngFor="let cliente of datosExcel" [class.row-deseleccionada]="!cliente.seleccionado">
+            <td style="text-align: center;">
+              <input 
+                type="checkbox" 
+                class="form-check-input-row" 
+                [(ngModel)]="cliente.seleccionado" 
+                [disabled]="cliente.procesado">
+            </td>
+            <td><span class="text-muted small">{{ cliente.index }}</span></td>
             <td>
-              <span *ngIf="!cliente.procesado" class="badge badge-pending"><i class="fas fa-clock me-1"></i>Pendiente</span>
-              <span *ngIf="cliente.procesado && cliente.exito" class="badge badge-success"><i class="fas fa-check me-1"></i>Éxito</span>
-              <span *ngIf="cliente.procesado && !cliente.exito" class="badge badge-error"><i class="fas fa-exclamation-circle me-1"></i>Error</span>
+              <input 
+                type="text" 
+                class="table-inline-input" 
+                [(ngModel)]="cliente.nombreCliente" 
+                [disabled]="cliente.procesado"
+                placeholder="Nombre del cliente" />
+            </td>
+            <td>
+              <input 
+                type="text" 
+                class="table-inline-input" 
+                [(ngModel)]="cliente.telefono" 
+                [disabled]="cliente.procesado"
+                placeholder="10 dígitos" />
+            </td>
+            <td>
+              <input 
+                type="text" 
+                class="table-inline-input" 
+                [(ngModel)]="cliente.asesor" 
+                [disabled]="cliente.procesado"
+                placeholder="Asesor" />
+            </td>
+            <td>
+              <input 
+                type="text" 
+                class="table-inline-input" 
+                [(ngModel)]="cliente.unidad" 
+                [disabled]="cliente.procesado"
+                placeholder="Modelo" />
+            </td>
+            <td>
+              <input 
+                type="text" 
+                class="table-inline-input fw-semibold" 
+                [(ngModel)]="cliente.marcaNombre" 
+                [disabled]="cliente.procesado"
+                placeholder="Sucursal" />
+            </td>
+            <td>
+              <span class="small text-muted">{{ cliente.fecha || '-' }}</span>
+            </td>
+            <td>
+              <span *ngIf="!cliente.procesado" class="badge badge-pending">
+                <i class="fas fa-clock me-1"></i>Pendiente
+              </span>
+              <span *ngIf="cliente.procesado && cliente.exito" class="badge badge-success">
+                <i class="fas fa-check me-1"></i>Creado
+              </span>
+              <span *ngIf="cliente.procesado && !cliente.exito" class="badge badge-error" [title]="cliente.error">
+                <i class="fas fa-exclamation-circle me-1"></i>Error
+              </span>
             </td>
           </tr>
         </tbody>
@@ -120,60 +218,76 @@
 
     <!-- TABLA DE ENCUESTAS GENERADAS -->
     <div *ngIf="encuestasGeneradas.length > 0" class="generated-section">
-      <h4>Encuestas Generadas</h4>
-      <div class="table-responsive">
-        <table class="table align-middle">
+      <h4><i class="fas fa-check-circle text-success me-2"></i>Encuestas Generadas Exitosamente ({{ encuestasGeneradas.length }})</h4>
+      <div class="table-responsive-box">
+        <table class="table-generated align-middle">
           <thead>
             <tr>
               <th>Cliente</th>
-              <th>Marca</th>
-              <th>Link</th>
+              <th>Agencia</th>
+              <th>Enlace de Encuesta</th>
               <th>Plantilla</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <ng-container *ngFor="let item of encuestasGeneradas">
+            <ng-container *ngFor="let item of encuestasGeneradas; let i = index">
               <tr>
-                <td><strong>{{ item.cliente }}</strong></td>
-                <td>{{ item.marca }}</td>
+                <td>
+                  <strong>{{ item.cliente }}</strong>
+                  <div class="small text-muted">{{ item.telefono }}</div>
+                </td>
+                <td>
+                  <span class="badge-marca-tag">{{ item.marca }}</span>
+                </td>
                 <td>
                   <div class="d-flex align-items-center gap-1" style="max-width: 260px;">
-                    <input type="text" 
-                           class="form-control form-control-sm text-truncate bg-light border" 
-                           [value]="item.link" 
-                           readonly />
-                    <button class="btn btn-sm btn-outline-secondary" 
+                    <input 
+                      type="text" 
+                      class="form-control form-control-sm text-truncate bg-light border" 
+                      [value]="item.link" 
+                      readonly />
+                    <button class="btn btn-sm" 
+                            [class.btn-outline-success]="copiadoTokens[item.token]"
+                            [class.btn-outline-secondary]="!copiadoTokens[item.token]"
                             (click)="copiarLink(item.token)" 
-                            title="Copiar enlace">
-                      <i class="fas fa-copy"></i>
+                            [title]="copiadoTokens[item.token] ? '¡Copiado!' : 'Copiar enlace'">
+                      <i class="fas" [class.fa-check]="copiadoTokens[item.token]" [class.fa-copy]="!copiadoTokens[item.token]"></i>
                     </button>
                   </div>
                 </td>
                 <td>
                   <button class="btn-ver-plantilla" (click)="item.mostrarPlantilla = !item.mostrarPlantilla">
                     <i class="fas me-1" [class.fa-eye]="!item.mostrarPlantilla" [class.fa-eye-slash]="item.mostrarPlantilla"></i>
-                    {{ item.mostrarPlantilla ? 'Ocultar' : 'Ver' }}
+                    {{ item.mostrarPlantilla ? 'Ocultar' : 'Ver Texto' }}
                   </button>
                 </td>
                 <td>
-                  <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-                    <button class="btn-copy" (click)="copiarImagen(item.imagenUrl)" title="Copiar solo la imagen">
-                      <i class="fas fa-image me-1"></i> Copiar Imagen
+                  <div class="actions-buttons-group">
+                    <button class="btn-direct-whatsapp" (click)="abrirWhatsAppDirecto(item)" title="Abrir WhatsApp Web directamente">
+                      <i class="fab fa-whatsapp me-1"></i> Enviar
                     </button>
-                    <button class="btn-copy-plantilla" (click)="copiarPlantilla(item.plantilla)" title="Copiar solo el texto de la plantilla">
-                      <i class="fab fa-whatsapp me-1"></i> Copiar Plantilla
+                    <button class="btn-copy-plantilla" 
+                            [class.btn-copied-pulse]="copiadoPlantillaIdx === i"
+                            (click)="copiarPlantilla(item.plantilla, i)" 
+                            title="Copiar texto de plantilla">
+                      <i class="fas" [class.fa-check]="copiadoPlantillaIdx === i" [class.fa-copy]="copiadoPlantillaIdx !== i" class="me-1"></i>
+                      {{ copiadoPlantillaIdx === i ? '¡Copiado!' : 'Copiar' }}
+                    </button>
+                    <button class="btn-copy" (click)="copiarImagen(item.imagenUrl)" title="Copiar logo corporativo">
+                      <i class="fas fa-image me-1"></i> Logo
                     </button>
                   </div>
                 </td>
               </tr>
-              <tr *ngIf="item.mostrarPlantilla">
+              <tr *ngIf="item.mostrarPlantilla" class="row-plantilla-expanded">
                 <td colspan="5">
-                  <div class="plantilla-box">
-                    <div class="plantilla-imagen" *ngIf="item.imagenUrl" style="text-align: center; margin-bottom: 10px;">
-                      <img [src]="item.imagenUrl" [alt]="item.marca" style="max-height: 80px; width: auto; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                  <div class="plantilla-preview-card">
+                    <!-- CONTENEDOR DE LOGO CORPORATIVO CON FONDO BLANCO Y OBJECT-FIT CONTAIN -->
+                    <div class="brand-logo-neutral-container" *ngIf="item.imagenUrl">
+                      <img [src]="item.imagenUrl" [alt]="item.marca" class="brand-logo-img">
                     </div>
-                    <textarea readonly rows="12" class="plantilla-textarea">{{ item.plantilla }}</textarea>
+                    <textarea readonly rows="9" class="plantilla-textarea">{{ item.plantilla }}</textarea>
                   </div>
                 </td>
               </tr>
@@ -181,21 +295,15 @@
           </tbody>
         </table>
       </div>
+
       <div class="generated-actions">
         <button class="btn-copy-all" (click)="copiarTodosLosLinks()">
           <i class="fas fa-copy me-1"></i> Copiar Todos los Links
         </button>
         <button class="btn-report" (click)="descargarReporte()">
-          <i class="fas fa-file-download me-1"></i> Descargar Reporte
+          <i class="fas fa-file-download me-1"></i> Descargar Reporte Excel
         </button>
       </div>
-    </div>
-
-    <div *ngIf="errores.length > 0" class="errors-section">
-      <h4><i class="fas fa-exclamation-triangle me-2"></i>Errores encontrados</h4>
-      <ul>
-        <li *ngFor="let error of errores">{{ error }}</li>
-      </ul>
     </div>
   </div>
 </div>
